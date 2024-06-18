@@ -1,0 +1,16 @@
+{
+	"manifest_version": 3,
+	"name": "Bambloo",
+	"version": "1.0.0",
+
+	"action": {
+		"default_popup": "index.html"
+	},
+
+	"permissions": ["nativeMessaging", "storage"],
+
+	"background": {
+		"service_worker": "src/background.ts",
+		"type": "module"
+	}
+}
