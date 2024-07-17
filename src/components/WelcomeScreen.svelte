@@ -49,16 +49,16 @@
 			<option          value='native-messaging'>Native Messaging</option>
 		</select>
 
-		<span>{selectMsg ?? ''}</span>
+		{#if selectMsg} <span>{selectMsg}</span> {/if}
 	</div>
 
 	<div>
 		{#if method === 'native-messaging'}
-			<span>{connMsg ?? ''}</span>
+			{#if connMsg} <span>{connMsg}</span> {/if}
 		{/if}
 
 		{#if method === 'ws'}
-			<span>{connMsg ?? ''}</span>
+			{#if connMsg} <span>{connMsg}</span> {/if}
 		{/if}
 	</div>
 </main>

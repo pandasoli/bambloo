@@ -13,7 +13,9 @@
 
 <main>
 	<div>
-		<span>{$popup ?? ''}</span>
+		{#if $popup}
+			<span>{$popup}</span>
+		{/if}
 	</div>
 
 	{#if !$conn?.connected}
