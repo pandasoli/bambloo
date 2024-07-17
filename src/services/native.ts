@@ -1,6 +1,6 @@
 
 export const connect_native = () => new Promise<{ port: chrome.runtime.Port, err: string|null }>(resolve => {
-	const port = chrome.runtime.connectNative('com.elisoli.chrome.echoa')
+	const port = chrome.runtime.connectNative('com.elisoli.chrome.echo')
 
 	const onMsg = (msg: string) => {
 		if (msg !== 'test') return

@@ -49,9 +49,9 @@ chrome.runtime.onConnect.addListener(async port => {
 	if (!isConnMethod(conn_method))
 		popup.set('Connection method store is not valid')
 	else {
-		//const { conn: conn_, err } = await try_conn(conn_method)
-		//
-		//if (conn_) conn.set(conn_)
-		//else popup.set(err)
+		const { conn: conn_, err } = await try_conn(conn_method)
+
+		if (conn_) conn.set(conn_)
+		else popup.set(err)
 	}
 })()
