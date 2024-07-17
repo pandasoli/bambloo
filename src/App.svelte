@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import WelcomeScreen from '@/components/WelcomeScreen.svelte'
+	import Header from '@/components/Header.svelte'
 	import { conn } from '@/stores/conn.ts'
 	import { popup } from '@/stores/popup.ts'
 
@@ -18,6 +19,7 @@
 	{#if !$conn?.connected}
 		<WelcomeScreen />
 	{:else}
+		<Header />
 		<span>Connected</span>
 	{/if}
 </main>

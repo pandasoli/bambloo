@@ -3,6 +3,7 @@ import { isConnMethod } from '@/models/conn.ts'
 import type { ConnMethod } from '@/models/conn.ts'
 import { conn } from '@/stores/conn.ts'
 import { popup } from '@/stores/popup.ts'
+import { ui } from '@/stores/ui.ts'
 import { updateGlobal } from '@/utils/update_global.ts'
 import { try_conn } from '@/services/connect.ts'
 
@@ -24,6 +25,7 @@ chrome.runtime.onMessage.addListener((msg, _, send) => {
 chrome.runtime.onConnect.addListener(async port => {
 	updateGlobal(get(conn), 'conn')
 	updateGlobal(get(popup), 'popup')
+	updateGlobal(get(ui), 'ui')
 
 	port.onDisconnect.addListener(() => {
 		/// popup message isn't required between connections
