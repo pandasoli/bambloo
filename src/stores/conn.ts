@@ -16,7 +16,7 @@ const change = (new_conn: Conn) => {
 	updateGlobal(new_conn, 'conn')
 }
 
-const setErr = (err: ConnErr) => {
+const setErr = (err: ConnErr) =>
 	state.update(conn => {
 		if (!conn) return conn
 
@@ -26,7 +26,6 @@ const setErr = (err: ConnErr) => {
 		updateGlobal(conn, 'conn')
 		return conn
 	})
-}
 
 chrome.runtime.onMessage.addListener(msg => {
 	if (msg.type === 'conn update')

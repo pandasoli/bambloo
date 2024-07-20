@@ -17,14 +17,13 @@ const change = (new_ui: UIData) => {
 	updateGlobal(new_ui, 'ui')
 }
 
-const setTab = (tab: Tab) => {
+const setTab = (tab: Tab) =>
 	state.update(ui => {
 		ui.tab = tab
 
 		updateGlobal(ui, 'ui')
 		return ui
 	})
-}
 
 chrome.runtime.onMessage.addListener(msg => {
 	if (msg.type === 'ui update')
