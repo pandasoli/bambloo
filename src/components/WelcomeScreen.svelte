@@ -47,8 +47,8 @@
 		<select on:change={onSelect} disabled={connecting}>
 			<option value='none'            >None</option>
 			<option value='browser'         >Browser</option>
-			<option value='ws'              >Web Socket</option>
 			<option value='native-messaging'>Native Messaging</option>
+			<option value='ws'              >Web Socket</option>
 		</select>
 
 		{#if selectMsg} <span>{selectMsg}</span> {/if}

@@ -1,5 +1,5 @@
 
-const ConnMethodsList = ['browser', 'ws', 'native-messaging'] as const
+const ConnMethodsList = ['browser', 'native-messaging', 'ws'] as const
 export type ConnMethod = typeof ConnMethodsList[number]
 
 export interface BaseConn {
@@ -13,17 +13,17 @@ export interface BrowserConn extends BaseConn {
 	ctx: chrome.runtime.ExtensionContext|null
 }
 
-export interface WSConn extends BaseConn {
-	method: 'ws'
-	socket: WebSocket
-}
-
 export interface NativeMessagingConn extends BaseConn {
 	method: 'native-messaging'
 	port: chrome.runtime.Port
 }
 
-export type Conn = BrowserConn | WSConn | NativeMessagingConn | null
+export interface WSConn extends BaseConn {
+	method: 'ws'
+	socket: WebSocket
+}
+
+export type Conn = BrowserConn | NativeMessagingConn | WSConn | null
 
 export const isConnMethod = (val: string): val is ConnMethod =>
 	ConnMethodsList.includes(val as ConnMethod)

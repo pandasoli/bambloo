@@ -11,7 +11,7 @@ import { try_conn } from '@/services/connect.ts'
 
 chrome.runtime.onMessage.addListener((msg, _, send) => {
 	if (msg?.startsWith?.('try')) {
-		const method = msg.substring(4) as ConnMethod
+		const method = msg.substring('try '.length) as ConnMethod
 
 		try_conn(method)
 			.then(({ conn: conn_, err }) => {
