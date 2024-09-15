@@ -7,7 +7,7 @@
 		"default_popup": "index.html"
 	},
 
-	"permissions": ["nativeMessaging", "storage"],
+	"permissions": ["nativeMessaging", "storage", "offscreen"],
 
 	"background": {
 		"service_worker": "src/background.ts",

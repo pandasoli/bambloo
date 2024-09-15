@@ -10,6 +10,7 @@ export interface BaseConn {
 
 export interface BrowserConn extends BaseConn {
 	method: 'browser'
+	ctx: chrome.runtime.ExtensionContext|null
 }
 
 export interface WSConn extends BaseConn {

@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- <script src='src/utils/discord.js'></script> -->
+
+<script src='browser_offscreen_script.js'></script>
+
+<!-- <script>
+	// NOTE: update user-agent value forcely to connect Discord API via browser;
+	Discord.Constants.UserAgent = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/0.0.309 Chrome/83.0.4103.122 Electron/9.3.5 Safari/537.36'
+
+	const client = new Discord.Client({ transport: 'websocket' /* NOTE: On webbrowser environment */ })
+
+	client.on('debug', payload => console.log(payload))
+
+	client.once('ready', () => {
+		client.user.setActivity('Chrome', { type: 'PLAYING' })
+	)
+
+	try {
+		/* await */ client.login(auth_token)
+		.then(() => resolve({ client, err: null }))
+	}
+	catch (e) {
+		resolve({ client, err: e })
+	}
+</script> -->
