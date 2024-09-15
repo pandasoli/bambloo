@@ -7,12 +7,23 @@
 
 	let connecting = false
 	let selectMsg: string|null = null
+	let inputMsg: string|null = null
 	let connMsg: string|null = null
+
+	let authentication_token: string|null = null
+	let port: number = 8765
 
 	function try_conn(host: string, host_display: string) {
 		connMsg = `Connectin' to ${host_display} host`
+		connecting = true
 
-		chrome.runtime.sendMessage(`try ${host}`)
+		chrome.runtime.sendMessage({
+			type: `try ${host}`,
+			args: {
+				authentication_token,
+				port
+			}
+		})
 			.then(err => {
 				connecting = false
 				connMsg = err
@@ -29,13 +40,19 @@
 		method = value
 
 		// Call connecion function
-		connecting = true
+		switch (method) {
+			case 'native-messaging':
+				try_conn('native-messaging', 'Native Messaging')
+		}
+	}
 
+	const connect = () => {
 		switch (method) {
 			case 'browser':
+				if (authentication_token === null)
+					return inputMsg = 'Missing authentication token'
+
 				try_conn('browser', 'Browser'); break
-			case 'native-messaging':
-				try_conn('native-messaging', 'Native Messaging'); break
 			case 'ws':
 				try_conn('ws', 'WebSocket')
 		}
@@ -55,12 +72,17 @@
 	</div>
 
 	<div>
-		{#if method === 'native-messaging'}
-			{#if connMsg} <span>{connMsg}</span> {/if}
+		{#if method === 'browser'}
+			<input bind:value={authentication_token} type='text' placeholder='Authentication token'/>
+			{#if inputMsg} <span>{inputMsg}</span> {/if}
+			<button on:click={connect}>Connect</button>
 		{/if}
 
 		{#if method === 'ws'}
-			{#if connMsg} <span>{connMsg}</span> {/if}
+			<input bind:value={port} type='number' placeholder='Port'/>
+			<button on:click={connect}>Connect</button>
 		{/if}
+
+		{#if connMsg} <span>{connMsg}</span> {/if}
 	</div>
 </main>

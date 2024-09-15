@@ -1,6 +1,8 @@
+import type { WSArgs } from '@/models/conn.ts'
 
-export const connect_ws = () => new Promise<{ socket: WebSocket, err: string|null }>(resolve => {
-	const socket = new WebSocket('ws://localhost:8765')
+
+export const connect_ws = (args: WSArgs) => new Promise<{ socket: WebSocket, err: string|null }>(resolve => {
+	const socket = new WebSocket(`ws://localhost:${args.port}`)
 
 	const onOpen = () => {
 		socket.removeEventListener('open', onOpen)

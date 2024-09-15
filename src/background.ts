@@ -10,10 +10,10 @@ import { try_conn } from '@/services/connect.ts'
 
 
 chrome.runtime.onMessage.addListener((msg, _, send) => {
-	if (msg?.startsWith?.('try')) {
-		const method = msg.substring('try '.length) as ConnMethod
+	if (msg?.type.startsWith('try')) {
+		const method = msg.type.substring('try '.length) as ConnMethod
 
-		try_conn(method)
+		try_conn(method, msg.args)
 			.then(({ conn: conn_, err }) => {
 				if (conn_) conn.change(conn_)
 				send(err)
@@ -38,9 +38,14 @@ chrome.runtime.onConnect.addListener(async port => {
 			? conn_.method
 			: null
 
+		let conn_args = conn_?.connected
+			? conn_.args
+			: null
+
 		// Store data
 		const data = {
 			conn_method,
+			conn_args,
 			presences: presences_ as string[]|undefined
 		}
 
@@ -54,12 +59,13 @@ chrome.runtime.onConnect.addListener(async port => {
 // Run on background start
 (async () => {
 	const { conn_method } = await chrome.storage.local.get('conn_method')
+	const { conn_args } = await chrome.storage.local.get('conn_args')
 	const { presences: presences_ } = await chrome.storage.local.get('presences')
 
 	if (!isConnMethod(conn_method))
 		popup.append('Connection method store is not valid')
 	else {
-		const { conn: conn_, err } = await try_conn(conn_method)
+		const { conn: conn_, err } = await try_conn(conn_method, conn_args)
 
 		if (conn_) conn.set(conn_)
 		else if (err) popup.append(err)

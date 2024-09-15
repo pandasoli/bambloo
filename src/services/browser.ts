@@ -1,5 +1,7 @@
+import type { BrowserArgs } from '@/models/conn.ts'
 
-export const connect_browser = () => new Promise<{ ctx: chrome.runtime.ExtensionContext|null, err: string|null }>(async resolve => {
+
+export const connect_browser = (args: BrowserArgs) => new Promise<{ ctx: chrome.runtime.ExtensionContext|null, err: string|null }>(async resolve => {
 	const url = chrome.runtime.getURL('browser_offscreen.html')
 
 	const getContexts = async () =>
@@ -21,5 +23,11 @@ export const connect_browser = () => new Promise<{ ctx: chrome.runtime.Extension
 	if (ctxs.length === 0)
 		return resolve({ ctx: null, err: 'Document not created' })
 
+	chrome.runtime.onMessage.addListener(msg => {
+		if (msg.type !== 'background') return
+		console.log(msg)
+	})
+
+	chrome.runtime.sendMessage({ type: 'offscreen', args })
 	resolve({ ctx: ctxs[0], err: null })
 })
