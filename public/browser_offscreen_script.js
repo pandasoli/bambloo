@@ -1,8 +1,29 @@
+import './discord.js'
 
-chrome.runtime.onMessage.addListener(msg => {
-	if (msg.type !== 'offscreen') return
-	chrome.runtime.sendMessage({ type: 'background', data: msg.args })
-	return false
+
+const connect = auth_token => new Promise((resolve, reject) => {
+	// NOTE: update user-agent value forcely to connect Discord API via browser;
+	Discord.Constants.UserAgent = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/0.0.309 Chrome/83.0.4103.122 Electron/9.3.5 Safari/537.36'
+
+	const client = new Discord.Client({ transport: 'websocket' /* NOTE: On webbrowser environment */ })
+
+	client.on('debug', console.log)
+
+	client.once('ready', () =>
+		client.user.setActivity('Chrome', { type: 'PLAYING' })
+	)
+
+	client.login(auth_token)
+		.then(() => resolve(client))
+		.catch(e => reject(String(e)))
 })
 
-chrome.runtime.sendMessage({ type: 'background', data: 'hi' })
+chrome.runtime.onMessage.addListener((msg, _, send) => {
+	if (msg.type !== 'offscreen') return
+
+	connect(msg.args.authentication_token)
+		.then(() => send('OK'))
+		.catch(send)
+
+	return true
+})
