@@ -1,10 +1,13 @@
 import './discord.js'
 
 
-const connect = auth_token => new Promise((resolve, reject) => {
+// @ts-ignore
+const connect = (auth_token: string) => new Promise<{ client: Discord.Client, err: string|null }>(resolve => {
+	// @ts-ignore
 	// NOTE: update user-agent value forcely to connect Discord API via browser;
 	Discord.Constants.UserAgent = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/0.0.309 Chrome/83.0.4103.122 Electron/9.3.5 Safari/537.36'
 
+	// @ts-ignore
 	const client = new Discord.Client({ transport: 'websocket' /* NOTE: On webbrowser environment */ })
 
 	client.on('debug', console.log)
@@ -14,16 +17,15 @@ const connect = auth_token => new Promise((resolve, reject) => {
 	)
 
 	client.login(auth_token)
-		.then(() => resolve(client))
-		.catch(e => reject(String(e)))
+		.then(() => resolve({ client, err: null }))
+		.catch((e: unknown) => resolve({ client, err: String(e) }))
 })
 
 chrome.runtime.onMessage.addListener((msg, _, send) => {
 	if (msg.type !== 'offscreen') return
 
 	connect(msg.args.authentication_token)
-		.then(() => send('OK'))
-		.catch(send)
+		.then(({ err }) => send(err || 'OK'))
 
 	return true
 })
