@@ -9,7 +9,7 @@ export interface BaseConn {
 	args: unknown
 }
 
-export interface BrowserArgs { authentication_token: string }
+export interface BrowserArgs { auth_token: string }
 export interface WSArgs { port: number }
 
 export interface BrowserConn extends BaseConn {

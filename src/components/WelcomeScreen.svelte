@@ -10,7 +10,7 @@
 	let inputMsg: string|null = null
 	let connMsg: string|null = null
 
-	let browser_conn_args: BrowserArgs = { authentication_token: '' }
+	let browser_conn_args: BrowserArgs = { auth_token: '' }
 	let ws_conn_args: WSArgs = { port: 8765 }
 
 	function try_conn(host: string, host_display: string) {
@@ -49,7 +49,7 @@
 	const connect = () => {
 		switch (method) {
 			case 'browser':
-				if (browser_conn_args.authentication_token.length === 0)
+				if (browser_conn_args.auth_token.length === 0)
 					return inputMsg = 'Missing authentication token'
 
 				try_conn('browser', 'Browser'); break
@@ -73,7 +73,7 @@
 
 	<div>
 		{#if method === 'browser'}
-			<input bind:value={browser_conn_args.authentication_token} type='text' placeholder='Authentication token'/>
+			<input bind:value={browser_conn_args.auth_token} type='text' placeholder='Authentication token'/>
 			{#if inputMsg} <span>{inputMsg}</span> {/if}
 			<button on:click={connect}>Connect</button>
 		{/if}
