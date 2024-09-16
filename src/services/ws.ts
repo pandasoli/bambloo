@@ -19,4 +19,3 @@ export const connect_ws = (args: WSArgs) => new Promise<{ socket: WebSocket, err
 	socket.addEventListener('open', onOpen)
 	socket.addEventListener('close', onClose)
 })
-

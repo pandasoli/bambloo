@@ -24,10 +24,10 @@ export const connect_browser = (args: BrowserArgs) => new Promise<{ ctx: chrome.
 		return resolve({ ctx: null, err: 'Document not created' })
 
 	chrome.runtime.sendMessage({ type: 'offscreen', args })
-		.then(err => {
-			if (err === 'OK')
-				return resolve({ ctx: ctxs[0], err: null })
-
-			resolve({ ctx: ctxs[0], err })
-		})
+		.then(err =>
+			resolve({
+				ctx: ctxs[0],
+				err: err === 'OK' ? null : err
+			})
+		)
 })
