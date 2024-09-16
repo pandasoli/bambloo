@@ -6,6 +6,7 @@ export interface BaseConn {
 	method: ConnMethod
 	connected: boolean
 	errMsg: string|null
+	args: unknown
 }
 
 export interface BrowserArgs { authentication_token: string }
@@ -28,8 +29,8 @@ export interface WSConn extends BaseConn {
 	args: WSArgs
 }
 
-export type Conn = BrowserConn | NativeMessagingConn | WSConn | null
-export type ConnArgs = BrowserArgs | WSArgs | null
+export type Conn = BrowserConn | NativeMessagingConn | WSConn
+export type ConnArgs = BrowserArgs | WSArgs
 
 export const isConnMethod = (val: string): val is ConnMethod =>
 	ConnMethodsList.includes(val as ConnMethod)

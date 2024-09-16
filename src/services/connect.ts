@@ -7,42 +7,39 @@ import { connect_native } from '@/services/native.ts'
 import { connect_ws } from '@/services/ws.ts'
 
 
+// maybe a function overload here?
 export async function try_conn(method: ConnMethod, args: ConnArgs) {
 	if (get(conn)?.connected)
 		return {err: "There's alredy an open connection"}
 
-	let nconn: Conn = null
+	let nconn: Conn
 	const base_data: BaseConn = {
 		method,
 		connected: true,
-		errMsg: null
+		errMsg: null,
+		args: null
 	}
 
 	switch (method) {
 		case 'browser': {
 			const { ctx, err } = await connect_browser(args as BrowserArgs)
 			if (err) return {err}
-			nconn = { ...base_data,
-				method: 'browser',
-				ctx,
-				args: args as BrowserArgs
-			}
+
+			nconn = {...base_data, method, ctx, args: args as BrowserArgs}
 		} break
 
 		case 'native-messaging': {
 			const { port, err } = await connect_native()
 			if (err) return {err}
-			nconn = { ...base_data, method: 'native-messaging', port }
+
+			nconn = {...base_data, method, port}
 		} break
 
 		case 'ws': {
 			const { socket, err } = await connect_ws(args as WSArgs)
 			if (err) return {err}
-			nconn = { ...base_data,
-				method: 'ws',
-				socket,
-				args: args as WSArgs
-			}
+
+			nconn = {...base_data, method, socket, args: args as WSArgs}
 		}
 	}
 

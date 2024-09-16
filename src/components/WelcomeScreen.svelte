@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import type { ChangeEventHandler } from 'svelte/elements'
-	import type { ConnMethod } from '@/models/conn.ts'
+	import type { ConnMethod, BrowserArgs, WSArgs } from '@/models/conn.ts'
 	import { isConnMethod } from '@/models/conn.ts'
 
 	let method: ConnMethod|null = null
@@ -10,8 +10,8 @@
 	let inputMsg: string|null = null
 	let connMsg: string|null = null
 
-	let authentication_token: string|null = null
-	let port: number = 8765
+	let browser_conn_args: BrowserArgs = { authentication_token: '' }
+	let ws_conn_args: WSArgs = { port: 8765 }
 
 	function try_conn(host: string, host_display: string) {
 		connMsg = `Connectin' to ${host_display} host`
@@ -19,10 +19,10 @@
 
 		chrome.runtime.sendMessage({
 			type: `try ${host}`,
-			args: {
-				authentication_token,
-				port
-			}
+			args:
+				method === 'browser' ? browser_conn_args :
+				method === 'ws'      ? ws_conn_args :
+				null
 		})
 			.then(err => {
 				connecting = false
@@ -49,7 +49,7 @@
 	const connect = () => {
 		switch (method) {
 			case 'browser':
-				if (authentication_token === null)
+				if (browser_conn_args.authentication_token.length === 0)
 					return inputMsg = 'Missing authentication token'
 
 				try_conn('browser', 'Browser'); break
@@ -73,13 +73,13 @@
 
 	<div>
 		{#if method === 'browser'}
-			<input bind:value={authentication_token} type='text' placeholder='Authentication token'/>
+			<input bind:value={browser_conn_args.authentication_token} type='text' placeholder='Authentication token'/>
 			{#if inputMsg} <span>{inputMsg}</span> {/if}
 			<button on:click={connect}>Connect</button>
 		{/if}
 
 		{#if method === 'ws'}
-			<input bind:value={port} type='number' placeholder='Port'/>
+			<input bind:value={ws_conn_args.port} type='number' placeholder='Port'/>
 			<button on:click={connect}>Connect</button>
 		{/if}
 
