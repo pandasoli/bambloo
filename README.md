@@ -13,6 +13,10 @@
 > [!WARNING]
 > Under development!
 
+> [!WARNING]
+> If your debugging, don't worry about the error `Uncaught (in promise) Error: Could not establish connection. Receiving end does not exist.`
+> it happens because we're trying to send a message to the popup when it's not open (at `src/utils/update_global.ts`).
+
 <br>
 <br>
 <br>
@@ -38,15 +42,6 @@ use [this](https://howtogeek.com/879956/what-is-a-discord-token-and-how-do-you-g
 - Filter for `/api`
 - Select `country-code`
 - In the `Request Headers` section look for `Authorization`
-
-Env Todos
----
-
-- Make a websocket echo server in C
-	
-	<br>
-- Make a simple extension to set a WebDiscord presence ([chrome-discord-presence][gh:chrome-discord-presence])
-	- [ ] Receive inputs and sets a presence
 
 
 Resouces
