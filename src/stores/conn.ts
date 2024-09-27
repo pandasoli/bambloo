@@ -9,7 +9,7 @@ export type ConnErr = {
 }
 
 
-const state = writable<Conn>(null)
+const state = writable<Conn|null>(null)
 
 const change = (new_conn: Conn) => {
 	state.set(new_conn)

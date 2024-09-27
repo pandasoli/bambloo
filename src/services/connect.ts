@@ -1,7 +1,6 @@
 import { get } from 'svelte/store'
 import { conn } from '@/stores/conn.ts'
-import type { Conn, ConnMethod, BaseConn, ConnArgs, BrowserArgs, WSArgs, BrowserConn, WSConn } from '@/models/conn.ts'
-import { connect_browser } from '@/services/browser.ts'
+import type { Conn, ConnMethod, BaseConn, ConnArgs, WSArgs, WSConn } from '@/models/conn.ts'
 import { connect_native } from '@/services/native.ts'
 import { connect_ws } from '@/services/ws.ts'
 
@@ -20,12 +19,6 @@ export async function try_conn(method: ConnMethod, args: ConnArgs) {
 	}
 
 	switch (method) {
-		case 'browser': {
-			const { ctx, err } = await connect_browser(args as BrowserArgs)
-			if (err) return {err}
-			nconn = {...base_data, ctx, args} as BrowserConn
-		} break
-
 		case 'native-messaging': {
 			const { port, err } = await connect_native()
 			if (err) return {err}

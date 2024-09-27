@@ -1,16 +1,14 @@
 <script lang='ts'>
 	import type { ChangeEventHandler } from 'svelte/elements'
-	import type { ConnMethod, BrowserArgs, WSArgs } from '@/models/conn.ts'
+	import type { ConnMethod, WSArgs } from '@/models/conn.ts'
 	import { isConnMethod } from '@/models/conn.ts'
 
 	let method: ConnMethod|null = null
 
 	let connecting = false
 	let selectMsg: string|null = null
-	let inputMsg: string|null = null
 	let connMsg: string|null = null
 
-	let browser_conn_args: BrowserArgs = { auth_token: '' }
 	let ws_conn_args: WSArgs = { port: 8765 }
 
 	function try_conn(host: string, host_display: string) {
@@ -20,8 +18,7 @@
 		chrome.runtime.sendMessage({
 			type: `try ${host}`,
 			args:
-				method === 'browser' ? browser_conn_args :
-				method === 'ws'      ? ws_conn_args :
+				method === 'ws' ? ws_conn_args :
 				null
 		})
 			.then(err => {
@@ -48,12 +45,7 @@
 
 	const connect = () => {
 		switch (method) {
-			case 'browser':
-				if (browser_conn_args.auth_token.length === 0)
-					return inputMsg = 'Missing authentication token'
-
-				try_conn('browser', 'Browser'); break
-			case 'ws':
+		case 'ws':
 				try_conn('ws', 'WebSocket')
 		}
 	}
@@ -63,7 +55,6 @@
 	<div>
 		<select on:change={onSelect} disabled={connecting}>
 			<option value='none'            >None</option>
-			<option value='browser'         >Browser</option>
 			<option value='native-messaging'>Native Messaging</option>
 			<option value='ws'              >Web Socket</option>
 		</select>
@@ -72,12 +63,6 @@
 	</div>
 
 	<div>
-		{#if method === 'browser'}
-			<input bind:value={browser_conn_args.auth_token} type='text' placeholder='Authentication token'/>
-			{#if inputMsg} <span>{inputMsg}</span> {/if}
-			<button on:click={connect}>Connect</button>
-		{/if}
-
 		{#if method === 'ws'}
 			<input bind:value={ws_conn_args.port} type='number' placeholder='Port'/>
 			<button on:click={connect}>Connect</button>
