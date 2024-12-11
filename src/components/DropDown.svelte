@@ -32,7 +32,7 @@
 
 	<header>
 		<label for='open'>
-			<span id='placeholder'>
+			<span id='placeholder' aria-invalid={selected == null}>
 				{#if selected == null}
 					{placeholder}
 				{:else}
@@ -75,7 +75,7 @@
 	header {
 		border-radius: 4px;
 		overflow: hidden;
-		background: #1C1F26;
+		background: var(--light-bg);
 		width: 100%;
 
 		label {
@@ -110,7 +110,7 @@
 			width: 100%;
 			padding: 10px;
 			padding-right: 35px;
-			background: var(--bg-light)
+			background: var(--light-bg)
 		}
 	}
 </style>

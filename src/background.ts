@@ -63,14 +63,14 @@ chrome.runtime.onConnect.addListener(async port => {
 	const { conn: conn_data } = await chrome.storage.local.get('conn')
 	const { presences: presences_data } = await chrome.storage.local.get('presences')
 
-	if (!isConnMethod(conn_data?.method))
-		popup.append('Connection method stored is not valid')
-	else {
-		const { conn: nconn, err } = await try_conn(conn_data.method, conn_data.args)
-
-		if (nconn) conn.set(nconn)
-		else if (err) popup.append(err)
-	}
+	//if (!isConnMethod(conn_data?.method))
+	//	popup.append('Connection method stored is not valid')
+	//else {
+	//	const { conn: nconn, err } = await try_conn(conn_data.method, conn_data.args)
+	//
+	//	if (nconn) conn.set(nconn)
+	//	else if (err) popup.append(err)
+	//}
 
 	if (!Array.isArray(presences_data))
 		popup.append('Presences object is not of valid type')
