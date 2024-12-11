@@ -1,18 +1,30 @@
 <script lang='ts'>
-	import type { ChangeEventHandler } from 'svelte/elements'
 	import type { ConnMethod, WSArgs } from '@/models/conn.ts'
 	import { isConnMethod } from '@/models/conn.ts'
+	import DropDown from '@/components/DropDown.svelte'
+
+	// Used for "..." animation
+	import { fade } from 'svelte/transition'
+	import { onMount } from 'svelte'
+
+	let connMsgs: string[] = []
+	let connMsgsIndex = 0
 
 	let method: ConnMethod|null = null
 
 	let connecting = false
-	let selectMsg: string|null = null
-	let connMsg: string|null = null
+	let connErr: string|null = null
 
 	let ws_conn_args: WSArgs = { port: 8765 }
 
 	function try_conn(host: string, host_display: string) {
-		connMsg = `Connectin' to ${host_display} host`
+		// Setting for "..."-animation messages
+		connMsgs = []
+		connMsgsIndex = 0
+
+		for (let i = 0; i < 4; ++i)
+			connMsgs.push(`Connectin' to ${host_display} host` + Array(i).fill('.').join(''))
+
 		connecting = true
 
 		chrome.runtime.sendMessage({
@@ -23,16 +35,19 @@
 		})
 			.then(err => {
 				connecting = false
-				connMsg = err
+				connErr = err
 			})
 	}
 
-	const onSelect: ChangeEventHandler<HTMLSelectElement> = e => {
-		const value = e.currentTarget.value
+	const onSelect = (item: { value: string }) => {
+		const value = item.value
+
+		connErr = null
+		method = null
 
 		// Check value matches type
 		if (!isConnMethod(value))
-			return selectMsg = `'${value}' isn't a valid option`
+			return console.warn('[WelcomeScreen:onSelect]', `'${value}' isn't a valid option`)
 
 		method = value
 
@@ -45,29 +60,99 @@
 
 	const connect = () => {
 		switch (method) {
-		case 'ws':
+			case 'ws':
 				try_conn('ws', 'WebSocket')
 		}
 	}
+
+	onMount(() => {
+		const interval = setInterval(() =>
+			connMsgsIndex = (connMsgsIndex + 1) % connMsgs.length
+		, 500)
+
+		return () => clearInterval(interval)
+	})
 </script>
 
-<main>
-	<div>
-		<select on:change={onSelect} disabled={connecting}>
-			<option value='none'            >None</option>
-			<option value='native-messaging'>Native Messaging</option>
-			<option value='ws'              >Web Socket</option>
-		</select>
+<main class='form'>
+	<img src='/trees/welcome.png' id='tree' />
+	<img src='/logo_discord-blue.png' id='logo' />
 
-		{#if selectMsg} <span>{selectMsg}</span> {/if}
-	</div>
+	<main class='main'>
+		<h1>Welcome!</h1>
 
-	<div>
-		{#if method === 'ws'}
-			<input bind:value={ws_conn_args.port} type='number' placeholder='Port'/>
-			<button on:click={connect}>Connect</button>
-		{/if}
+		<div>
+			<DropDown
+				placeholder='Select connection method'
+				disabled={connecting}
+				onchange={onSelect}
+				items={[
+					{value: 'native-messaging', text: 'Native Messaging'},
+					{value:	'ws', text: 'Web Socket'}
+				]}
+				let:item
+			>
+				{item.text}
+			</DropDown>
 
-		{#if connMsg} <span>{connMsg}</span> {/if}
-	</div>
+			<div id='aux'>
+				{#if method === 'ws'}
+					<div>
+						<input bind:value={ws_conn_args.port} type='number' placeholder='Port'/>
+						<button class='active' on:click={connect}>Connect</button>
+					</div>
+				{/if}
+
+				{#if connecting} <span class='info' transition:fade>{connMsgs[connMsgsIndex]}</span> {/if}
+				{#if connErr} <span class='error'>{connErr}</span> {/if}
+			</div>
+		</div>
 </main>
+</main>
+
+<style lang='scss'>
+	.form {
+		height: 332px;
+		width: 228px
+	}
+
+	.main { z-index: 2 }
+
+	h1 {
+		color: white;
+		margin-bottom: 120px;
+		font-weight: 400;
+		font-size: 28px
+	}
+
+	#tree {
+		position: absolute;
+		width: 238px;
+		top: 0;
+		right: 0;
+		mix-blend-mode: lighten
+	}
+
+	#logo {
+		position: absolute;
+		height: 100px;
+		width: 131px;
+		right: -35px;
+		bottom: 0;
+		object-fit: cover;
+		z-index: 99
+	}
+
+	#aux {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding-block: 10px;
+
+		div {
+			display: flex;
+			align-items: center;
+			gap: 10px
+		}
+	}
+</style>

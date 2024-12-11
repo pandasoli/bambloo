@@ -14,11 +14,13 @@
 </script>
 
 <main>
-	{#each $popup as msg}
-		<div>
-			<span>{msg}</span>
-		</div>
-	{/each}
+	<div id='popup-container'>
+		{#each $popup as msg}
+			<div class='popup'>
+				<span>{msg}</span>
+			</div>
+		{/each}
+	</div>	
 
 	{#if !$conn?.connected}
 		<WelcomeScreen />
@@ -29,3 +31,19 @@
 		<span>Connected</span>
 	{/if}
 </main>
+
+<style>
+	#popup-container {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		z-index: 99
+	}
+
+	.popup {
+		padding-block: 2px;
+		text-align: center;
+		background: orange
+	}
+</style>
