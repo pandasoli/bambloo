@@ -98,6 +98,11 @@ input[type='number'] {
 
 span.error { color: var(--red) }
 span.info { color: var(--blue) }
+span.code {
+	border-radius: 4px;
+	font-family: 'JetBrains Mono';
+	background: var(--light-bg)
+}
 span[aria-invalid='true'] { color: var(--text-cl) }
 
 code {

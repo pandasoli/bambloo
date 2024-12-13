@@ -4,7 +4,6 @@
 	import DropDown from '@/components/DropDown.svelte'
 
 	// Used for "..." animation
-	import { fade } from 'svelte/transition'
 	import { onMount } from 'svelte'
 
 	let connMsgs: string[] = []
@@ -19,11 +18,8 @@
 
 	function try_conn(host: string, host_display: string) {
 		// Setting for "..."-animation messages
-		connMsgs = []
+		connMsgs = Array.from({ length: 4 }, (_, i) => `Connectin' to ${host_display} host` + '.'.repeat(i))
 		connMsgsIndex = 0
-
-		for (let i = 0; i < 4; ++i)
-			connMsgs.push(`Connectin' to ${host_display} host` + Array(i).fill('.').join(''))
 
 		connecting = true
 
@@ -102,7 +98,7 @@
 				</div>
 			{/if}
 
-			{#if connecting} <span class='info' transition:fade>{connMsgs[connMsgsIndex]}</span> {/if}
+			{#if connecting} <span class='info'>{connMsgs[connMsgsIndex]}</span> {/if}
 			{#if connErr} <span class='error'>{connErr}</span> {/if}
 		</div>
 	</div>
@@ -150,5 +146,7 @@
 			align-items: center;
 			gap: 10px
 		}
+
+		.info { font-weight: bold }
 	}
 </style>

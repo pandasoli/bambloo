@@ -1,92 +1,177 @@
 <script lang='ts'>
+	import { onMount } from 'svelte'
 	import { repos } from '@/stores/repos.ts'
 	import { presences } from '@/stores/presences.ts'
 	import type { Manifest } from '@/models/Manifest.ts'
 
-	type Location = {repo: string, path: string}
+	// Used for "..." animation
+	const loadingMsgs = Array.from({ length: 4 }, (_, i) => 'Loading presences' + '.'.repeat(i))
+	let loadingMsgsIndex = 0
+
+	type Location = { repo: string, path: string }
+
+	let repo_i = 0
+
+	let manifests_path: Location[] = []
 	let manifests: Manifest[] = []
+	let error: string|null = null
 
-	let promises: Promise<Location[]>[] = $repos.map(repo =>
-		fetch(`https://api.github.com/repos/${repo}/git/trees/master?recursive=1`)
-			.then(res => res.json())
-			.then(res => res.tree)
-			.then(res => res.filter(({ type }: { type: string }) => type === 'blob'))
-			.then(res => res.filter(({ path }: { path: string }) => path.endsWith('manifest.json')))
-			.then(res => res.map(({ path }: { path: string }) => ({repo, path})))
-	)
+	const load_presences = async () => {
+		while (manifests_path.length > 0) {
+			const { repo, path } = manifests_path[0]
 
-	const process_more = async (): Promise<number> => {
-		const total = 10
-		let amount = 0
+			const url = `https://raw.githubusercontent.com/${repo}/refs/heads/master/`
+			const res = await fetch(url + path)
 
-		while (amount < total && promises.length > 0) {
-			const locations = await promises.shift() as Location[]
+			// Check HTTP status code
+			if (res.status !== 200) {
+				error = `Request to file <span class='code'>${path}</span> inside repo <span class='code>${repo}</span> returned status code <span class='code'>${res.status}</span>`
+				return null
+			}
 
-			locations.forEach(({ repo, path }) =>
-				fetch(`https://raw.githubusercontent.com/${repo}/refs/heads/master/${path}`)
-					.then(res => res.json())
-					.then(res => manifests = [ ...manifests, res ])
-			)
+			// Process response
+			const manifest: Manifest = await res.json()
+			const pwd = url + path.split('/').slice(0, -1).join('/') + '/'
 
-			amount += locations.length
+			if (manifest.images.background.startsWith('.')) manifest.images.background = pwd + manifest.images.background
+			if (manifest.images.icon.startsWith('.')) manifest.images.icon = pwd + manifest.images.icon
+
+			manifests = [ ...manifests, manifest ]
+			manifests_path.shift()
+		}
+	}
+
+	const load_repos = async () => {
+		for (; repo_i < $repos.length; ++repo_i) {
+			const repo = $repos[repo_i]
+			const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/master?recursive=1`)
+
+			// Check HTTP status code
+			if (res.status !== 200) {
+				error = `Request to repo <span class='code'>${repo}</span> returned status code <span class='code'>${res.status}</span>`
+				return null
+			}
+
+			// Process response
+			const msg = await res.json()
+
+			const locations = msg.tree
+				.filter(({ type }: { type: string }) => type === 'blob')
+				.filter(({ path }: { path: string }) => path.endsWith('manifest.json'))
+				.map(({ path }: { path: string }) => ({ repo, path }))
+
+			manifests_path = [ ...manifests_path, ...locations ]
 		}
 
-		return amount
+		load_presences()
 	}
 
-	const manage = (manifest: Manifest) => {
-		const found = $presences?.find(e => e.title === manifest.title)
+	const retry = () => {
+		error = null
 
-		if (found) presences.remove(manifest)
-		else presences.append(manifest)
+		/* Identify where the error comes from
+		 * based on what it didn't finish
+		 * processing
+		 */
+
+		if (repo_i < $repos.length) load_repos()
+		else load_presences()
 	}
 
-	process_more()
+	const manage = (manifest: Manifest) => null
+
+	onMount(() => {
+		load_repos()
+
+		const interval = setInterval(() =>
+			loadingMsgsIndex = (loadingMsgsIndex + 1) % loadingMsgs.length
+		, 500)
+
+		return () => clearInterval(interval)
+	})
 </script>
 
 <main>
-	<div id='searchbox'>
-		<input type='text' placeholder='Search here...' />
-
-		<div>
-			<svg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'>
-				<path d='M3.98827 0C1.78336 0 0 1.74248 0 3.89685C0 6.05122 1.78336 7.7937 3.98827 7.7937C4.77548 7.7937 5.50403 7.56805 6.1217 7.18481L9.00293 10L10 9.02579L7.15543 6.25358C7.66679 5.59814 7.97654 4.786 7.97654 3.89685C7.97654 1.74248 6.19318 0 3.98827 0ZM3.98827 0.916905C5.67724 0.916905 7.03812 2.2466 7.03812 3.89685C7.03812 5.5471 5.67724 6.87679 3.98827 6.87679C2.2993 6.87679 0.938416 5.5471 0.938416 3.89685C0.938416 2.2466 2.2993 0.916905 3.98827 0.916905Z' fill='white'/>
-			</svg>
+	{#if error}
+		<div id='error'>
+			<span class='error'>{@html error}</span>
+			<button class='red outline' on:click={retry}>Retry</button>
 		</div>
-	</div>
+	{:else if manifests.length === 0}
+		<div id='loading'>
+			<span class='info'>{loadingMsgs[loadingMsgsIndex]}</span>
+		</div>
+	{:else}
+		<div id='searchbox'>
+			<input type='text' placeholder='Search here...' />
 
-	<div id='presences'>
-		{#each manifests as manifest}
-			<div class='presence'>
-				<img src={manifest.images.background} class='bg' />
-
-				<div>
-					<img src={manifest.images.icon} class='icon' />
-					<span class='title'>{manifest.title}</span>
-
-					<button on:click={() => manage(manifest)}>
-						{#if $presences?.find(e => e.title === manifest.title)}
-										<img src='/svgs/trash.svg' alt='Trash icon' />
-						{:else} <img src='/svgs/download.svg' alt='Download icon' />
-						{/if}
-					</button>
-				</div>
+			<div>
+				<svg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'>
+					<path d='M3.98827 0C1.78336 0 0 1.74248 0 3.89685C0 6.05122 1.78336 7.7937 3.98827 7.7937C4.77548 7.7937 5.50403 7.56805 6.1217 7.18481L9.00293 10L10 9.02579L7.15543 6.25358C7.66679 5.59814 7.97654 4.786 7.97654 3.89685C7.97654 1.74248 6.19318 0 3.98827 0ZM3.98827 0.916905C5.67724 0.916905 7.03812 2.2466 7.03812 3.89685C7.03812 5.5471 5.67724 6.87679 3.98827 6.87679C2.2993 6.87679 0.938416 5.5471 0.938416 3.89685C0.938416 2.2466 2.2993 0.916905 3.98827 0.916905Z' fill='white'/>
+				</svg>
 			</div>
-		{/each}
-	</div>
+		</div>
+
+		<div id='presences' class:loading={manifests.length === 0}>
+			{#each manifests as manifest}
+				<div class='presence'>
+					<img src={manifest.images.background} class='bg' />
+
+					<div>
+						<img src={manifest.images.icon} class='icon' />
+						<span class='title'>{manifest.title}</span>
+
+						<button on:click={() => manage(manifest)}>
+							{#if $presences?.find(e => e.title === manifest.title)}
+											<img src='/svgs/trash.svg' alt='Trash icon' />
+							{:else} <img src='/svgs/download.svg' alt='Download icon' />
+							{/if}
+						</button>
+					</div>
+				</div>
+			{/each}
+		</div>
+	{/if}
 </main>
 
 <style lang='scss'>
 	main {
 		display: flex;
 		flex-direction: column;
-		gap: 14px
+		gap: 14px;
+		height: 100%
 	}
 
 	#presences {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 2px
+	}
+
+	#loading {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+
+		span { font-weight: bold }
+	}
+
+	#error {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		gap: 4px;
+		height: 100%;
+
+		button {
+			font-size: 9pt;
+			height: 18px;
+			width: 80px
+		}
 	}
 
 	.presence {
@@ -139,8 +224,7 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		border-radius: 8px;
-		opacity: .6
+		border-radius: 8px
 	}
 
 	#searchbox {
