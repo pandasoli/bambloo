@@ -34,20 +34,12 @@ chrome.runtime.onConnect.addListener(async port => {
 		const presences_ = get(presences)
 		const conn_ = get(conn)
 
-		let conn_method = conn_?.connected
-			? conn_.method
-			: null
-
-		let conn_args = conn_?.connected
-			? conn_.args
-			: null
+		const method = conn_?.connected ? conn_.method : null
+		const args = conn_?.connected ? conn_.args : null
 
 		// Store data
 		const data = {
-			conn: {
-				method: conn_method,
-				args: conn_args
-			},
+			conn: { method, args },
 			presences: presences_ as string[]|undefined
 		}
 
@@ -63,17 +55,23 @@ chrome.runtime.onConnect.addListener(async port => {
 	const { conn: conn_data } = await chrome.storage.local.get('conn')
 	const { presences: presences_data } = await chrome.storage.local.get('presences')
 
-	//if (!isConnMethod(conn_data?.method))
-	//	popup.append('Connection method stored is not valid')
-	//else {
-	//	const { conn: nconn, err } = await try_conn(conn_data.method, conn_data.args)
-	//
-	//	if (nconn) conn.set(nconn)
-	//	else if (err) popup.append(err)
-	//}
+	if (conn_data !== undefined && conn_data?.method !== null) {
+		if (!isConnMethod(conn_data?.method))
+			popup.append('Connection method stored is not valid')
+		else {
+			const { conn: nconn, err } = await try_conn(conn_data.method, conn_data.args)
 
-	if (!Array.isArray(presences_data))
-		popup.append('Presences object is not of valid type')
+			if (nconn) conn.set(nconn)
+			else if (err) popup.append(err)
+		}
+	}
+
+	if (presences_data !== undefined) {
+		if (!Array.isArray(presences_data))
+			presences.panic(presences_data)
+		else
+			presences.set(presences_data)
+	}
 	else
-		presences.set(presences_data)
+		presences.set([])
 })()

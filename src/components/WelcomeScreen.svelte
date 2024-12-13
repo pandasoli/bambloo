@@ -74,49 +74,45 @@
 	})
 </script>
 
-<main class='form'>
-	<img src='/trees/welcome.png' id='tree' />
-	<img src='/logo_discord-blue.png' id='logo' />
+<img src='/trees/welcome.png' id='tree' />
+<img src='/logo_discord-blue.png' id='logo' />
 
-	<main class='main'>
-		<h1>Welcome!</h1>
+<main>
+	<h1>Welcome!</h1>
 
-		<div>
-			<DropDown
-				placeholder='Select connection method'
-				disabled={connecting}
-				onchange={onSelect}
-				items={[
-					{value: 'native-messaging', text: 'Native Messaging'},
-					{value:	'ws', text: 'Web Socket'}
-				]}
-				let:item
-			>
-				{item.text}
-			</DropDown>
+	<div>
+		<DropDown
+			placeholder='Select connection method'
+			disabled={connecting}
+			onchange={onSelect}
+			items={[
+				{value: 'native-messaging', text: 'Native Messaging'},
+				{value:	'ws', text: 'Web Socket'}
+			]}
+			let:item
+		>
+			{item.text}
+		</DropDown>
 
-			<div id='aux'>
-				{#if method === 'ws'}
-					<div>
-						<input bind:value={ws_conn_args.port} type='number' placeholder='Port'/>
-						<button class='active' on:click={connect}>Connect</button>
-					</div>
-				{/if}
+		<div id='aux'>
+			{#if method === 'ws'}
+				<div>
+					<input bind:value={ws_conn_args.port} type='number' placeholder='Port'/>
+					<button class='active' on:click={connect}>Connect</button>
+				</div>
+			{/if}
 
-				{#if connecting} <span class='info' transition:fade>{connMsgs[connMsgsIndex]}</span> {/if}
-				{#if connErr} <span class='error'>{connErr}</span> {/if}
-			</div>
+			{#if connecting} <span class='info' transition:fade>{connMsgs[connMsgsIndex]}</span> {/if}
+			{#if connErr} <span class='error'>{connErr}</span> {/if}
 		</div>
-</main>
+	</div>
 </main>
 
 <style lang='scss'>
-	.form {
+	main {
 		height: 332px;
 		width: 228px
 	}
-
-	.main { z-index: 2 }
 
 	h1 {
 		color: white;

@@ -16,17 +16,24 @@
 </script>
 
 <main>
-	<button class:active={$ui.tab === 'presences'} name='presences' on:click={onClick}>Presences</button>
-	<button class:active={$ui.tab === 'tabs'}      name='tabs'      on:click={onClick}>Tabs</button>
-	<button class:active={$ui.tab === 'store'}     name='store'     on:click={onClick}>Store</button>
+	<button class={$ui.tab === 'presences' ? 'active' : 'inactive'} name='presences' on:click={onClick}>Presences</button>
+	<button class={$ui.tab === 'tabs'      ? 'active' : 'inactive'} name='tabs'      on:click={onClick}>Tabs</button>
+	<button class={$ui.tab === 'store'     ? 'active' : 'inactive'} name='store'     on:click={onClick}>Store</button>
 
-	{#if msg}
-		<span>{msg}</span>
-	{/if}
+	{#if msg} <span class='error'>{msg}</span> {/if}
 </main>
 
 <style>
-	.active {
-		background-color: blue;
+	main {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 8px;
+		padding-block: 7px
+	}
+
+	button {
+		height: 20px;
+		width: 70px;
+		font-size: 10px
 	}
 </style>
