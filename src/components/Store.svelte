@@ -16,8 +16,9 @@
 	let manifests: Manifest[] = []
 	let error: string|null = null
 
-	const load_presences = async () => {
-		while (manifests_path.length > 0) {
+	const load_presences = async (amount: number) => {
+		for (let i = 0; manifests_path.length > 0 && i < amount; ++i && manifests_path.shift())
+		{
 			const { repo, path } = manifests_path[0]
 
 			const url = `https://raw.githubusercontent.com/${repo}/refs/heads/master/`
@@ -37,33 +38,38 @@
 			if (manifest.images.icon.startsWith('.')) manifest.images.icon = pwd + manifest.images.icon
 
 			manifests = [ ...manifests, manifest ]
-			manifests_path.shift()
 		}
 	}
 
 	const load_repos = async () => {
-		for (; repo_i < $repos.length; ++repo_i) {
-			const repo = $repos[repo_i]
-			const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/master?recursive=1`)
+		const more_amount = 10
 
-			// Check HTTP status code
-			if (res.status !== 200) {
-				error = `Request to repo <span class='code'>${repo}</span> returned status code <span class='code'>${res.status}</span>`
-				return null
+		if (manifests_path.length < more_amount) {
+			const expected_len = manifests.length + 10
+
+			for (; repo_i < $repos.length && manifests.length < expected_len; ++repo_i) {
+				const repo = $repos[repo_i]
+				const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/master?recursive=1`)
+
+				// Check HTTP status code
+				if (res.status !== 200) {
+					error = `Request to repo <span class='code'>${repo}</span> returned status code <span class='code'>${res.status}</span>`
+					return null
+				}
+
+				// Process response
+				const msg = await res.json()
+
+				const locations = msg.tree
+					.filter(({ type }: { type: string }) => type === 'blob')
+					.filter(({ path }: { path: string }) => path.endsWith('manifest.json'))
+					.map(({ path }: { path: string }) => ({ repo, path }))
+
+				manifests_path = [ ...manifests_path, ...locations ]
 			}
-
-			// Process response
-			const msg = await res.json()
-
-			const locations = msg.tree
-				.filter(({ type }: { type: string }) => type === 'blob')
-				.filter(({ path }: { path: string }) => path.endsWith('manifest.json'))
-				.map(({ path }: { path: string }) => ({ repo, path }))
-
-			manifests_path = [ ...manifests_path, ...locations ]
 		}
 
-		load_presences()
+		load_presences(more_amount)
 	}
 
 	const retry = () => {
