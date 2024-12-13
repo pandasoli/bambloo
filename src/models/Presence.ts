@@ -1,6 +1,6 @@
 import type { Manifest } from '@/models/Manifest.ts'
 
 
-export interface PresenceScript extends Manifest {
+export interface Presence extends Manifest {
 	active: boolean
 }

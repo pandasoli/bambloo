@@ -36,6 +36,7 @@
 
 			if (manifest.images.background.startsWith('.')) manifest.images.background = pwd + manifest.images.background
 			if (manifest.images.icon.startsWith('.')) manifest.images.icon = pwd + manifest.images.icon
+			manifest.script = pwd + manifest.script
 
 			manifests = [ ...manifests, manifest ]
 		}
@@ -81,10 +82,17 @@
 		 */
 
 		if (repo_i < $repos.length) load_repos()
-		else load_presences()
+		else load_presences(1)
 	}
 
-	const manage = (manifest: Manifest) => null
+	const manage = (manifest: Manifest) => {
+		if ($presences) {
+			const found = $presences.find(e => e.title === manifest.title)
+
+			if (found) presences.remove(manifest)
+			else presences.append(manifest)
+		}
+	}
 
 	onMount(() => {
 		load_repos()
@@ -125,7 +133,7 @@
 
 					<div>
 						<img src={manifest.images.icon} class='icon' />
-						<span class='title'>{manifest.title}</span>
+						<span class='title' style='color: {manifest.title_color}'>{manifest.title}</span>
 
 						<button on:click={() => manage(manifest)}>
 							{#if $presences?.find(e => e.title === manifest.title)}

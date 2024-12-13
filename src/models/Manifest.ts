@@ -4,6 +4,8 @@ export interface Manifest {
 	description: string
 	author: string
 
+	title_color: string
+
 	images: {
 		background: string
 		icon: string
