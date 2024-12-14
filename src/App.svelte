@@ -1,13 +1,18 @@
 <script lang='ts'>
-	import WelcomeScreen from '@/components/WelcomeScreen.svelte'
-	import Store from '@/components/Store.svelte'
+	import WelcomeScreen from '@/Welcome.svelte'
+  import PresencesTab from '@/Presences.svelte'
+	import TabsTab from '@/Tabs.svelte'
 	import Header from '@/components/Header.svelte'
-  import PresencesTab from '@/components/PresencesTab.svelte'
-  import TabsTab from '@/components/TabsTab.svelte'
+	import Store from '@/components/Store.svelte'
+
 	import { conn } from '@/stores/conn.ts'
 	import { ui } from '@/stores/ui.ts'
 	import { popup } from '@/stores/popup.ts'
 	import { presences } from '@/stores/presences.ts'
+
+	import presencesTreeIcon from '@/assets/trees/presences.png'
+	import storeTreeIcon from '@/assets/trees/store.png'
+
 
 	popup.subscribe(() =>
 		setTimeout(() =>
@@ -29,7 +34,7 @@
 		<WelcomeScreen />
 	{:else}
 		{#if $presences?.length === 0}
-			<img src='/trees/presences.png' id='tree' />
+			<img src={presencesTreeIcon} id='tree' />
 			<Store />
 		{:else}
 			<Header />
@@ -37,7 +42,7 @@
 			{#if      $ui.tab === 'presences'} <PresencesTab />
 			{:else if $ui.tab === 'tabs'     } <TabsTab />
 			{:else if $ui.tab === 'store'    }
-				<img src='/trees/store.png' id='tree' />
+				<img src={storeTreeIcon} id='tree' />
 				<Store />
 			{/if}
 		{/if}

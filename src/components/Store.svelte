@@ -1,8 +1,13 @@
 <script lang='ts'>
 	import { onMount } from 'svelte'
+
 	import { repos } from '@/stores/repos.ts'
 	import { presences } from '@/stores/presences.ts'
 	import type { Manifest } from '@/models/Manifest.ts'
+
+	import downloadIcon from '@/assets/download.svg'
+	import trashIcon from '@/assets/trash.svg'
+
 
 	// Used for "..." animation
 	const loadingMsgs = Array.from({ length: 4 }, (_, i) => 'Loading presences' + '.'.repeat(i))
@@ -137,8 +142,8 @@
 
 						<button on:click={() => manage(manifest)}>
 							{#if $presences?.find(e => e.title === manifest.title)}
-											<img src='/svgs/trash.svg' alt='Trash icon' />
-							{:else} <img src='/svgs/download.svg' alt='Download icon' />
+											<img src={trashIcon} alt='Trash icon' />
+							{:else} <img src={downloadIcon} alt='Download icon' />
 							{/if}
 						</button>
 					</div>

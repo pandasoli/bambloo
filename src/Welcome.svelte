@@ -1,8 +1,10 @@
 <script lang='ts'>
 	import ConnectionChooser from '@/components/ConnectionChooser.svelte'
+
+	import treeIcon from '@/assets/trees/welcome.png'
 </script>
 
-<img src='/trees/welcome.png' id='tree' />
+<img src={treeIcon} id='tree' />
 <img src='/logo_discord-blue.png' id='logo' />
 
 <main>

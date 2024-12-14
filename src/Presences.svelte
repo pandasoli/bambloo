@@ -1,14 +1,16 @@
 <script lang='ts'>
-	import { fade } from 'svelte/transition'
 	import { presences, problem } from '@/stores/presences.ts'
 	import CheckBox from '@/components/CheckBox.svelte'
-	import SettingsScreen from '@/components/SettingsScreen.svelte'
+	import SettingsScreen from '@/Settings.svelte'
+
+	import treeIcon from '@/assets/trees/presences.png'
+
 
 	let open_settings = false
 </script>
 
 {#if $presences !== null}
-	<img src='/trees/presences.png' id='tree' />
+	<img src={treeIcon} id='tree' />
 {/if}
 
 <main class:error={$presences === null}>

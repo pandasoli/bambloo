@@ -1,7 +1,8 @@
 <script lang='ts'>
+	import treeIcon from '@/assets/trees/tabs.png'
 </script>
 
-<img src='/trees/tabs.png' id='tree' />
+<img src={treeIcon} id='tree' />
 
 <main>
 </main>
