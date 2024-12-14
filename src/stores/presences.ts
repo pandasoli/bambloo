@@ -11,11 +11,12 @@ import type { Manifest } from '@/models/Manifest.ts'
 */
 const state = writable<Presence[]|null>(null)
 const problematic_data = writable<any>()
+const default_enabled = true
 
 const append = (manifest: Manifest) =>
 	state.update(presences => {
 		presences = presences ?? []
-		presences.push({ ...manifest, active: true })
+		presences.push({ ...manifest, enabled: default_enabled })
 
 		updateGlobal(presences, 'presences')
 		return presences
@@ -26,6 +27,20 @@ const remove = (presence: Manifest) =>
 		if (!presences) return presences
 
 		presences = presences.filter(e => e.title !== presence.title)
+
+		updateGlobal(presences, 'presences')
+		return presences
+	})
+
+const toggle_enabled = (presence: Presence) =>
+	state.update(presences => {
+		if (!presences) return presences
+
+		for (const presence_ of presences)
+			if (presence_.title === presence.title) {
+				presence_.enabled = !presence_.enabled
+				break
+			}
 
 		updateGlobal(presences, 'presences')
 		return presences
@@ -44,5 +59,6 @@ export const presences = {
 	...state,
 	append,
 	remove,
+	toggle_enabled,
 	panic
 }

@@ -1,8 +1,11 @@
 <script lang='ts'>
 	import { onMount } from 'svelte'
+
 	import type { ConnMethod, WSArgs } from '@/models/conn.ts'
 	import { isConnMethod } from '@/models/conn.ts'
+
 	import DropDown from '@/components/DropDown.svelte'
+
 
 	let connMsgs: string[] = [] // Used for "..." animation
 	let connMsgsIndex = 0

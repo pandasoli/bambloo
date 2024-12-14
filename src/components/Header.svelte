@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { ui } from '@/stores/ui.ts'
-	import { isTab } from '@/models/tab.ts'
+	import { isTab } from '@/models/AppTab.ts'
 
 	let msg: string|null = null
 

@@ -1,12 +1,16 @@
 import { writable } from 'svelte/store'
 import { updateGlobal } from '@/utils/update_global.ts'
-import type { Tab } from '@/models/tab.ts'
+import type { AppTab } from '@/models/AppTab.ts'
 
 
-export type UIData = { tab: Tab }
+export type UIData = {
+	tab: AppTab
+	config_open: boolean
+}
 
 const initial: UIData = {
-	tab: 'presences'
+	tab: 'presences',
+	config_open: false
 }
 
 
@@ -17,9 +21,17 @@ const change = (new_ui: UIData) => {
 	updateGlobal(new_ui, 'ui')
 }
 
-const setTab = (tab: Tab) =>
+const setTab = (tab: AppTab) =>
 	state.update(ui => {
 		ui.tab = tab
+
+		updateGlobal(ui, 'ui')
+		return ui
+	})
+
+const toggleConfigOpen = () =>
+	state.update(ui => {
+		ui.config_open = !ui.config_open
 
 		updateGlobal(ui, 'ui')
 		return ui
@@ -33,5 +45,6 @@ chrome.runtime.onMessage.addListener(msg => {
 export const ui = {
 	...state,
 	change,
-	setTab
+	setTab,
+	toggleConfigOpen
 }

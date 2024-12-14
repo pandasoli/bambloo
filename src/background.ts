@@ -1,13 +1,19 @@
 import { get } from 'svelte/store'
+
 import { isConnMethod } from '@/models/conn.ts'
 import type { ConnMethod } from '@/models/conn.ts'
+import type { Presence } from '@/models/Presence.ts'
+
+import { try_conn } from '@/services/connect.ts'
+
 import { conn } from '@/stores/conn.ts'
 import { popup } from '@/stores/popup.ts'
 import { ui } from '@/stores/ui.ts'
 import { presences } from '@/stores/presences.ts'
+import { tabs } from '@/stores/tabs.ts'
 import { repos } from '@/stores/repos.ts'
+
 import { updateGlobal } from '@/utils/update_global.ts'
-import { try_conn } from '@/services/connect.ts'
 
 
 chrome.runtime.onMessage.addListener((msg, _, send) => {
@@ -29,6 +35,8 @@ chrome.runtime.onConnect.addListener(async port => {
 	updateGlobal(get(popup), 'popup')
 	updateGlobal(get(ui), 'ui')
 	updateGlobal(get(presences), 'presences')
+	updateGlobal(get(tabs), 'tabs')
+	updateGlobal(get(repos), 'repos')
 
 	port.onDisconnect.addListener(() => {
 		// Store data that is required between connections
@@ -43,7 +51,7 @@ chrome.runtime.onConnect.addListener(async port => {
 		const data = {
 			conn: { method, args },
 			repos: repos_,
-			presences: presences_ as string[]|undefined
+			presences: presences_ as Presence[]|undefined
 		}
 
 		// Needed to not overwrite invalid data in storage
@@ -77,4 +85,6 @@ chrome.runtime.onConnect.addListener(async port => {
 	}
 	else
 		presences.set([])
+
+	tabs.load()
 })()
