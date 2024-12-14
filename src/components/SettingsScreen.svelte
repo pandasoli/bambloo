@@ -1,7 +1,12 @@
 <script lang='ts'>
+	import type { FocusEventHandler } from 'svelte/elements'
+	import { repos } from '@/stores/repos'
 	import ConnectionChooser from '@/components/ConnectionChooser.svelte'
 
 	export let close: () => void
+
+	const update_repos: FocusEventHandler<HTMLTextAreaElement> = ev =>
+		repos.change(ev.currentTarget.value.split('\n'))
 </script>
 
 <main>
@@ -18,6 +23,11 @@
 	<div>
 		<span>Connection Method</span>
 		<ConnectionChooser />
+
+		<br />
+
+		<span>Repositories</span>
+		<textarea on:focusout={update_repos}>{$repos.join('\n')}</textarea>
 	</div>
 </main>
 

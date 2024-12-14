@@ -87,6 +87,16 @@ input[type='number'] {
 	outline: none
 }
 
+textarea {
+	border: none;
+	background: var(--light-bg);
+	border-radius: 4px;
+	padding: 10px;
+	width: 90%;
+	resize: vertical;
+	outline: none
+}
+
 #app {
 	position: relative;
 	display: flex;

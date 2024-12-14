@@ -5,6 +5,7 @@ import { conn } from '@/stores/conn.ts'
 import { popup } from '@/stores/popup.ts'
 import { ui } from '@/stores/ui.ts'
 import { presences } from '@/stores/presences.ts'
+import { repos } from '@/stores/repos.ts'
 import { updateGlobal } from '@/utils/update_global.ts'
 import { try_conn } from '@/services/connect.ts'
 
@@ -33,6 +34,7 @@ chrome.runtime.onConnect.addListener(async port => {
 		// Store data that is required between connections
 		const presences_ = get(presences)
 		const conn_ = get(conn)
+		const repos_ = get(repos)
 
 		const method = conn_?.connected ? conn_.method : null
 		const args = conn_?.connected ? conn_.args : null
@@ -40,6 +42,7 @@ chrome.runtime.onConnect.addListener(async port => {
 		// Store data
 		const data = {
 			conn: { method, args },
+			repos: repos_,
 			presences: presences_ as string[]|undefined
 		}
 
