@@ -4,7 +4,7 @@
 
 	import type { Tab } from '@/models/Tab.ts'
 
-	import CheckBox from '@/components/CheckBox.svelte'
+	import Switch from '@/components/Switch.svelte'
 
 	import treeIcon from '@/assets/trees/tabs.png'
 	import worldIcon from '@/assets/world.svg'
@@ -28,7 +28,7 @@
 		<div class='tab'>
 			<img src={tab.favIconUrl || worldIcon} />
 			<span>{tab.title}</span>
-			<CheckBox checked={tab.enabled} onchange={() => toggle(tab)} />
+			<Switch enabled={tab.enabled} onchange={() => toggle(tab)} />
 		</div>
 
 		{#if i < $tabs.length - 1} <hr /> {/if}
