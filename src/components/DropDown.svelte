@@ -29,7 +29,7 @@
 
 <main bind:this={ main }>
 	<button on:click={() => open = !open} {disabled} id='header'>
-		<span id='placeholder' class:white={selected == null}>
+		<span id='placeholder' class:white={selected !== null}>
 			{#if selected == null}
 				{placeholder}
 			{:else}
