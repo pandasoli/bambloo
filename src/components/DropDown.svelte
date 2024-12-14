@@ -8,46 +8,41 @@
 	export let disabled: boolean = false
 	export let onchange: ((item: any) => void)|undefined = undefined
 
-	let open: HTMLInputElement
 	let main: HTMLElement
+	let open: boolean
 	let selected: any|null = null
 
 	const onselect = (item: any) => {
 		selected = item
-		open.checked = false
+		open = false
 		onchange?.(item)
 	}
 
 	// Close when clicked outside main
 	const window_onclick: MouseEventHandler<Window> = ({ target }) => {
 		if (!main.contains(target as Node))
-			open.checked = false
+			open = false
 	}
 </script>
 
 <svelte:window on:click={ window_onclick } />
 
 <main bind:this={ main }>
-	<!-- Remove checkbox -->
-	<input type='checkbox' id='open' {disabled} bind:this={open} />
+	<button on:click={() => open = !open} {disabled} id='header'>
+		<span id='placeholder' class:white={selected == null}>
+			{#if selected == null}
+				{placeholder}
+			{:else}
+				<slot item={selected} />
+			{/if}
+		</span>
 
-	<header>
-		<label for='open'>
-			<span id='placeholder' aria-invalid={selected == null}>
-				{#if selected == null}
-					{placeholder}
-				{:else}
-					<slot item={selected} />
-				{/if}
-			</span>
+		<svg class:open={open} width='13' height='9' viewBox='0 0 13 9' fill='none' xmlns='http://www.w3.org/2000/svg'>
+			<path d='M0.625 0.5L6.10185 7.5L12 0.5' stroke='white'/>
+		</svg>
+	</button>
 
-			<svg width='13' height='9' viewBox='0 0 13 9' fill='none' xmlns='http://www.w3.org/2000/svg'>
-				<path d='M0.625 0.5L6.10185 7.5L12 0.5' stroke='white'/>
-			</svg>
-		</label>
-	</header>	
-
-	<div id='items'>
+	<div id='items' class:open={open}>
 		{#each items as item}
 			<button on:click={() => onselect(item)}>
 				<slot {item}/>
@@ -57,49 +52,32 @@
 </main>
 
 <style lang='scss'>
-	#open { display: none }
-	#open:checked ~ #items {
-		opacity: 1;
-		visibility: visible
-	}
-	#open:checked ~ header label svg {
-		transform: rotate(180deg)
-	}
-	#open:disabled ~ header label {
-		opacity: .6
-	}
+	main { position: relative }
 
-	main {
-		position: relative
-	}
-
-	header {
-		border-radius: 4px;
-		overflow: hidden;
-		background: var(--light-bg);
+	#header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 28px;
 		width: 100%;
+		height: auto;
+		padding: 10px;
+		border-radius: 4px;
+		background: var(--light-bg);
 
-		label {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: 28px;
-
-			padding: 10px;
-
-			svg {
-				transition: 500ms transform
-			}
-		}
+		&:disabled span { opacity: .6 }
+		svg { transition: 500ms transform }
+		svg.open { transform: rotate(180deg) }
 	}
 
-	#placeholder[aria-invalid='false'] { color: white }
+	#placeholder.white { color: white }
 
 	#items {
 		position: absolute;
 		border-radius: 4px;
 		overflow: hidden;
 		top: calc(100% + 4px);
+		box-shadow: 1px 2px 4px 2px rgba(0, 0, 0, .2);
 
 		opacity: 0;
 		visibility: hidden;
@@ -114,6 +92,11 @@
 			padding: 10px;
 			padding-right: 35px;
 			background: var(--light-bg)
+		}
+
+		&.open {
+			opacity: 1;
+			visibility: visible
 		}
 	}
 </style>
