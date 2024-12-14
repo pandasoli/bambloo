@@ -76,10 +76,12 @@ button.red:hover { background: var(--dark-red) }
 button.red.outline { background: transparent; box-shadow: inset 0 0 0 1px var(--dark-red) }
 button.red.outline:hover { box-shadow: none; background: var(--red) }
 
+input::placeholder { color: var(--text-cl) }
 input[type='number'] {
 	border: none;
 	box-sizing: border-box;
 	background: var(--light-bg);
+	border-radius: 4px;
 	padding: 10px;
 	width: 100%;
 	outline: none
@@ -96,6 +98,7 @@ input[type='number'] {
 	overflow: hidden
 }
 
+span { color: var(--text-cl) }
 span.error { color: var(--red) }
 span.info { color: var(--blue) }
 span.code {
@@ -103,7 +106,6 @@ span.code {
 	font-family: 'JetBrains Mono';
 	background: var(--light-bg)
 }
-span[aria-invalid='true'] { color: var(--text-cl) }
 
 code {
 	padding: 4px;

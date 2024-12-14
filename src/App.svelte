@@ -60,6 +60,7 @@
 	}
 
 	main {
+		/* Size of main screen */
 		width: 228px;
 		height: 378px;
 

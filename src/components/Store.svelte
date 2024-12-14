@@ -256,9 +256,7 @@
 			border: none;
 			padding: 3px 9px;
 			font-size: 8pt;
-			outline: none;
-
-			&::placeholder { color: var(--header-text-cl) }
+			outline: none
 		}
 
 		div {

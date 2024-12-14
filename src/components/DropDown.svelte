@@ -28,6 +28,7 @@
 <svelte:window on:click={ window_onclick } />
 
 <main bind:this={ main }>
+	<!-- Remove checkbox -->
 	<input type='checkbox' id='open' {disabled} bind:this={open} />
 
 	<header>
@@ -90,7 +91,9 @@
 				transition: 500ms transform
 			}
 		}
-	}	
+	}
+
+	#placeholder[aria-invalid='false'] { color: white }
 
 	#items {
 		position: absolute;
