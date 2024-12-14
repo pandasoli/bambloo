@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 import { updateGlobal } from '@/utils/update_global.ts'
-import type { PresenceScript } from '@/models/PresenceScript.ts'
+import type { Presence } from '@/models/Presence.ts'
 import type { Manifest } from '@/models/Manifest.ts'
 
 
@@ -9,7 +9,7 @@ import type { Manifest } from '@/models/Manifest.ts'
 	not overwriting invalid data in the storage.
 	It's only overwritten when the user does so.
 */
-const state = writable<PresenceScript[]|null>(null)
+const state = writable<Presence[]|null>(null)
 const problematic_data = writable<any>()
 
 const append = (manifest: Manifest) =>
