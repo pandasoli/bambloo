@@ -41,7 +41,8 @@
 		width: 261px;
 		top: 0;
 		right: 0;
-		mix-blend-mode: lighten
+		mix-blend-mode: lighten;
+		image-rendering: pixelated
 	}
 
 	main { padding-top: 16px }

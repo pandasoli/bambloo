@@ -81,6 +81,7 @@
 		width: 100%;
 		top: 0;
 		left: 0;
-		mix-blend-mode: lighten
+		mix-blend-mode: lighten;
+		image-rendering: pixelated
 	}
 </style>
