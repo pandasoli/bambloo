@@ -134,3 +134,8 @@ hr {
 	background: var(--light-bg);
 	border: none
 }
+
+::-webkit-scrollbar { width: 4px }
+::-webkit-scrollbar-track { background: none }
+::-webkit-scrollbar-thumb { background: var(--lightest-bg); border-radius: 2px }
+::-webkit-scrollbar-thumb:hover { background: var(--blue) } 

@@ -1,8 +1,12 @@
 <script lang='ts'>
 	import type { FocusEventHandler } from 'svelte/elements'
 
-	import { repos } from '@/stores/repos'
 	import ConnectionChooser from '@/components/ConnectionChooser.svelte'
+
+	import { repos } from '@/stores/repos'
+
+	import discordIcon from '@/assets/discord.svg'
+	import githubIcon from '@/assets/github.svg'
 
 
 	export let close: () => void
@@ -30,6 +34,28 @@
 
 		<span>Repositories</span>
 		<textarea on:focusout={update_repos}>{$repos.join('\n')}</textarea>
+
+		<br />
+		<br />
+
+		<span class='center'>Credits</span>
+
+		<p>
+			<span class='info'>Bambloo</span> was designed and developed by <a href='https://github.com/pandasoli'>Eli Soli</a>
+			and is now public and free to all to help and enjoy.
+		</p>
+
+		<div id='socials'>
+			<button>
+				<img src={discordIcon} alt='Discord icon' />
+				Discord Server
+			</button>
+
+			<button>
+				<img src={githubIcon} alt='GitHub icon' />
+				GitHub Repository
+			</button>
+		</div>
 	</div>
 </main>
 
@@ -43,15 +69,28 @@
 		width: 100%;
 		height: 100%;
 		padding: 12px;
+		padding-bottom: 100px;
 		top: 0;
 		left: 0;
 		background: var(--bg);
 		box-sizing: border-box;
+		overflow-y: scroll;
+		overflow-x: hidden;
 
 		& > div {
 			width: 228px;
 			height: 378px
 		}
+	}
+
+	#logo {
+		position: fixed;
+		height: 100px;
+		width: 131px;
+		right: -35px;
+		bottom: 0;
+		object-fit: cover;
+		z-index: 99
 	}
 
 	header {
@@ -82,13 +121,22 @@
 		}
 	}
 
-	#logo {
-		position: absolute;
-		height: 100px;
-		width: 131px;
-		right: -35px;
-		bottom: 0;
-		object-fit: cover;
-		z-index: 99
+	.center { text-align: center }
+
+	#socials {
+		display: flex;
+		gap: 4px;
+
+		button {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+			height: auto;
+			border-radius: 6px;
+			padding: 2px 8px;
+			background: var(--blue);
+
+			img { width: 24px; height: 24px; object-fit: contain }
+		}
 	}
 </style>
