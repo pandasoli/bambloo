@@ -1,10 +1,12 @@
 <script lang='ts'>
+	import { alltabs } from '@/stores/alltabs.ts'
 	import { tabs } from '@/stores/tabs.ts'
 	import { popup } from '@/stores/popup.ts'
 
 	import type { Tab } from '@/models/Tab.ts'
 
 	import Switch from '@/components/Switch.svelte'
+	import InfoButton from '@/components/InfoButton.svelte'
 
 	import treeIcon from '@/assets/trees/tabs.png'
 	import worldIcon from '@/assets/world.svg'
@@ -24,15 +26,33 @@
 <img src={treeIcon} id='tree' />
 
 <main>
-	{#each $tabs as tab, i}
-		<div class='tab'>
-			<img src={tab.favIconUrl || worldIcon} />
-			<span>{tab.title}</span>
-			<Switch enabled={tab.enabled} onchange={() => toggle(tab)} />
+	<div id='options'>
+		<div />
+		<div>
+			<span>Current tab</span>
+			<Switch enabled={$alltabs} onchange={() => alltabs.toggle()} />
+			<span>All tabs</span>
 		</div>
+		<div>
+			<InfoButton>
+				Only the allowed focused
+				tab to be shown on Discord
+				or all allowed tabs
+			</InfoButton>
+		</div>
+	</div>
 
-		{#if i < $tabs.length - 1} <hr /> {/if}
-	{/each}
+	<div>
+		{#each $tabs as tab, i}
+			<div class='tab'>
+				<img src={tab.favIconUrl || worldIcon} />
+				<span>{tab.title}</span>
+				<Switch enabled={tab.enabled} onchange={() => toggle(tab)} />
+			</div>
+
+			{#if i < $tabs.length - 1} <hr /> {/if}
+		{/each}
+	</div>
 </main>
 
 <style lang='scss'>
@@ -45,7 +65,28 @@
 		image-rendering: pixelated
 	}
 
-	main { padding-top: 16px }
+	main {
+		display: flex;
+		flex-direction: column;
+		gap: 8px
+	}
+
+	#options {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 16px;
+		padding-block: 8px;
+
+		div:nth-child(2) {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px
+		}
+
+		span { color: white }
+	}
 
 	.tab {
 		display: flex;
