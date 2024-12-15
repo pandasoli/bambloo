@@ -23,33 +23,31 @@
 	chrome.runtime.connect()
 </script>
 
-<main>
-	<div id='popup-container'>
-		{#each $popup as msg}
-			<div class='popup'>
-				<span>{msg}</span>
-			</div>
-		{/each}
-	</div>	
+<div id='popup-container'>
+	{#each $popup as msg}
+		<div class='popup'>
+			<span>{msg}</span>
+		</div>
+	{/each}
+</div>	
 
-	{#if !$conn?.connected}
-		<WelcomeScreen />
+{#if !$conn?.connected}
+	<WelcomeScreen />
+{:else}
+	{#if $presences?.length === 0}
+		<img src={presencesTreeIcon} id='tree' />
+		<Store />
 	{:else}
-		{#if $presences?.length === 0}
-			<img src={presencesTreeIcon} id='tree' />
-			<Store />
-		{:else}
-			<Header />
+		<Header />
 
-			{#if      $ui.tab === 'presences'} <PresencesTab />
-			{:else if $ui.tab === 'tabs'     } <TabsTab />
-			{:else if $ui.tab === 'store'    }
-				<img src={storeTreeIcon} id='tree' />
-				<Store />
-			{/if}
+		{#if      $ui.tab === 'presences'} <PresencesTab />
+		{:else if $ui.tab === 'tabs'     } <TabsTab />
+		{:else if $ui.tab === 'store'    }
+			<img src={storeTreeIcon} id='tree' />
+			<Store />
 		{/if}
 	{/if}
-</main>
+{/if}
 
 {#if $ui.config_open}
 	<SettingsScreen close={ui.toggleConfigOpen}/>
@@ -68,17 +66,6 @@
 		padding-block: 2px;
 		text-align: center;
 		background: orange
-	}
-
-	main {
-		padding: 22px 26px;
-		height: 100%;
-
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-
-		& > main { z-index: 1 }
 	}
 
 	#tree {

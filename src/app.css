@@ -81,12 +81,15 @@ textarea {
 #app {
 	position: relative;
 	display: flex;
-	align-items: center;
-	justify-content: center;
+	flex-direction: column;
+	gap: 12px;
 	width: 100%;
 	height: 100%;
+	padding: 22px 26px;
 	background-color: var(--bg);
-	overflow: hidden
+	overflow: hidden;
+
+	& > main { z-index: 1 }
 }
 
 span { color: var(--text-cl) }
