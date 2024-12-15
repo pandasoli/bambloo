@@ -5,6 +5,8 @@
 	import { presences } from '@/stores/presences.ts'
 	import type { Manifest } from '@/models/Manifest.ts'
 
+	import StorePresence from '@/StorePresence.svelte'
+
 	import downloadIcon from '@/assets/download.svg'
 	import trashIcon from '@/assets/trash.svg'
 
@@ -12,6 +14,8 @@
 	// Used for "..." animation
 	const loadingMsgs = Array.from({ length: 4 }, (_, i) => 'Loading presences' + '.'.repeat(i))
 	let loadingMsgsIndex = 0
+
+	let open_presence: Manifest|null = null
 
 	type Location = { repo: string, path: string }
 
@@ -133,7 +137,7 @@
 
 		<div id='presences' class:loading={manifests.length === 0}>
 			{#each manifests as manifest}
-				<div class='presence'>
+				<button class='presence' on:click={() => open_presence = manifest}>
 					<img src={manifest.images.background} class='bg' />
 
 					<div>
@@ -147,11 +151,15 @@
 							{/if}
 						</button>
 					</div>
-				</div>
+				</button>
 			{/each}
 		</div>
 	{/if}
 </main>
+
+{#if open_presence !== null}
+	<StorePresence manifest={open_presence} close={() => open_presence = null} />
+{/if}
 
 <style lang='scss'>
 	main {

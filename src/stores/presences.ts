@@ -46,6 +46,20 @@ const toggle_enabled = (presence: Presence) =>
 		return presences
 	})
 
+const change_input = (title: string, input: string) =>
+	state.update(presences => {
+		if (!presences) return presences
+
+		for (const presence of presences)
+			if (presence.title === title) {
+				presence.input = input
+				break
+			}
+
+		updateGlobal(presences, 'presences')
+		return presences
+	})
+
 const panic = (data: any) => problematic_data.set(data)
 
 chrome.runtime.onMessage.addListener(msg => {
@@ -60,5 +74,6 @@ export const presences = {
 	append,
 	remove,
 	toggle_enabled,
+	change_input,
 	panic
 }

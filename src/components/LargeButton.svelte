@@ -3,19 +3,24 @@
 
 	export let src: string|undefined = undefined
 	export let alt: string|undefined = undefined
+	export let href: string|undefined = undefined
 	export let onclick: MouseEventHandler<HTMLButtonElement>|undefined = undefined
 </script>
 
-<button
-	on:click={onclick}
-	{ ...$$restProps }
->
-	<img {src} {alt} />
-	<slot />
-</button>
+{#if href}
+	<a {href} { ...$$restProps }>
+		<img {src} {alt} />
+		<slot />
+	</a>
+{:else}
+	<button on:click={onclick} { ...$$restProps }>
+		<img {src} {alt} />
+		<slot />
+	</button>
+{/if}
 
 <style lang='scss'>
-	button {
+	button, a {
 		display: flex;
 		align-items: center;
 		gap: 4px;
@@ -23,6 +28,8 @@
 		border-radius: 6px;
 		padding: 2px 8px;
 		background: var(--blue);
+		color: white;
+		text-decoration: none;
 		cursor: pointer;
 		transition: 250ms opacity;
 

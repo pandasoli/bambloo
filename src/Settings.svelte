@@ -32,13 +32,14 @@
 	</header>
 
 	<div>
-		<span>Connection Method</span>
+		<span class='header'>Connection Method</span>
 		<ConnectionChooser />
 
 		<br />
 
-		<span>Repositories</span>
+		<span class='header'>Repositories</span>
 		<textarea
+			id='repos'
 			placeholder='Presence repos separated by line'
 			on:focusout={update_repos}
 		>{$repos.join('\n')}</textarea>
@@ -46,7 +47,7 @@
 		<br />
 		<br />
 
-		<span class='center'>Credits</span>
+		<span class='center header'>Credits</span>
 
 		<p>
 			<span class='info'>Bambloo</span> was designed and developed by <a href='https://github.com/pandasoli'>Eli Soli</a>
@@ -54,17 +55,15 @@
 		</p>
 
 		<div id='socials'>
-			<LargeButton src={discordIcon} alt='Discord icon'>
+			<LargeButton src={discordIcon} alt='Discord icon' href='https://discord.gg/4gNjyuXgMG'>
 				Discord Server
 			</LargeButton>
 
-			<LargeButton src={githubIcon} alt='GitHub icon'>
+			<LargeButton src={githubIcon} alt='GitHub icon' href='https://github.com/pandasoli/bambloo'>
 				GitHub Repository
 			</LargeButton>
 		</div>
 	</div>
-
-	<div id='spacer' />
 </main>
 
 <style lang='scss'>
@@ -79,15 +78,8 @@
 		top: 0;
 		left: 0;
 		padding: 12px;
-		padding-bottom: 100px;
 		background: var(--bg);
-		overflow-y: auto;
-		z-index: 2;
-
-		& > div {
-			width: 228px;
-			height: 378px
-		}
+		overflow-y: auto
 	}
 
 	#logo {
@@ -115,23 +107,16 @@
 		}
 	}
 
-	main > div:first-child {
+	main > div {
+		width: 228px;
 		padding: 8px;
-
-		& > span {
-			display: block;
-			font-weight: medium;
-			margin-bottom: 8px;
-			margin-left: 4px;
-		}
+		padding-bottom: 100px
 	}
 
-	.center { text-align: center }
+	#repos { width: 100% }
 
 	#socials {
 		display: flex;
 		gap: 4px
 	}
-
-	#spacer { height: 100px }
 </style>

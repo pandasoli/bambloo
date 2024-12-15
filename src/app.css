@@ -75,7 +75,9 @@ textarea {
 	padding: 10px;
 	width: 90%;
 	resize: vertical;
-	outline: none
+	outline: none;
+
+	&::placeholder { color: var(--text-cl) }
 }
 
 #app {
@@ -95,10 +97,17 @@ textarea {
 span { color: var(--text-cl) }
 span.error { color: var(--red) }
 span.info { color: var(--blue) }
+span.center { text-align: center; margin-inline: 0 }
 span.code {
 	border-radius: 4px;
 	font-family: 'JetBrains Mono';
 	background: var(--light-bg)
+}
+span.header {
+	display: block;
+	font-weight: medium;
+	margin-bottom: 8px;
+	margin-left: 4px
 }
 
 a { color: var(--text-cl) }
@@ -121,7 +130,7 @@ hr {
 	border: none
 }
 
-::-webkit-scrollbar { width: 4px }
+::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: none }
 ::-webkit-scrollbar-thumb { background: var(--lightest-bg); border-radius: 2px }
 ::-webkit-scrollbar-thumb:hover { background: var(--blue) } 
