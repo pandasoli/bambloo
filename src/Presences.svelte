@@ -5,6 +5,7 @@
 	import type { Presence } from '@/models/Presence.ts'
 
 	import CheckBox from '@/components/CheckBox.svelte'
+	import Button from '@/components/Button.svelte'
 
 	import SettingsScreen from '@/Settings.svelte'
 
@@ -35,8 +36,8 @@
 			<span class='error'>Could not parse local JSON data</span>
 
 			<div class='buttons'>
-				<button class='red outline'>Delete my data</button>
-				<button class='red'>Retry parsing</button>
+				<Button type='red' outline>Delete my data</Button>
+				<Button type='red'>Retry parsing</Button>
 			</div>
 		</div>
 
@@ -70,8 +71,6 @@
 		right: 8px;
 		bottom: 8px;
 		height: 18px;
-		padding: 0;
-		background: none;
 		cursor: pointer;
 		transition: 250ms opacity, 250ms transform;
 
@@ -100,12 +99,6 @@
 			display: grid;
 			grid-template-columns: repeat(2, 1fr);
 			gap: 6px;
-
-			button {
-				font-size: 9pt;
-				height: 18px;
-				width: 107px
-			}
 		}
 	}
 

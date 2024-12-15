@@ -2,6 +2,7 @@
 	import type { FocusEventHandler } from 'svelte/elements'
 
 	import ConnectionChooser from '@/components/ConnectionChooser.svelte'
+	import LargeButton from '@/components/LargeButton.svelte'
 
 	import { repos } from '@/stores/repos'
 
@@ -46,15 +47,13 @@
 		</p>
 
 		<div id='socials'>
-			<button>
-				<img src={discordIcon} alt='Discord icon' />
+			<LargeButton src={discordIcon} alt='Discord icon'>
 				Discord Server
-			</button>
+			</LargeButton>
 
-			<button>
-				<img src={githubIcon} alt='GitHub icon' />
+			<LargeButton src={githubIcon} alt='GitHub icon'>
 				GitHub Repository
-			</button>
+			</LargeButton>
 		</div>
 	</div>
 </main>
@@ -101,8 +100,6 @@
 
 		button {
 			height: 30px;
-			padding: 0;
-			background: none;
 			cursor: pointer;
 			transition: 250ms opacity;
 
@@ -125,18 +122,6 @@
 
 	#socials {
 		display: flex;
-		gap: 4px;
-
-		button {
-			display: flex;
-			align-items: center;
-			gap: 4px;
-			height: auto;
-			border-radius: 6px;
-			padding: 2px 8px;
-			background: var(--blue);
-
-			img { width: 24px; height: 24px; object-fit: contain }
-		}
+		gap: 4px
 	}
 </style>

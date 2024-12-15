@@ -84,9 +84,6 @@
 		transition: 500ms opacity;
 
 		button {
-			border-radius: 0;
-			height: auto;
-
 			text-align: left;
 			width: 100%;
 			padding: 10px;

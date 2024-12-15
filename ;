@@ -8,14 +8,7 @@
 
 <main>
 	{#each AppTabsList as tab}
-		<Button
-			type='blue'
-			class='HeaderButton'
-			inactive={$ui.tab !== tab}
-			onclick={() => ui.setTab(tab)}
-		>
-			{ tab }
-		</Button>
+		<Button class='smth' type='blue' inactive={$ui.tab !== tab} onclick={() => ui.setTab(tab)}>{tab}</Button>
 	{/each}
 </main>
 
@@ -27,10 +20,10 @@
 		padding-block: 7px
 	}
 
-	:global(.HeaderButton) {
-		height: 20px !important;
+	main > * {
+		height: 20px;
 		width: 70px;
-		font-size: 10px !important;
+		font-size: 10px;
 		text-transform: capitalize
 	}
 </style>

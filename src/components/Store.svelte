@@ -214,8 +214,7 @@
 			justify-content: center;
 			align-items: center;
 			height: 100%;
-			background: none;
-			padding-right: 10px;
+			margin-right: 10px;
 			cursor: pointer;
 
 			&:hover { opacity: .75 }

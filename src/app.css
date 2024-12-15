@@ -50,31 +50,11 @@ h1 {
 img { pointer-events: none }
 
 button {
-	display: block;
+	padding: 0;
+	background: none;
 	border: none;
-	font-size: 10pt;
-	border-radius: 4px;
-	height: 26px
+	font-size: 10pt
 }
-
-button.active {
-	background: var(--blue);
-	font-weight: bold
-}
-
-button.inactive {
-	background: var(--light-bg);
-	color: var(--header-text-cl);
-	font-weight: bold
-}
-
-button.red { transition: 500ms background }
-
-button.red { background: var(--red) }
-button.red:hover { background: var(--dark-red) }
-/* box-shadow used to apply inner border */
-button.red.outline { background: transparent; box-shadow: inset 0 0 0 1px var(--dark-red) }
-button.red.outline:hover { box-shadow: none; background: var(--red) }
 
 input::placeholder { color: var(--text-cl) }
 input[type='number'] {
