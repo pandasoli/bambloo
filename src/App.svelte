@@ -13,6 +13,8 @@
 	import presencesTreeIcon from '@/assets/trees/presences.png'
 	import storeTreeIcon from '@/assets/trees/store.png'
 
+	import SettingsScreen from '@/Settings.svelte'
+
 
 	popup.subscribe(() =>
 		setTimeout(() =>
@@ -49,6 +51,10 @@
 	{/if}
 </main>
 
+{#if $ui.config_open}
+	<SettingsScreen close={ui.toggleConfigOpen}/>
+{/if}
+
 <style>
 	#popup-container {
 		position: absolute;
@@ -65,9 +71,8 @@
 	}
 
 	main {
-		/* Size of main screen */
-		width: 228px;
-		height: 378px;
+		padding: 22px 26px;
+		height: 100%;
 
 		display: flex;
 		flex-direction: column;

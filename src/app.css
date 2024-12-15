@@ -28,7 +28,7 @@ body {
 	height: 420px;
 	width: 280px;
 
-	color-scheme: light dark;
+	color-scheme: dark;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -46,6 +46,7 @@ h1 {
   line-height: 1.1
 }
 
+* { box-sizing: border-box }
 * { user-select: none }
 img { pointer-events: none }
 
@@ -96,6 +97,8 @@ span.code {
 	font-family: 'JetBrains Mono';
 	background: var(--light-bg)
 }
+
+a { color: var(--text-cl) }
 
 code {
 	padding: 4px;

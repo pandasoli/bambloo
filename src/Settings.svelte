@@ -13,7 +13,11 @@
 	export let close: () => void
 
 	const update_repos: FocusEventHandler<HTMLTextAreaElement> = ev =>
-		repos.change(ev.currentTarget.value.split('\n'))
+		repos.change(
+			ev.currentTarget.value
+				.split('\n')
+				.map(e => e.trim())
+		)
 </script>
 
 <main>
@@ -34,7 +38,10 @@
 		<br />
 
 		<span>Repositories</span>
-		<textarea on:focusout={update_repos}>{$repos.join('\n')}</textarea>
+		<textarea
+			placeholder='Presence repos separated by line'
+			on:focusout={update_repos}
+		>{$repos.join('\n')}</textarea>
 
 		<br />
 		<br />
@@ -56,6 +63,8 @@
 			</LargeButton>
 		</div>
 	</div>
+
+	<div id='spacer' />
 </main>
 
 <style lang='scss'>
@@ -69,12 +78,9 @@
 		height: 100%;
 		padding: 12px;
 		padding-bottom: 100px;
-		top: 0;
-		left: 0;
 		background: var(--bg);
-		box-sizing: border-box;
-		overflow-y: scroll;
-		overflow-x: hidden;
+		overflow-y: auto;
+		z-index: 2;
 
 		& > div {
 			width: 228px;
@@ -107,7 +113,7 @@
 		}
 	}
 
-	main > div {
+	main > div:first-child {
 		padding: 8px;
 
 		& > span {
@@ -124,4 +130,6 @@
 		display: flex;
 		gap: 4px
 	}
+
+	#spacer { height: 100px }
 </style>
