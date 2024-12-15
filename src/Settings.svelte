@@ -3,6 +3,7 @@
 
 	import ConnectionChooser from '@/components/ConnectionChooser.svelte'
 	import LargeButton from '@/components/LargeButton.svelte'
+	import ToolTip from '@/components/ToolTip.svelte'
 
 	import { repos } from '@/stores/repos'
 
@@ -50,18 +51,25 @@
 		<span class='center header'>Credits</span>
 
 		<p>
-			<span class='info'>Bambloo</span> was designed and developed by <a href='https://github.com/pandasoli'>Eli Soli</a>
+			<span class='info'>Bambloo</span> was designed and developed by
+			<ToolTip href='https://github.com/pandasoli'>
+				<a href='https://github.com/pandasoli'>Eli Soli</a>
+			</ToolTip>
 			and is now public and free to all to help and enjoy.
 		</p>
 
 		<div id='socials'>
-			<LargeButton src={discordIcon} alt='Discord icon' href='https://discord.gg/4gNjyuXgMG'>
-				Discord Server
-			</LargeButton>
+			<ToolTip href='https://discord.gg/4gNjyuXgMG'>
+				<LargeButton src={discordIcon} alt='Discord icon' href='https://discord.gg/4gNjyuXgMG'>
+					Discord Server
+				</LargeButton>
+			</ToolTip>
 
-			<LargeButton src={githubIcon} alt='GitHub icon' href='https://github.com/pandasoli/bambloo'>
-				GitHub Repository
-			</LargeButton>
+			<ToolTip href='https://github.com/pandasoli/bambloo'>
+				<LargeButton src={githubIcon} alt='GitHub icon' href='https://github.com/pandasoli/bambloo'>
+					GitHub Repository
+				</LargeButton>
+			</ToolTip>
 		</div>
 	</div>
 </main>

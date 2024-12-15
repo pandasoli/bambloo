@@ -11,6 +11,7 @@
 	import trashIcon from '@/assets/trash.svg'
 	import linkIcon from '@/assets/link.svg'
     import App from './App.svelte';
+    import ToolTip from './components/ToolTip.svelte';
 
 
 	export let manifest: Manifest
@@ -88,8 +89,14 @@
 
 					<p>
 						If you have any problem using this Presence Script
-						please reach us out on <a href='https://discord.gg/4gNjyuXgMG'>Discord</a> or create an issue
-						on <a href='https://github.com/pandasoli/bambloo'>GitHub</a>.
+						please reach us out on
+						<ToolTip href='https://discord.gg/4gNjyuXgMG'>
+							<a href='https://discord.gg/4gNjyuXgMG'>Discord</a>
+						</ToolTip>
+						or create an issue on
+						<ToolTip href='https://github.com/pandasoli/bambloo'>
+							<a href='https://github.com/pandasoli/bambloo'>GitHub</a>.
+						</ToolTip>
 					</p>
 				</footer>
 			{/if}
