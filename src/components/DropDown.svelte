@@ -66,6 +66,7 @@
 		background: var(--light-bg);
 
 		&:disabled span { opacity: .6 }
+		span { text-align: left }
 		svg { transition: 500ms transform }
 		svg.open { transform: rotate(180deg) }
 	}
