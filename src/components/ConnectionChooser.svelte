@@ -1,6 +1,8 @@
 <script lang='ts'>
 	import { onMount } from 'svelte'
 
+	import { conn } from '@/stores/conn.ts'
+
 	import type { ConnMethod, WSArgs } from '@/models/conn.ts'
 	import { isConnMethod } from '@/models/conn.ts'
 
@@ -8,22 +10,31 @@
 	import Button from '@/components/Button.svelte'
 
 
-	let connMsgs: string[] = [] // Used for "..." animation
-	let connMsgsIndex = 0
+	enum State { Stopped, Connecing, WaitingDetails }
+
+
+	let state: State = State.Stopped
+
+	let loadingMsgs: string[] = [] // Used for "..." animation
+	let loadingMsgsI = 0
 
 	let method: ConnMethod|null = null
-
-	let connecting = false
 	let connErr: string|null = null
-
 	let ws_conn_args: WSArgs = { port: 8765 }
 
-	function try_conn(host: string, host_display: string) {
-		// Setting for "..."-animation messages
-		connMsgs = Array.from({ length: 4 }, (_, i) => `Connectin' to ${host_display} host` + '.'.repeat(i))
-		connMsgsIndex = 0
+	chrome.runtime.onMessage.addListener(msg => {
+		if (msg.to !== 'connectionchooser') return
+		if (msg.state === 'waiting for details') {
+			state = State.WaitingDetails
+			loadingMsgs = Array.from({ length: 4 }, (_, i) => `Waiting for connection details` + '.'.repeat(i))
+		}
+	})
 
-		connecting = true
+	function try_conn(host: string, host_display: string) {
+		loadingMsgs = Array.from({ length: 4 }, (_, i) => `Connectin' to ${host_display} host` + '.'.repeat(i))
+		loadingMsgsI = 0
+
+		state = State.Connecing
 
 		chrome.runtime.sendMessage({
 			type: `try ${host}`,
@@ -32,7 +43,7 @@
 				null
 		})
 			.then(err => {
-				connecting = false
+				state = State.Stopped
 				connErr = err
 			})
 	}
@@ -63,9 +74,14 @@
 		}
 	}
 
+	const stop = () => {
+		conn.stop()
+		state = State.Stopped
+	}
+
 	onMount(() => {
 		const interval = setInterval(() =>
-			connMsgsIndex = (connMsgsIndex + 1) % connMsgs.length
+			loadingMsgsI = (loadingMsgsI + 1) % loadingMsgs.length
 		, 500)
 
 		return () => clearInterval(interval)
@@ -75,7 +91,7 @@
 <main>
 	<DropDown
 		placeholder='Select connection method'
-		disabled={connecting}
+		disabled={state !== State.Stopped}
 		onchange={onSelect}
 		items={[
 			{value: 'native-messaging', text: 'Native Messaging'},
@@ -93,8 +109,12 @@
 				<Button type='blue' onclick={connect}>Connect</Button>
 			</div>
 		{/if}
+		
+		{#if state === State.WaitingDetails}
+			<Button type='red' outline onclick={stop}>Cancel</Button>
+		{/if}
 
-		{#if connecting} <span class='info'>{connMsgs[connMsgsIndex]}</span> {/if}
+		{#if state} <span class='info'>{loadingMsgs[loadingMsgsI]}</span> {/if}
 		{#if connErr} <span class='error'>{connErr}</span> {/if}
 	</div>
 </main>

@@ -22,9 +22,19 @@ chrome.runtime.onMessage.addListener((msg, _, send) => {
 		const method = msg.type.substring('try '.length) as ConnMethod
 
 		try_conn(method, msg.args)
-			.then(({ conn: conn_, err }) => {
-				if (conn_) conn.change(conn_)
-				send(err)
+			.then(({ promise, err }) => {
+				if (err) return send(err)
+				if (!promise) return // just to make it not |undefined
+
+				chrome.runtime.sendMessage({
+					to: 'connectionchooser',
+					state: 'waiting for details'
+				})
+
+				promise.then(({ conn: conn_ }) => {
+					if (conn_) conn.change(conn_)
+					send(err)
+				})
 			})
 
 		return true
@@ -76,9 +86,13 @@ chrome.runtime.onConnect.addListener(async port => {
 		if (!isConnMethod(conn_data?.method))
 			popup.append('Connection method stored is not valid')
 		else {
-			const { conn: nconn, err } = await try_conn(conn_data.method, conn_data.args)
+			const { promise, err } = await try_conn(conn_data.method, conn_data.args)
 
-			if (nconn) conn.set(nconn)
+			if (promise) {
+				const { conn: nconn } = await promise
+
+				if (nconn) conn.set(nconn)
+			}
 			else if (err) popup.append(err)
 		}
 	}

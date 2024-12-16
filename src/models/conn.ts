@@ -1,3 +1,5 @@
+import type { ConnDetails } from '@/models/ConnDetails.ts'
+
 
 const ConnMethodsList = ['native-messaging', 'ws'] as const
 export type ConnMethod = typeof ConnMethodsList[number]
@@ -7,6 +9,7 @@ export interface BaseConn {
 	connected: boolean
 	errMsg: string|null
 	args: unknown
+	details: ConnDetails
 }
 
 export interface WSArgs { port: number }

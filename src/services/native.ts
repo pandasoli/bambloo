@@ -20,4 +20,3 @@ export const connect_native = () => new Promise<{ port: chrome.runtime.Port, err
 	port.onDisconnect.addListener(onDisco)
 	port.postMessage('test')
 })
-

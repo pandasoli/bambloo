@@ -27,6 +27,23 @@ const setErr = (err: ConnErr) =>
 		return conn
 	})
 
+const stop = () =>
+	state.update(conn => {
+		if (!conn?.connected) return conn
+
+		switch (conn.method) {
+			case 'native-messaging':
+				conn.port.disconnect()
+				break
+
+			case 'ws':
+				conn.socket.close()
+		}
+
+		updateGlobal(conn, 'conn')
+		return conn
+	})
+
 chrome.runtime.onMessage.addListener(msg => {
 	if (msg.type === 'conn update')
 		state.set(msg.data)
@@ -35,5 +52,6 @@ chrome.runtime.onMessage.addListener(msg => {
 export const conn = {
 	...state,
 	change,
-	setErr
+	setErr,
+	stop
 }
