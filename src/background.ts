@@ -11,6 +11,7 @@ import { popup } from '@/stores/popup.ts'
 import { ui } from '@/stores/ui.ts'
 import { presences } from '@/stores/presences.ts'
 import { tabs } from '@/stores/tabs.ts'
+import { alltabs } from '@/stores/alltabs.ts'
 import { repos } from '@/stores/repos.ts'
 
 import { updateGlobal } from '@/utils/update_global.ts'
@@ -37,12 +38,14 @@ chrome.runtime.onConnect.addListener(async port => {
 	updateGlobal(get(presences), 'presences')
 	updateGlobal(get(tabs), 'tabs')
 	updateGlobal(get(repos), 'repos')
+	updateGlobal(get(alltabs), 'alltabs')
 
 	port.onDisconnect.addListener(() => {
 		// Store data that is required between connections
 		const presences_ = get(presences)
 		const conn_ = get(conn)
 		const repos_ = get(repos)
+		const alltabs_ = get(alltabs)
 
 		const method = conn_?.connected ? conn_.method : null
 		const args = conn_?.connected ? conn_.args : null
@@ -51,6 +54,7 @@ chrome.runtime.onConnect.addListener(async port => {
 		const data = {
 			conn: { method, args },
 			repos: repos_,
+			alltabs: alltabs_,
 			presences: presences_ as Presence[]|undefined
 		}
 
@@ -59,12 +63,14 @@ chrome.runtime.onConnect.addListener(async port => {
 
 		chrome.storage.local.set(data)
 	})
-});
+})
 
 // Run on background start
-(async () => {
+;(async () => {
 	const { conn: conn_data } = await chrome.storage.local.get('conn')
 	const { presences: presences_data } = await chrome.storage.local.get('presences')
+	const { repos: repos_data } = await chrome.storage.local.get('repos')
+	const { alltabs: alltabs_data } = await chrome.storage.local.get('alltabs')
 
 	if (conn_data !== undefined && conn_data?.method !== null) {
 		if (!isConnMethod(conn_data?.method))
@@ -83,8 +89,20 @@ chrome.runtime.onConnect.addListener(async port => {
 		else
 			presences.set(presences_data)
 	}
-	else
-		presences.set([])
+
+	if (repos_data !== undefined) {
+		if (!Array.isArray(repos_data))
+			popup.append('Repos list stored is not valid')
+		else
+			repos.set(repos_data)
+	}
+
+	if (alltabs_data !== undefined) {
+		if (typeof alltabs_data !== 'boolean')
+			popup.append('AllTabs option stored is not valid')
+		else
+			alltabs.set(alltabs_data)
+	}
 
 	tabs.load()
 })()

@@ -1,7 +1,7 @@
 
-export const updateGlobal = (state: any, datatype: string) => {
+export const updateGlobal = (state: any, store: string) => {
 	const data = JSON.parse(JSON.stringify(state))
-	const msg = { type: `${datatype} update`, data }
+	const msg = { type: `${store} update`, data }
 
 	/* When popup not open this error's thrown (no worry):
 	 *   Uncaught (in promise) Error: Could not establish

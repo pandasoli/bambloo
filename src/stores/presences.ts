@@ -9,7 +9,7 @@ import type { Manifest } from '@/models/Manifest.ts'
 	not overwriting invalid data in the storage.
 	It's only overwritten when the user does so.
 */
-const state = writable<Presence[]|null>(null)
+const state = writable<Presence[]|null>([])
 const problematic_data = writable<any>()
 const default_enabled = true
 
@@ -60,7 +60,10 @@ const change_input = (title: string, input: string) =>
 		return presences
 	})
 
-const panic = (data: any) => problematic_data.set(data)
+const panic = (data: any) => {
+	state.set(null)
+	problematic_data.set(data)
+}
 
 chrome.runtime.onMessage.addListener(msg => {
 	if (msg.type === 'presences update')
