@@ -5,6 +5,7 @@
 	import { isConnMethod } from '@/models/conn.ts'
 
 	import DropDown from '@/components/DropDown.svelte'
+	import Button from '@/components/Button.svelte'
 
 
 	let connMsgs: string[] = [] // Used for "..." animation
@@ -89,7 +90,7 @@
 		{#if method === 'ws'}
 			<div>
 				<input bind:value={ws_conn_args.port} type='number' placeholder='Port'/>
-				<button class='active' on:click={connect}>Connect</button>
+				<Button type='blue' onclick={connect}>Connect</Button>
 			</div>
 		{/if}
 
@@ -106,7 +107,8 @@
 		padding-block: 10px;
 
 		div {
-			display: flex;
+			display: grid;
+			grid-template-columns: 2fr 1fr;
 			align-items: center;
 			gap: 10px
 		}
