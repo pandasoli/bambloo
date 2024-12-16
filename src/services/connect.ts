@@ -2,7 +2,8 @@ import { get } from 'svelte/store'
 
 import { conn } from '@/stores/conn.ts'
 
-import type { Conn, ConnMethod, BaseConn, ConnArgs, WSArgs, WSConn } from '@/models/conn.ts'
+import type { Conn, BaseConn, ConnArgs, WSArgs, WSConn } from '@/models/Conn.ts'
+import { ConnMethod } from '@/models/Conn.ts'
 
 import { connect_native } from '@/services/native.ts'
 import { connect_ws } from '@/services/ws.ts'
@@ -28,7 +29,7 @@ export async function try_conn(method: ConnMethod, args: ConnArgs): Res {
 	}
 
 	switch (method) {
-		case 'native-messaging': {
+		case ConnMethod.NativeMessaging: {
 			const { port, err } = await connect_native()
 			if (err) return {err}
 			nconn = {...base_data, method, port}
@@ -41,7 +42,7 @@ export async function try_conn(method: ConnMethod, args: ConnArgs): Res {
 			)
 		} break
 
-		case 'ws': {
+		case ConnMethod.WebSocket: {
 			const { socket, err } = await connect_ws(args as WSArgs)
 			if (err) return {err}
 			nconn = {...base_data, socket, args} as WSConn

@@ -2,6 +2,7 @@
 	import WelcomeScreen from '@/Welcome.svelte'
   import PresencesTab from '@/Presences.svelte'
 	import TabsTab from '@/Tabs.svelte'
+	import SettingsScreen from '@/Settings.svelte'
 	import Header from '@/components/Header.svelte'
 	import Store from '@/components/Store.svelte'
 
@@ -10,10 +11,10 @@
 	import { popup } from '@/stores/popup.ts'
 	import { presences } from '@/stores/presences.ts'
 
+	import { AppTab } from '@/models/AppTab'
+
 	import presencesTreeIcon from '@/assets/trees/presences.png'
 	import storeTreeIcon from '@/assets/trees/store.png'
-
-	import SettingsScreen from '@/Settings.svelte'
 
 
 	popup.subscribe(() =>
@@ -40,9 +41,9 @@
 	{:else}
 		<Header />
 
-		{#if      $ui.tab === 'presences'} <PresencesTab />
-		{:else if $ui.tab === 'tabs'     } <TabsTab />
-		{:else if $ui.tab === 'store'    }
+		{#if      $ui.tab === AppTab.Presences} <PresencesTab />
+		{:else if $ui.tab === AppTab.Tabs     } <TabsTab />
+		{:else if $ui.tab === AppTab.Store    }
 			<img src={storeTreeIcon} id='tree' />
 			<Store />
 		{/if}

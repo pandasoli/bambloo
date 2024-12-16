@@ -1,8 +1,10 @@
 import type { ConnDetails } from '@/models/ConnDetails.ts'
 
 
-const ConnMethodsList = ['native-messaging', 'ws'] as const
-export type ConnMethod = typeof ConnMethodsList[number]
+export enum ConnMethod {
+	NativeMessaging,
+	WebSocket
+}
 
 export interface BaseConn {
 	method: ConnMethod
@@ -15,18 +17,15 @@ export interface BaseConn {
 export interface WSArgs { port: number }
 
 export interface NativeMessagingConn extends BaseConn {
-	method: 'native-messaging'
+	method: ConnMethod.NativeMessaging
 	port: chrome.runtime.Port
 }
 
 export interface WSConn extends BaseConn {
-	method: 'ws'
+	method: ConnMethod.WebSocket
 	socket: WebSocket
 	args: WSArgs
 }
 
 export type Conn = NativeMessagingConn | WSConn
 export type ConnArgs = WSArgs
-
-export const isConnMethod = (val: string): val is ConnMethod =>
-	ConnMethodsList.includes(val as ConnMethod)

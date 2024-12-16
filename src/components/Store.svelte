@@ -1,23 +1,25 @@
 <script lang='ts'>
 	import { onMount } from 'svelte'
 
+	import StorePresence from '@/StorePresence.svelte'
+
 	import { repos } from '@/stores/repos.ts'
 	import { presences } from '@/stores/presences.ts'
-	import type { Manifest } from '@/models/Manifest.ts'
+	import { ui } from '@/stores/ui.ts'
 
-	import StorePresence from '@/StorePresence.svelte'
+	import type { Manifest } from '@/models/Manifest.ts'
+	import { AppTab } from '@/models/AppTab.ts'
 
 	import downloadIcon from '@/assets/download.svg'
 	import trashIcon from '@/assets/trash.svg'
 
 
+	type Location = { repo: string, path: string }
+
+
 	// Used for "..." animation
 	const loadingMsgs = Array.from({ length: 4 }, (_, i) => 'Loading presences' + '.'.repeat(i))
 	let loadingMsgsIndex = 0
-
-	let open_presence: Manifest|null = null
-
-	type Location = { repo: string, path: string }
 
 	let repo_i = 0
 
@@ -103,6 +105,11 @@
 		}
 	}
 
+	const openPresence = (manifest: Manifest) => {
+		ui.setOpenedPresence(manifest)
+		ui.setTab(AppTab.Store)
+	}
+
 	onMount(() => {
 		load_repos()
 
@@ -137,7 +144,7 @@
 
 		<div id='presences' class:loading={manifests.length === 0}>
 			{#each manifests as manifest}
-				<button class='presence' on:click={() => open_presence = manifest}>
+				<button class='presence' on:click={() => openPresence(manifest)}>
 					<img src={manifest.images.background} class='bg' />
 
 					<div>
@@ -157,8 +164,8 @@
 	{/if}
 </main>
 
-{#if open_presence !== null}
-	<StorePresence manifest={open_presence} close={() => open_presence = null} />
+{#if $ui.opened_presence}
+	<StorePresence manifest={$ui.opened_presence} close={() => ui.setOpenedPresence(null)} />
 {/if}
 
 <style lang='scss'>

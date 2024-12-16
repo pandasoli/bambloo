@@ -1,7 +1,6 @@
 import { get } from 'svelte/store'
 
-import { isConnMethod } from '@/models/conn.ts'
-import type { ConnMethod } from '@/models/conn.ts'
+import { ConnMethod } from '@/models/Conn.ts'
 import type { Presence } from '@/models/Presence.ts'
 
 import { try_conn } from '@/services/connect.ts'
@@ -19,7 +18,7 @@ import { updateGlobal } from '@/utils/update_global.ts'
 
 chrome.runtime.onMessage.addListener((msg, _, send) => {
 	if (msg?.type.startsWith('try')) {
-		const method = msg.type.substring('try '.length) as ConnMethod
+		const method = Number(msg.type.substring('try '.length)) as ConnMethod
 
 		try_conn(method, msg.args)
 			.then(({ promise, err }) => {
@@ -83,7 +82,7 @@ chrome.runtime.onConnect.addListener(async port => {
 	const { alltabs: alltabs_data } = await chrome.storage.local.get('alltabs')
 
 	if (conn_data !== undefined && conn_data?.method !== null) {
-		if (!isConnMethod(conn_data?.method))
+		if (typeof conn_data?.method !== 'number')
 			popup.append('Connection method stored is not valid')
 		else {
 			const { promise, err } = await try_conn(conn_data.method, conn_data.args)

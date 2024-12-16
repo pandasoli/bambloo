@@ -1,13 +1,16 @@
 <script lang='ts'>
 	import { ui } from '@/stores/ui.ts'
 
-	import { AppTabsList } from '@/models/AppTab.ts'
+	import { AppTab } from '@/models/AppTab.ts'
 
 	import Button from '@/components/Button.svelte'
+
+
+	const tabs = Object.values(AppTab) as AppTab[]
 </script>
 
 <main>
-	{#each AppTabsList as tab}
+	{#each tabs as tab}
 		<Button
 			type='blue'
 			class='HeaderButton'

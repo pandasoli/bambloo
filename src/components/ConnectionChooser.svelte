@@ -3,8 +3,7 @@
 
 	import { conn } from '@/stores/conn.ts'
 
-	import type { ConnMethod, WSArgs } from '@/models/conn.ts'
-	import { isConnMethod } from '@/models/conn.ts'
+	import { ConnMethod, type WSArgs } from '@/models/Conn.ts'
 
 	import DropDown from '@/components/DropDown.svelte'
 	import Button from '@/components/Button.svelte'
@@ -30,16 +29,16 @@
 		}
 	})
 
-	function try_conn(host: string, host_display: string) {
-		loadingMsgs = Array.from({ length: 4 }, (_, i) => `Connectin' to ${host_display} host` + '.'.repeat(i))
+	function try_conn() {
+		loadingMsgs = Array.from({ length: 4 }, (_, i) => `Connecting to host` + '.'.repeat(i))
 		loadingMsgsI = 0
 
 		state = State.Connecing
 
 		chrome.runtime.sendMessage({
-			type: `try ${host}`,
+			type: `try ${method}`,
 			args:
-				method === 'ws' ? ws_conn_args :
+				method === ConnMethod.WebSocket ? ws_conn_args :
 				null
 		})
 			.then(err => {
@@ -48,29 +47,19 @@
 			})
 	}
 
-	const onSelect = (item: { value: string }) => {
-		const value = item.value
-
+	const onSelect = (item: { value: ConnMethod }) => {
+		method = item.value
 		connErr = null
-		method = null
-
-		// Check value matches type
-		if (!isConnMethod(value))
-			return console.warn('[WelcomeScreen:onSelect]', `'${value}' isn't a valid option`)
-
-		method = value
 
 		// Call connecion function
 		switch (method) {
-			case 'native-messaging':
-				try_conn('native-messaging', 'Native Messaging')
+			case ConnMethod.NativeMessaging: try_conn()
 		}
 	}
 
 	const connect = () => {
 		switch (method) {
-			case 'ws':
-				try_conn('ws', 'WebSocket')
+			case ConnMethod.WebSocket: try_conn()
 		}
 	}
 
@@ -94,8 +83,8 @@
 		disabled={state !== State.Stopped}
 		onchange={onSelect}
 		items={[
-			{value: 'native-messaging', text: 'Native Messaging'},
-			{value:	'ws', text: 'Web Socket'}
+			{value: ConnMethod.NativeMessaging, text: 'Native Messaging'},
+			{value:	ConnMethod.WebSocket, text: 'Web Socket'}
 		]}
 		let:item
 	>
@@ -103,7 +92,7 @@
 	</DropDown>
 
 	<div id='aux'>
-		{#if method === 'ws'}
+		{#if method === ConnMethod.WebSocket}
 			<div>
 				<input bind:value={ws_conn_args.port} type='number' placeholder='Port'/>
 				<Button type='blue' onclick={connect}>Connect</Button>

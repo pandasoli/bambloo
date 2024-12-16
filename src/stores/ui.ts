@@ -1,16 +1,21 @@
 import { writable } from 'svelte/store'
+
 import { updateGlobal } from '@/utils/update_global.ts'
-import type { AppTab } from '@/models/AppTab.ts'
+
+import type { Manifest } from '@/models/Manifest.ts'
+import { AppTab } from '@/models/AppTab.ts'
 
 
 export type UIData = {
 	tab: AppTab
 	config_open: boolean
+	opened_presence: Manifest|null // for Store
 }
 
 const initial: UIData = {
-	tab: 'presences',
-	config_open: false
+	tab: AppTab.Presences,
+	config_open: false,
+	opened_presence: null
 }
 
 
@@ -37,6 +42,14 @@ const toggleConfigOpen = () =>
 		return ui
 	})
 
+const setOpenedPresence = (presence: Manifest) =>
+	state.update(ui => {
+		ui.opened_presence = presence
+
+		updateGlobal(ui, 'ui')
+		return ui
+	})
+
 chrome.runtime.onMessage.addListener(msg => {
 	if (msg.type === 'ui update')
 		state.set(msg.data)
@@ -46,5 +59,6 @@ export const ui = {
 	...state,
 	change,
 	setTab,
-	toggleConfigOpen
+	toggleConfigOpen,
+	setOpenedPresence
 }
