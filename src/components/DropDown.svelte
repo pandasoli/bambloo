@@ -6,16 +6,16 @@
 	export let placeholder = ''
 	export let items: any[] = []
 	export let disabled: boolean = false
+	export let selected: number|null = null
 	export let onchange: ((item: any) => void)|undefined = undefined
 
 	let main: HTMLElement
 	let open: boolean
-	let selected: any|null = null
 
-	const onselect = (item: any) => {
-		selected = item
+	const onselect = (i: number) => {
+		selected = i
 		open = false
-		onchange?.(item)
+		onchange?.(items[i])
 	}
 
 	// Close when clicked outside main
@@ -33,7 +33,7 @@
 			{#if selected == null}
 				{placeholder}
 			{:else}
-				<slot item={selected} />
+				<slot item={items[selected]} />
 			{/if}
 		</span>
 
@@ -43,8 +43,8 @@
 	</button>
 
 	<div id='items' class:open={open}>
-		{#each items as item}
-			<button on:click={() => onselect(item)}>
+		{#each items as item, i}
+			<button on:click={() => onselect(i)}>
 				<slot {item}/>
 			</button>
 		{/each}

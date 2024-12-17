@@ -9,31 +9,46 @@
 	import Button from '@/components/Button.svelte'
 
 
-	let state: ConnState = ConnState.Stopped
-	let errMsg: string|null = null
+	let state: ConnState
+	$: state = $conn?.state ?? ConnState.Stopped
+
+	let errMsg: string|null
+	$: errMsg = $conn?.errMsg ?? null
 
 	let loadingMsgs: string[] = [] // Used for "..." animation
 	let loadingMsgsI = 0
+	$: {
+		loadingMsgsI = 0
+		let text = ''
 
-	let method: ConnMethod|null = null
+		if (state === ConnState.Connected)
+			loadingMsgs = ['Connected']
+		else {
+			switch (state) {
+				case ConnState.Connecting: text = 'Connecting to host'; break
+				case ConnState.WaitingDetails: text = 'Waiting for connection details'; break
+			}
+
+			loadingMsgs = Array.from({ length: 4 }, (_, i) => text + '.'.repeat(i))
+		}
+	}
+
+	let method: ConnMethod|null
+	$: method = $conn?.method ?? null
+
 	let ws_conn_args: WebSocketArgs = { port: 8765 }
 
 	chrome.runtime.onMessage.addListener(msg => {
-		if (msg.type === 'conn state update') {
-			state = msg.state
-			loadingMsgsI = 0
+		switch (msg.type) {
+			case 'conn state update':
+				state = msg.state; break
 
-			if (state === ConnState.WaitingDetails)
-				loadingMsgs = Array.from({ length: 4 }, (_, i) => `Waiting for connection details` + '.'.repeat(i))
-			else if (state === ConnState.Connected)
-				loadingMsgs = ['Connected']
+			case 'conn lost':
+				errMsg = 'Connection lost'
 		}
 	})
 
 	function try_conn() {
-		loadingMsgs = Array.from({ length: 4 }, (_, i) => `Connecting to host` + '.'.repeat(i))
-		loadingMsgsI = 0
-
 		state = ConnState.Connecting
 		errMsg = null
 
@@ -73,12 +88,22 @@
 
 		return () => clearInterval(interval)
 	})
+
+	const logall = (ev: KeyboardEvent) => {
+		ev.preventDefault()
+
+		if (ev.key === 'k')
+			console.log({ method, state, errMsg })
+	}
 </script>
+
+<svelte:window on:keydown={logall} />
 
 <main>
 	<DropDown
 		placeholder='Select connection method'
 		disabled={state === ConnState.Connecting || state === ConnState.WaitingDetails}
+		selected={method}
 		onchange={onSelect}
 		items={[
 			{value: ConnMethod.NativeMessaging, text: 'Native Messaging'},
