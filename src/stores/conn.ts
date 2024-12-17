@@ -1,12 +1,9 @@
 import { writable } from 'svelte/store'
-import type { Conn } from '@/models/conn.ts'
+
+import type { Conn, ConnDetails, NativeMessagingConn, WebSocketConn } from '@/models/Conn.ts'
+import { ConnMethod, ConnState } from '@/models/Conn.ts'
+
 import { updateGlobal } from '@/utils/update_global.ts'
-
-
-export type ConnErr = {
-	errMsg: string|null
-	connected: boolean
-}
 
 
 const state = writable<Conn|null>(null)
@@ -16,29 +13,32 @@ const change = (new_conn: Conn) => {
 	updateGlobal(new_conn, 'conn')
 }
 
-const setErr = (err: ConnErr) =>
+const setErr = (err: string) =>
 	state.update(conn => {
 		if (!conn) return conn
 
-		conn.connected = err.connected
-		conn.errMsg = err.errMsg
+		conn.state = ConnState.Stopped
+		conn.errMsg = err
 
 		updateGlobal(conn, 'conn')
 		return conn
 	})
 
-const stop = () =>
-	state.update(conn => {
-		if (!conn?.connected) return conn
+const setState = (nstate: ConnState) =>
+	state.subscribe(conn => {
+		if (!conn) return conn
 
-		switch (conn.method) {
-			case 'native-messaging':
-				conn.port.disconnect()
-				break
+		conn.state = nstate
 
-			case 'ws':
-				conn.socket.close()
-		}
+		updateGlobal(conn, 'conn')
+		return conn
+	})
+
+const setDetails = (details: ConnDetails) =>
+	state.subscribe(conn => {
+		if (!conn) return conn
+
+		conn.details = details
 
 		updateGlobal(conn, 'conn')
 		return conn
@@ -53,5 +53,6 @@ export const conn = {
 	...state,
 	change,
 	setErr,
-	stop
+	setState,
+	setDetails
 }

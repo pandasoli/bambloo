@@ -1,31 +1,37 @@
-import type { ConnDetails } from '@/models/ConnDetails.ts'
 
+export enum ConnState {
+	Stopped,
+	Connecting,
+	WaitingDetails,
+	Connected
+}
 
 export enum ConnMethod {
 	NativeMessaging,
 	WebSocket
 }
 
-export interface BaseConn {
+export interface ConnDetails { multiple: boolean }
+
+export interface WebSocketArgs { port: number }
+
+interface ConnBase {
 	method: ConnMethod
-	connected: boolean
-	errMsg: string|null
-	args: unknown
+	state: ConnState
+	errMsg?: string
 	details: ConnDetails
 }
 
-export interface WSArgs { port: number }
-
-export interface NativeMessagingConn extends BaseConn {
+export interface NativeMessagingConn extends ConnBase {
 	method: ConnMethod.NativeMessaging
 	port: chrome.runtime.Port
 }
 
-export interface WSConn extends BaseConn {
+export interface WebSocketConn extends ConnBase {
 	method: ConnMethod.WebSocket
 	socket: WebSocket
-	args: WSArgs
+	args: WebSocketArgs
 }
 
-export type Conn = NativeMessagingConn | WSConn
-export type ConnArgs = WSArgs
+export type ConnArgs = WebSocketArgs
+export type Conn = NativeMessagingConn | WebSocketConn

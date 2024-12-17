@@ -11,7 +11,8 @@
 	import { popup } from '@/stores/popup.ts'
 	import { presences } from '@/stores/presences.ts'
 
-	import { AppTab } from '@/models/AppTab'
+	import { AppTab } from '@/models/AppTab.ts'
+	import { ConnState } from '@/models/Conn.ts'
 
 	import presencesTreeIcon from '@/assets/trees/presences.png'
 	import storeTreeIcon from '@/assets/trees/store.png'
@@ -32,7 +33,7 @@
 	{/each}
 </div>	
 
-{#if !$conn?.connected}
+{#if $conn?.state !== ConnState.Connected}
 	<WelcomeScreen />
 {:else}
 	{#if $presences?.length === 0}

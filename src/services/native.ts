@@ -1,22 +1,33 @@
+import type { ConnDetails } from '@/models/Conn.ts'
 
-export const connect_native = () => new Promise<{ port: chrome.runtime.Port, err: string|null }>(resolve => {
+
+type DetailsPromise = Promise<{ details?: ConnDetails, err?: string }>
+
+type Res = {
+	port: chrome.runtime.Port
+	details: DetailsPromise
+}
+
+
+export const connect_native = (): Res => {
 	const port = chrome.runtime.connectNative('com.elisoli.chrome.echo')
 
-	const onMsg = (msg: string) => {
-		if (msg !== 'test') return
+	const details: DetailsPromise = new Promise(resolve => {
+		const onMsg = (details: ConnDetails) => {
+			port.onMessage.removeListener(onMsg)
+			port.onDisconnect.removeListener(onDisco)
+			resolve({ details })
+		}
 
-		port.onMessage.removeListener(onMsg)
-		port.onDisconnect.removeListener(onDisco)
-		resolve({ port, err: null })
-	}
+		const onDisco = () => {
+			port.onMessage.removeListener(onMsg)
+			port.onDisconnect.removeListener(onDisco)
+			resolve({ err: chrome.runtime.lastError?.message })
+		}
 
-	const onDisco = () => {
-		port.onMessage.removeListener(onMsg)
-		port.onDisconnect.removeListener(onDisco)
-		resolve({ port, err: chrome.runtime.lastError?.message ?? null })
-	}
+		port.onMessage.addListener(onMsg)
+		port.onDisconnect.addListener(onDisco)
+	})
 
-	port.onMessage.addListener(onMsg)
-	port.onDisconnect.addListener(onDisco)
-	port.postMessage('test')
-})
+	return {port, details}
+}

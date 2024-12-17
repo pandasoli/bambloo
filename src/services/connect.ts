@@ -1,60 +1,35 @@
-import { get } from 'svelte/store'
-
-import { conn } from '@/stores/conn.ts'
-
-import type { Conn, BaseConn, ConnArgs, WSArgs, WSConn } from '@/models/Conn.ts'
-import { ConnMethod } from '@/models/Conn.ts'
+import type { Conn, ConnDetails, ConnArgs, WebSocketArgs, NativeMessagingConn, WebSocketConn } from '@/models/Conn.ts'
+import { ConnMethod, ConnState } from '@/models/Conn.ts'
 
 import { connect_native } from '@/services/native.ts'
 import { connect_ws } from '@/services/ws.ts'
 
 
-type Err<T> = Promise<T & { err?: string }>
-type Res = Err<{ promise?: Promise<{ conn: Conn }> }>
+type DetailsPromise = Promise<{ details?: ConnDetails, err?: string }>
+type Res = { conn: Conn, details: DetailsPromise }
 
 
 // maybe a function overload here?
-export async function try_conn(method: ConnMethod, args: ConnArgs): Res {
-	if (get(conn)?.connected)
-		return {err: "There's alredy an open connection"}
-
-	let nconn: Conn
-	let promise: Promise<{ conn: Conn }>
-	const base_data: BaseConn = {
+export function try_conn(method: ConnMethod, args: ConnArgs): Res {
+	const bconn = {
 		method,
-		connected: true,
-		errMsg: null,
-		args: null,
+		state: ConnState.WaitingDetails,
 		details: { multiple: false }
 	}
 
 	switch (method) {
 		case ConnMethod.NativeMessaging: {
-			const { port, err } = await connect_native()
-			if (err) return {err}
-			nconn = {...base_data, method, port}
+			const { port, details } = connect_native()
 
-			promise = new Promise(resolve =>
-				port.onMessage.addListener(msg => {
-					nconn.details = msg
-					resolve({conn: nconn})
-				})
-			)
-		} break
+			const conn = {...bconn, port} as NativeMessagingConn
+			return {conn, details}
+		}
 
 		case ConnMethod.WebSocket: {
-			const { socket, err } = await connect_ws(args as WSArgs)
-			if (err) return {err}
-			nconn = {...base_data, socket, args} as WSConn
+			const { socket, details } = connect_ws(args as WebSocketArgs)
 
-			promise = new Promise(resolve =>
-				socket.addEventListener('message', ev => {
-					nconn.details = JSON.parse(ev.data)
-					resolve({conn: nconn})
-				})
-			)
+			const conn = {...bconn, socket, args} as WebSocketConn
+			return {conn, details}
 		}
 	}
-
-	return {promise}
 }

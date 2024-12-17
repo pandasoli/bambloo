@@ -1,7 +1,8 @@
 import { get } from 'svelte/store'
 
-import { ConnMethod } from '@/models/Conn.ts'
+import { ConnMethod, ConnState } from '@/models/Conn.ts'
 import type { Presence } from '@/models/Presence.ts'
+import type { ConnArgs, WebSocketConn } from '@/models/Conn.ts'
 
 import { try_conn } from '@/services/connect.ts'
 
@@ -16,24 +17,36 @@ import { repos } from '@/stores/repos.ts'
 import { updateGlobal } from '@/utils/update_global.ts'
 
 
+const connect = (method: ConnMethod, args: ConnArgs) => {
+	const { conn: conn_, details } = try_conn(method, args)
+	conn.change(conn_)
+
+	details
+		.then(({ details, err }) => {
+			if (err) return conn.setErr(err)
+			if (!details) return
+
+			conn.setDetails(details)
+			conn.setState(ConnState.Connected)
+		})
+}
+
 chrome.runtime.onMessage.addListener((msg, _, send) => {
-	if (msg?.type.startsWith('try')) {
-		const method = Number(msg.type.substring('try '.length)) as ConnMethod
+	if (msg?.type === 'connect') {
+		const method: ConnMethod = msg.method
+		const set_first: boolean = msg.set_first
 
-		try_conn(method, msg.args)
-			.then(({ promise, err }) => {
+		const { conn: conn_, details } = try_conn(method, msg.args as ConnArgs)
+		if (set_first) conn.change(conn_)
+
+		details
+			.then(({ details, err }) => {
 				if (err) return send(err)
-				if (!promise) return // just to make it not |undefined
+				if (!details) return
 
-				chrome.runtime.sendMessage({
-					to: 'connectionchooser',
-					state: 'waiting for details'
-				})
-
-				promise.then(({ conn: conn_ }) => {
-					if (conn_) conn.change(conn_)
-					send(err)
-				})
+				if (!set_first) conn.change(conn_)
+				conn.setDetails(details)
+				conn.setState(ConnState.Connected)
 			})
 
 		return true
@@ -56,8 +69,10 @@ chrome.runtime.onConnect.addListener(async port => {
 		const repos_ = get(repos)
 		const alltabs_ = get(alltabs)
 
-		const method = conn_?.connected ? conn_.method : null
-		const args = conn_?.connected ? conn_.args : null
+		const connected = conn_?.state === ConnState.Connected
+
+		const method = connected ? conn_.method : null
+		const args = method === ConnMethod.WebSocket ? (conn_ as WebSocketConn).args : null
 
 		// Store data
 		const data = {
@@ -84,16 +99,8 @@ chrome.runtime.onConnect.addListener(async port => {
 	if (conn_data !== undefined && conn_data?.method !== null) {
 		if (typeof conn_data?.method !== 'number')
 			popup.append('Connection method stored is not valid')
-		else {
-			const { promise, err } = await try_conn(conn_data.method, conn_data.args)
-
-			if (promise) {
-				const { conn: nconn } = await promise
-
-				if (nconn) conn.set(nconn)
-			}
-			else if (err) popup.append(err)
-		}
+		else
+			connect(conn_data.method, conn_data.args)
 	}
 
 	if (presences_data !== undefined) {

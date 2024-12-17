@@ -3,53 +3,53 @@
 
 	import { conn } from '@/stores/conn.ts'
 
-	import { ConnMethod, type WSArgs } from '@/models/Conn.ts'
+	import { ConnMethod, ConnState, type WebSocketArgs } from '@/models/Conn.ts'
 
 	import DropDown from '@/components/DropDown.svelte'
 	import Button from '@/components/Button.svelte'
 
 
-	enum State { Stopped, Connecing, WaitingDetails }
-
-
-	let state: State = State.Stopped
+	let state: ConnState = ConnState.Stopped
+	let errMsg: string|undefined
 
 	let loadingMsgs: string[] = [] // Used for "..." animation
 	let loadingMsgsI = 0
 
 	let method: ConnMethod|null = null
-	let connErr: string|null = null
-	let ws_conn_args: WSArgs = { port: 8765 }
+	let ws_conn_args: WebSocketArgs = { port: 8765 }
 
-	chrome.runtime.onMessage.addListener(msg => {
-		if (msg.to !== 'connectionchooser') return
-		if (msg.state === 'waiting for details') {
-			state = State.WaitingDetails
+	conn.subscribe(conn => {
+		if (!conn) return
+
+		state = conn.state
+
+		if (state === ConnState.WaitingDetails)
 			loadingMsgs = Array.from({ length: 4 }, (_, i) => `Waiting for connection details` + '.'.repeat(i))
-		}
 	})
 
 	function try_conn() {
 		loadingMsgs = Array.from({ length: 4 }, (_, i) => `Connecting to host` + '.'.repeat(i))
 		loadingMsgsI = 0
 
-		state = State.Connecing
+		state = ConnState.Connecting
+		errMsg = undefined
 
 		chrome.runtime.sendMessage({
-			type: `try ${method}`,
+			type: 'connect',
+			method,
+			set_first: $conn === null,
 			args:
 				method === ConnMethod.WebSocket ? ws_conn_args :
 				null
 		})
 			.then(err => {
-				state = State.Stopped
-				connErr = err
+				state = ConnState.Stopped
+				errMsg = err
 			})
 	}
 
 	const onSelect = (item: { value: ConnMethod }) => {
 		method = item.value
-		connErr = null
 
 		// Call connecion function
 		switch (method) {
@@ -61,11 +61,6 @@
 		switch (method) {
 			case ConnMethod.WebSocket: try_conn()
 		}
-	}
-
-	const stop = () => {
-		conn.stop()
-		state = State.Stopped
 	}
 
 	onMount(() => {
@@ -80,7 +75,7 @@
 <main>
 	<DropDown
 		placeholder='Select connection method'
-		disabled={state !== State.Stopped}
+		disabled={state === ConnState.Connecting || state === ConnState.WaitingDetails}
 		onchange={onSelect}
 		items={[
 			{value: ConnMethod.NativeMessaging, text: 'Native Messaging'},
@@ -98,13 +93,9 @@
 				<Button type='blue' onclick={connect}>Connect</Button>
 			</div>
 		{/if}
-		
-		{#if state === State.WaitingDetails}
-			<Button type='red' outline onclick={stop}>Cancel</Button>
-		{/if}
 
-		{#if state} <span class='info'>{loadingMsgs[loadingMsgsI]}</span> {/if}
-		{#if connErr} <span class='error'>{connErr}</span> {/if}
+		{#if state !== ConnState.Stopped} <span class='info'>{loadingMsgs[loadingMsgsI]}</span> {/if}
+		{#if errMsg} <span class='error'>{errMsg}</span> {/if}
 	</div>
 </main>
 
