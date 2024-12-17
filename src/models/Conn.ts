@@ -18,7 +18,6 @@ export interface WebSocketArgs { port: number }
 interface ConnBase {
 	method: ConnMethod
 	state: ConnState
-	errMsg?: string
 	details: ConnDetails
 }
 

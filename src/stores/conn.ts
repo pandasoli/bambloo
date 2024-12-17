@@ -8,21 +8,10 @@ import { updateGlobal } from '@/utils/update_global.ts'
 
 const state = writable<Conn|null>(null)
 
-const change = (new_conn: Conn) => {
+const change = (new_conn: Conn|null) => {
 	state.set(new_conn)
 	updateGlobal(new_conn, 'conn')
 }
-
-const setErr = (err: string) =>
-	state.update(conn => {
-		if (!conn) return conn
-
-		conn.state = ConnState.Stopped
-		conn.errMsg = err
-
-		updateGlobal(conn, 'conn')
-		return conn
-	})
 
 const setState = (nstate: ConnState) =>
 	state.subscribe(conn => {
@@ -52,7 +41,6 @@ chrome.runtime.onMessage.addListener(msg => {
 export const conn = {
 	...state,
 	change,
-	setErr,
 	setState,
 	setDetails
 }

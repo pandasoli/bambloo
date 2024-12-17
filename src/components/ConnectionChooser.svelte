@@ -10,7 +10,7 @@
 
 
 	let state: ConnState = ConnState.Stopped
-	let errMsg: string|undefined
+	let errMsg: string|null = null
 
 	let loadingMsgs: string[] = [] // Used for "..." animation
 	let loadingMsgsI = 0
@@ -18,13 +18,16 @@
 	let method: ConnMethod|null = null
 	let ws_conn_args: WebSocketArgs = { port: 8765 }
 
-	conn.subscribe(conn => {
-		if (!conn) return
+	chrome.runtime.onMessage.addListener(msg => {
+		if (msg.type === 'conn state update') {
+			state = msg.state
+			loadingMsgsI = 0
 
-		state = conn.state
-
-		if (state === ConnState.WaitingDetails)
-			loadingMsgs = Array.from({ length: 4 }, (_, i) => `Waiting for connection details` + '.'.repeat(i))
+			if (state === ConnState.WaitingDetails)
+				loadingMsgs = Array.from({ length: 4 }, (_, i) => `Waiting for connection details` + '.'.repeat(i))
+			else if (state === ConnState.Connected)
+				loadingMsgs = ['Connected']
+		}
 	})
 
 	function try_conn() {
@@ -32,7 +35,7 @@
 		loadingMsgsI = 0
 
 		state = ConnState.Connecting
-		errMsg = undefined
+		errMsg = null
 
 		chrome.runtime.sendMessage({
 			type: 'connect',

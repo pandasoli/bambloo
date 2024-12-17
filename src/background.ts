@@ -17,17 +17,26 @@ import { repos } from '@/stores/repos.ts'
 import { updateGlobal } from '@/utils/update_global.ts'
 
 
-const connect = (method: ConnMethod, args: ConnArgs) => {
+const connect = (method: ConnMethod, args: ConnArgs, set_first: boolean, onErr: (err: string) => void) => {
 	const { conn: conn_, details } = try_conn(method, args)
-	conn.change(conn_)
+	if (set_first) conn.change(conn_)
+
+	chrome.runtime.sendMessage({type: 'conn state update', state: ConnState.WaitingDetails})
 
 	details
 		.then(({ details, err }) => {
-			if (err) return conn.setErr(err)
+			if (err) {
+				conn.change(null)
+				onErr(err)
+				return
+			}
 			if (!details) return
+			if (!set_first) conn.change(conn_)
 
 			conn.setDetails(details)
 			conn.setState(ConnState.Connected)
+
+			chrome.runtime.sendMessage({type: 'conn state update', state: ConnState.Connected})
 		})
 }
 
@@ -36,19 +45,7 @@ chrome.runtime.onMessage.addListener((msg, _, send) => {
 		const method: ConnMethod = msg.method
 		const set_first: boolean = msg.set_first
 
-		const { conn: conn_, details } = try_conn(method, msg.args as ConnArgs)
-		if (set_first) conn.change(conn_)
-
-		details
-			.then(({ details, err }) => {
-				if (err) return send(err)
-				if (!details) return
-
-				if (!set_first) conn.change(conn_)
-				conn.setDetails(details)
-				conn.setState(ConnState.Connected)
-			})
-
+		connect(method, msg.args, set_first, send)
 		return true
 	}
 })
@@ -100,7 +97,7 @@ chrome.runtime.onConnect.addListener(async port => {
 		if (typeof conn_data?.method !== 'number')
 			popup.append('Connection method stored is not valid')
 		else
-			connect(conn_data.method, conn_data.args)
+			connect(conn_data.method, conn_data.args, true, popup.append)
 	}
 
 	if (presences_data !== undefined) {
