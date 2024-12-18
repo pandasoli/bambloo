@@ -1,6 +1,3 @@
-<script lang='ts'>
-</script>
-
 <main>
 	<div>
 		<p><slot /></p>
