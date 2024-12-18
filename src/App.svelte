@@ -20,7 +20,7 @@
 
 	popup.subscribe(() =>
 		setTimeout(() =>
-			popup.change([]), 10_000))
+			popup.set([]), 10_000))
 
 	chrome.runtime.connect()
 </script>

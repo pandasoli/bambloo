@@ -14,8 +14,6 @@ import { tabs } from '@/stores/tabs.ts'
 import { alltabs } from '@/stores/alltabs.ts'
 import { repos } from '@/stores/repos.ts'
 
-import { updateGlobal } from '@/utils/update_global.ts'
-
 
 const connect = (method: ConnMethod, args: ConnArgs, set_first: boolean, onErr?: (err: string) => void) => {
 	const { conn: conn_, details } = try_conn(method, args)
@@ -53,13 +51,16 @@ chrome.runtime.onMessage.addListener((msg, _, send) => {
 })
 
 chrome.runtime.onConnect.addListener(async port => {
-	updateGlobal(get(conn), 'conn')
-	updateGlobal(get(popup), 'popup')
-	updateGlobal(get(ui), 'ui')
-	updateGlobal(get(presences), 'presences')
-	updateGlobal(get(tabs), 'tabs')
-	updateGlobal(get(repos), 'repos')
-	updateGlobal(get(alltabs), 'alltabs')
+	const update = (data: any, name: string) =>
+		chrome.runtime.sendMessage({ type: `${name} update`, data })
+
+	update(get(conn), 'conn')
+	update(get(popup), 'popup')
+	update(get(ui), 'ui')
+	update(get(presences), 'presences')
+	update(get(tabs), 'tabs')
+	update(get(repos), 'repos')
+	update(get(alltabs), 'alltabs')
 
 	port.onDisconnect.addListener(() => {
 		// Store data that is required between connections

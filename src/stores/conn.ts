@@ -1,12 +1,13 @@
-import { get, writable } from 'svelte/store'
+import { writable } from 'svelte/store'
 
 import type { Conn, ConnDetails } from '@/models/Conn.ts'
 import { ConnMethod, ConnState } from '@/models/Conn.ts'
 
-import { updateGlobal } from '@/utils/update_global.ts'
+import { set_updatters } from '@/utils/storeUpdaters.ts'
 
 
 const state = writable<Conn|null>(null)
+set_updatters(state, 'conn')
 
 
 const onErr = () => {
@@ -30,7 +31,6 @@ const change = (new_conn: Conn|null) => {
 		}
 
 	state.set(new_conn)
-	updateGlobal(new_conn, 'conn')
 }
 
 const setState = (nstate: ConnState) =>
@@ -39,7 +39,6 @@ const setState = (nstate: ConnState) =>
 
 		conn.state = nstate
 
-		updateGlobal(conn, 'conn')
 		return conn
 	})
 
@@ -49,7 +48,6 @@ const setDetails = (details: ConnDetails) =>
 
 		conn.details = details
 
-		updateGlobal(conn, 'conn')
 		return conn
 	})
 
@@ -60,7 +58,6 @@ const setErrMsg = (msg: string) =>
 		conn.state = ConnState.Stopped
 		conn.errMsg = msg
 
-		updateGlobal(conn, 'conn')
 		return conn
 	})
 
@@ -81,14 +78,9 @@ const stop = () =>
 				conn.socket.close()
 		}
 
-		updateGlobal(conn, 'conn')
 		return conn
 	})
 
-chrome.runtime.onMessage.addListener(msg => {
-	if (msg.type === 'conn update')
-		state.set(msg.data)
-})
 
 export const conn = {
 	...state,

@@ -1,21 +1,14 @@
 import { writable } from 'svelte/store'
-import { updateGlobal } from '@/utils/update_global.ts'
+
+import { set_updatters } from '@/utils/storeUpdaters.ts'
 
 
 const state = writable<boolean>(true)
+set_updatters(state, 'alltabs')
 
 const toggle = () =>
-	state.update(alltabs => {
-		alltabs = !alltabs
+	state.update(alltabs => !alltabs)
 
-		updateGlobal(alltabs, 'alltabs')
-		return alltabs
-	})
-
-chrome.runtime.onMessage.addListener(msg => {
-	if (msg.type === 'alltabs update')
-		state.set(msg.data)
-})
 
 export const alltabs = {
 	...state,

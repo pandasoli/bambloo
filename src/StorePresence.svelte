@@ -1,6 +1,8 @@
 <script lang='ts'>
 	import type { FocusEventHandler } from 'svelte/elements'
 
+	import ToolTip from '@/components/ToolTip.svelte'
+
 	import type { Manifest } from '@/models/Manifest.ts'
 	import type { Presence } from '@/models/Presence.ts'
 
@@ -10,8 +12,6 @@
 	import downloadIcon from '@/assets/download.svg'
 	import trashIcon from '@/assets/trash.svg'
 	import linkIcon from '@/assets/link.svg'
-    import App from './App.svelte';
-    import ToolTip from './components/ToolTip.svelte';
 
 
 	export let manifest: Manifest
@@ -29,8 +29,10 @@
 		}
 	}
 
-	const change_input: FocusEventHandler<HTMLTextAreaElement> = ev =>
-		presences.change_input(installed?.title, ev.currentTarget.value)
+	const change_input: FocusEventHandler<HTMLTextAreaElement> = ev => {
+		if (installed)
+			presences.change_input(installed.title, ev.currentTarget.value)
+	}
 </script>
 
 <main id='container'>

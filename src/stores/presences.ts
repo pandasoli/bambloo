@@ -1,7 +1,9 @@
 import { writable } from 'svelte/store'
-import { updateGlobal } from '@/utils/update_global.ts'
+
 import type { Presence } from '@/models/Presence.ts'
 import type { Manifest } from '@/models/Manifest.ts'
+
+import { set_updatters } from '@/utils/storeUpdaters.ts'
 
 
 /*
@@ -12,13 +14,13 @@ import type { Manifest } from '@/models/Manifest.ts'
 const state = writable<Presence[]|null>([])
 const problematic_data = writable<any>()
 const default_enabled = true
+set_updatters(state, 'presences')
 
 const append = (manifest: Manifest) =>
 	state.update(presences => {
 		presences = presences ?? []
 		presences.push({ ...manifest, enabled: default_enabled })
 
-		updateGlobal(presences, 'presences')
 		return presences
 	})
 
@@ -28,7 +30,6 @@ const remove = (presence: Manifest) =>
 
 		presences = presences.filter(e => e.title !== presence.title)
 
-		updateGlobal(presences, 'presences')
 		return presences
 	})
 
@@ -42,7 +43,6 @@ const toggle_enabled = (presence: Presence) =>
 				break
 			}
 
-		updateGlobal(presences, 'presences')
 		return presences
 	})
 
@@ -56,7 +56,6 @@ const change_input = (title: string, input: string) =>
 				break
 			}
 
-		updateGlobal(presences, 'presences')
 		return presences
 	})
 
@@ -65,10 +64,6 @@ const panic = (data: any) => {
 	problematic_data.set(data)
 }
 
-chrome.runtime.onMessage.addListener(msg => {
-	if (msg.type === 'presences update')
-		state.set(msg.data)
-})
 
 export const problem = { ...problematic_data }
 

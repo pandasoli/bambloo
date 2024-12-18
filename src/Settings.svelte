@@ -14,7 +14,7 @@
 	export let close: () => void
 
 	const update_repos: FocusEventHandler<HTMLTextAreaElement> = ev =>
-		repos.change(
+		repos.set(
 			ev.currentTarget.value
 				.split('\n')
 				.map(e => e.trim())
