@@ -17,8 +17,9 @@
 	export let manifest: Manifest
 	export let close: () => void
 
-	const installed: Presence|undefined = $presences?.find(e => e.title === manifest.title)
-
+	const presence = $presences?.find(e => e.title === manifest.title)
+	const installed = presence !== undefined
+	let input = presence?.input ?? ''
 
 	const manage = (manifest: Manifest) => {
 		if ($presences) {
@@ -31,7 +32,7 @@
 
 	const change_input: FocusEventHandler<HTMLTextAreaElement> = ev => {
 		if (installed)
-			presences.change_input(installed.title, ev.currentTarget.value)
+			presences.change_input(presence, input)
 	}
 </script>
 
@@ -86,8 +87,9 @@
 
 					<textarea
 						placeholder='Data to be sent to this Presence Script...'
+						bind:value={input}
 						on:focusout={change_input}
-					>{installed?.input ?? ''}</textarea>
+					></textarea>
 
 					<p>
 						If you have any problem using this Presence Script

@@ -2,6 +2,7 @@
 	import { alltabs } from '@/stores/alltabs.ts'
 	import { tabs } from '@/stores/tabs.ts'
 	import { popup } from '@/stores/popup.ts'
+	import { conn } from '@/stores/conn.ts'
 
 	import type { Tab } from '@/models/Tab.ts'
 
@@ -26,21 +27,23 @@
 <img src={treeIcon} id='tree' />
 
 <main>
-	<div id='options'>
-		<div />
-		<div>
-			<span>Current tab</span>
-			<Switch enabled={$alltabs} onchange={() => alltabs.toggle()} />
-			<span>All tabs</span>
+	{#if $conn?.details.multiple}
+		<div id='options'>
+			<div />
+			<div>
+				<span>Current tab</span>
+				<Switch enabled={$alltabs} onchange={() => alltabs.toggle()} />
+				<span>All tabs</span>
+			</div>
+			<div>
+				<InfoButton>
+					Only the allowed focused
+					tab to be shown on Discord
+					or all allowed tabs
+				</InfoButton>
+			</div>
 		</div>
-		<div>
-			<InfoButton>
-				Only the allowed focused
-				tab to be shown on Discord
-				or all allowed tabs
-			</InfoButton>
-		</div>
-	</div>
+	{/if}
 
 	<div>
 		{#each $tabs as tab, i}

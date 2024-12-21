@@ -2,6 +2,7 @@
 	"manifest_version": 3,
 	"name": "Bambloo",
 	"description": "Let your Discord friends knwo what's in your browser",
+	"minimum_chrome_version": "120",
 	"version": "1.0.0",
 
 	"action": {
@@ -22,7 +23,8 @@
 		"128": "popup-logo/icon-128.png"
 	},
 
-	"permissions": ["nativeMessaging", "storage", "offscreen", "tabs", "activeTab"],
+	"permissions": ["nativeMessaging", "storage", "tabs", "userScripts"],
+	"host_permissions": ["<all_urls>"],
 
 	"background": {
 		"service_worker": "src/background.ts",

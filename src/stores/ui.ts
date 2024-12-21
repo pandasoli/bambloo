@@ -34,7 +34,7 @@ const toggleConfigOpen = () =>
 		return ui
 	})
 
-const setOpenedPresence = (presence: Manifest) =>
+const setOpenedPresence = (presence: Manifest | null) =>
 	state.update(ui => {
 		ui.opened_presence = presence
 		return ui

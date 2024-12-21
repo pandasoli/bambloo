@@ -17,9 +17,7 @@ const load = () => {
 
 const append = (tab: chrome.tabs.Tab) =>
 	state.update(tabs => {
-		tabs = tabs ?? []
 		tabs.push({ ...tab, enabled: default_enabled })
-
 		return tabs
 	})
 

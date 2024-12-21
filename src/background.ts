@@ -3,8 +3,11 @@ import { get } from 'svelte/store'
 import { ConnMethod, ConnState } from '@/models/Conn.ts'
 import type { Presence } from '@/models/Presence.ts'
 import type { ConnArgs, WebSocketConn } from '@/models/Conn.ts'
+import type { Activity } from '@/models/Activity.ts'
 
 import { try_conn } from '@/services/connect.ts'
+
+import * as userScript from '@/utils/userScript.ts'
 
 import { conn } from '@/stores/conn.ts'
 import { popup } from '@/stores/popup.ts'
@@ -40,6 +43,11 @@ const connect = (method: ConnMethod, args: ConnArgs, set_first: boolean, onErr?:
 		})
 }
 
+chrome.userScripts.configureWorld({
+	csp: "script-src 'self' 'unsafe-eval'",
+	messaging: true
+})
+
 chrome.runtime.onMessage.addListener((msg, _, send) => {
 	if (msg.type === 'connect') {
 		const method: ConnMethod = msg.method
@@ -47,6 +55,13 @@ chrome.runtime.onMessage.addListener((msg, _, send) => {
 
 		connect(method, msg.args, set_first, send)
 		return true
+	}
+})
+
+chrome.runtime.onUserScriptMessage.addListener(async msg => {
+	if (msg.type === 'presence') {
+		const activity = msg.presence as Activity
+		console.log(activity)
 	}
 })
 
@@ -104,8 +119,10 @@ chrome.runtime.onConnect.addListener(async port => {
 	if (presences_data !== undefined) {
 		if (!Array.isArray(presences_data))
 			presences.panic(presences_data)
-		else
+		else {
 			presences.set(presences_data)
+			presences_data.map(userScript.register)
+		}
 	}
 
 	if (repos_data !== undefined) {

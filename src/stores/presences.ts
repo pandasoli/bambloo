@@ -4,6 +4,7 @@ import type { Presence } from '@/models/Presence.ts'
 import type { Manifest } from '@/models/Manifest.ts'
 
 import { set_updatters } from '@/utils/storeUpdaters.ts'
+import * as userScript from '@/utils/userScript'
 
 
 /*
@@ -18,17 +19,28 @@ set_updatters(state, 'presences')
 
 const append = (manifest: Manifest) =>
 	state.update(presences => {
-		presences = presences ?? []
-		presences.push({ ...manifest, enabled: default_enabled })
+		if (!presences) return presences
+
+		let id = 0
+		while (presences.some(e => e.id === id)) id++
+
+		const presence = { ...manifest, id, enabled: default_enabled }
+
+		presences.push(presence)
+		userScript.register(presence)
 
 		return presences
 	})
 
-const remove = (presence: Manifest) =>
+const remove = (manifest: Manifest) =>
 	state.update(presences => {
 		if (!presences) return presences
 
-		presences = presences.filter(e => e.title !== presence.title)
+		const presence = presences.find(e => e.title === manifest.title)
+		presences = presences.filter(e => e.title !== manifest.title)
+
+		if (presence)
+			userScript.unregister(presence)
 
 		return presences
 	})
@@ -37,24 +49,17 @@ const toggle_enabled = (presence: Presence) =>
 	state.update(presences => {
 		if (!presences) return presences
 
-		for (const presence_ of presences)
-			if (presence_.title === presence.title) {
-				presence_.enabled = !presence_.enabled
-				break
-			}
+		presence.enabled = !presence.enabled
+		userScript.unregister(presence)
 
 		return presences
 	})
 
-const change_input = (title: string, input: string) =>
+const change_input = (presence: Presence, input: string) =>
 	state.update(presences => {
 		if (!presences) return presences
 
-		for (const presence of presences)
-			if (presence.title === title) {
-				presence.input = input
-				break
-			}
+		presence.input = input
 
 		return presences
 	})

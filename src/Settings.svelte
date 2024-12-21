@@ -13,9 +13,13 @@
 
 	export let close: () => void
 
-	const update_repos: FocusEventHandler<HTMLTextAreaElement> = ev =>
+
+	let repos_text = $repos.join('\n')
+
+
+	const update_repos: FocusEventHandler<HTMLTextAreaElement> = () =>
 		repos.set(
-			ev.currentTarget.value
+			repos_text
 				.split('\n')
 				.map(e => e.trim())
 		)
@@ -42,8 +46,9 @@
 		<textarea
 			id='repos'
 			placeholder='Presence repos separated by line'
+			bind:value={repos_text}
 			on:focusout={update_repos}
-		>{$repos.join('\n')}</textarea>
+		></textarea>
 
 		<br />
 		<br />
