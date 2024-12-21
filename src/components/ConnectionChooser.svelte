@@ -88,16 +88,7 @@
 
 		return () => clearInterval(interval)
 	})
-
-	const logall = (ev: KeyboardEvent) => {
-		ev.preventDefault()
-
-		if (ev.key === 'k')
-			console.log({ method, state, errMsg })
-	}
 </script>
-
-<svelte:window on:keydown={logall} />
 
 <main>
 	<DropDown
