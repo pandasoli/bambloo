@@ -58,10 +58,20 @@ chrome.runtime.onMessage.addListener((msg, _, send) => {
 	}
 })
 
-chrome.runtime.onUserScriptMessage.addListener(async msg => {
+chrome.runtime.onUserScriptMessage.addListener(async (msg, sender) => {
+	const [tab] = await chrome.tabs.query({ active: true })
+
 	if (msg.type === 'presence') {
+		const enabled = get(tabs)
+			.find(e => e.id === sender.tab?.id)
+			?.enabled
+
+		if (!enabled) return
+
 		const activity = msg.presence as Activity
-		console.log(activity)
+		const is_focused = sender.tab?.id === tab.id
+
+		conn.message({ is_focused, activity })
 	}
 })
 
@@ -109,6 +119,9 @@ chrome.runtime.onConnect.addListener(async port => {
 	const { repos: repos_data } = await chrome.storage.local.get('repos')
 	const { alltabs: alltabs_data } = await chrome.storage.local.get('alltabs')
 
+	// TODO: Check not only if data is undefined
+	// but if it fits in the model types
+
 	if (conn_data !== undefined && conn_data?.method !== null) {
 		if (typeof conn_data?.method !== 'number')
 			popup.append('Connection method stored is not valid')
@@ -121,7 +134,10 @@ chrome.runtime.onConnect.addListener(async port => {
 			presences.panic(presences_data)
 		else {
 			presences.set(presences_data)
-			presences_data.map(userScript.register)
+
+			presences_data.forEach((e: Presence) => {
+				if (e.enabled) userScript.register(e)
+			})
 		}
 	}
 

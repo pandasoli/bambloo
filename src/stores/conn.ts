@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store'
+import { get, writable } from 'svelte/store'
 
 import type { Conn, ConnDetails } from '@/models/Conn.ts'
 import { ConnMethod, ConnState } from '@/models/Conn.ts'
@@ -81,6 +81,20 @@ const stop = () =>
 		return conn
 	})
 
+const message = (data: any) => {
+	const conn_ = get(conn)
+
+	switch (conn_?.method) {
+		case ConnMethod.NativeMessaging:
+			console.log(data)
+			conn_.port.postMessage(data)
+			break
+
+		case ConnMethod.WebSocket:
+			conn_.socket.send(JSON.stringify(data))
+	}
+}
+
 
 export const conn = {
 	...state,
@@ -88,5 +102,6 @@ export const conn = {
 	setState,
 	setDetails,
 	setErrMsg,
-	stop
+	stop,
+	message
 }

@@ -50,7 +50,9 @@ const toggle_enabled = (presence: Presence) =>
 		if (!presences) return presences
 
 		presence.enabled = !presence.enabled
-		userScript.unregister(presence)
+
+		if (presence.enabled) userScript.register(presence)
+		else userScript.unregister(presence)
 
 		return presences
 	})
