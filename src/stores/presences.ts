@@ -1,10 +1,11 @@
-import { writable } from 'svelte/store'
+import { get, writable } from 'svelte/store'
 
 import type { Presence } from '@/models/Presence.ts'
 import type { Manifest } from '@/models/Manifest.ts'
 
 import { set_updatters } from '@/utils/storeUpdaters.ts'
 import * as userScript from '@/utils/userScript'
+import { tabs } from './tabs'
 
 
 /*
@@ -39,8 +40,16 @@ const remove = (manifest: Manifest) =>
 		const presence = presences.find(e => e.title === manifest.title)
 		presences = presences.filter(e => e.title !== manifest.title)
 
-		if (presence)
+		if (presence) {
 			userScript.unregister(presence)
+
+			tabs.update(tabs =>
+				tabs.map(tab => {
+					if (tab.presence_id === presence.id) delete tab.presence_id
+					return tab
+				})
+			)
+		}
 
 		return presences
 	})
