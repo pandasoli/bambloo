@@ -23,16 +23,11 @@
 		"128": "popup-logo/icon-128.png"
 	},
 
-	"permissions": ["nativeMessaging", "storage", "tabs", "userScripts"],
+	"permissions": ["nativeMessaging", "storage", "tabs", "userScripts", "scripting"],
 	"host_permissions": ["<all_urls>"],
 
 	"background": {
 		"service_worker": "src/background.ts",
 		"type": "module"
-	},
-
-	"host_permissions": [
-		"http://*/*",
-		"https://*/*"
-	]
+	}
 }
