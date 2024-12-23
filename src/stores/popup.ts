@@ -9,6 +9,7 @@ set_updatters(state, 'popup')
 const append = (msg: string) =>
 	state.update(msgs => {
 		msgs.push(msg)
+		console.warn(msg)
 
 		return msgs
 	})

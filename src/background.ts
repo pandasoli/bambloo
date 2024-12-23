@@ -137,6 +137,7 @@ chrome.runtime.onConnect.addListener(async port => {
 
 			presences_data.forEach((e: Presence) => {
 				if (e.enabled) userScript.register(e)
+					.catch(e => popup.append(String(e)))
 			})
 		}
 	}

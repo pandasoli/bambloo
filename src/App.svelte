@@ -55,7 +55,7 @@
 	<SettingsScreen close={ui.toggleConfigOpen}/>
 {/if}
 
-<style>
+<style lang='scss'>
 	#popup-container {
 		position: absolute;
 		top: 0;
@@ -65,9 +65,12 @@
 	}
 
 	.popup {
-		padding-block: 2px;
+		padding: 2px 6px;
 		text-align: center;
-		background: orange
+		background: orange;
+		font-size: 10px;
+
+		span { color: black }
 	}
 
 	#tree {

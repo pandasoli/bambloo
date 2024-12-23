@@ -1,11 +1,13 @@
-import { get, writable } from 'svelte/store'
+import { writable } from 'svelte/store'
 
 import type { Presence } from '@/models/Presence.ts'
 import type { Manifest } from '@/models/Manifest.ts'
 
+import { tabs } from '@/stores/tabs.ts'
+import { popup } from '@/stores/popup.ts'
+
 import { set_updatters } from '@/utils/storeUpdaters.ts'
 import * as userScript from '@/utils/userScript'
-import { tabs } from './tabs'
 
 
 /*
@@ -29,6 +31,7 @@ const append = (manifest: Manifest) =>
 
 		presences.push(presence)
 		userScript.register(presence)
+			.catch(popup.append)
 
 		return presences
 	})
@@ -60,7 +63,7 @@ const toggle_enabled = (presence: Presence) =>
 
 		presence.enabled = !presence.enabled
 
-		if (presence.enabled) userScript.register(presence)
+		if (presence.enabled) userScript.register(presence).catch(popup.append)
 		else userScript.unregister(presence)
 
 		return presences
