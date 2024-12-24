@@ -13,7 +13,6 @@ set_updatters(state, 'conn')
 const onErr = () => {
 	setState(ConnState.Stopped)
 	setErrMsg('Connection lost')
-	chrome.runtime.sendMessage({ type: 'conn lost' }) // is it needed?
 }
 
 
@@ -25,9 +24,7 @@ const change = (new_conn: Conn|null) => {
 				break
 
 			case ConnMethod.WebSocket:
-				new_conn.socket.addEventListener('open', () =>
-					new_conn.socket.addEventListener('close', onErr)
-				)
+				new_conn.socket.addEventListener('close', onErr)
 		}
 
 	state.set(new_conn)

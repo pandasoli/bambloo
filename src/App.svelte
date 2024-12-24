@@ -49,10 +49,10 @@
 			<Store />
 		{/if}
 	{/if}
-{/if}
 
-{#if $ui.config_open}
-	<SettingsScreen close={ui.toggleConfigOpen}/>
+	{#if $ui.config_open}
+		<SettingsScreen close={ui.toggleConfigOpen}/>
+	{/if}
 {/if}
 
 <style lang='scss'>

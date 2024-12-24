@@ -5,12 +5,17 @@ import { connect_native } from '@/services/native.ts'
 import { connect_ws } from '@/services/ws.ts'
 
 
-type DetailsPromise = Promise<{ details?: ConnDetails, err?: string }>
-type Res = { conn: Conn, details: DetailsPromise }
+type Res = {
+	conn: Conn
+	details: Promise<ConnDetails>
+} | {
+	conn: Conn
+	err: string
+}
 
 
 // maybe a function overload here?
-export function try_conn(method: ConnMethod, args: ConnArgs): Res {
+export const try_conn = async (method: ConnMethod, args: ConnArgs): Promise<Res> => {
 	const bconn = {
 		method,
 		state: ConnState.WaitingDetails,
@@ -19,16 +24,25 @@ export function try_conn(method: ConnMethod, args: ConnArgs): Res {
 
 	switch (method) {
 		case ConnMethod.NativeMessaging: {
-			const { port, details } = connect_native()
-
+			const { port, details: details_ } = connect_native()
 			const conn = {...bconn, port} as NativeMessagingConn
+			const res = await details_
+
+			if ('err' in res) return {conn, err: res.err}
+
+			const details = new Promise<ConnDetails>(r => r(res.details))
 			return {conn, details}
 		}
 
 		case ConnMethod.WebSocket: {
-			const { socket, details } = connect_ws(args as WebSocketArgs)
+			const res = await connect_ws(args as WebSocketArgs)
+			const conn = {...bconn, socket: res.socket, args} as WebSocketConn
 
-			const conn = {...bconn, socket, args} as WebSocketConn
+			if ('err' in res)
+				return {conn, err: res.err}
+
+			const { details } = res
+
 			return {conn, details}
 		}
 	}

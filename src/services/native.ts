@@ -1,7 +1,7 @@
 import type { ConnDetails } from '@/models/Conn.ts'
 
 
-type DetailsPromise = Promise<{ details?: ConnDetails, err?: string }>
+type DetailsPromise = Promise<{ details: ConnDetails } | { err: string }>
 
 type Res = {
 	port: chrome.runtime.Port

@@ -41,10 +41,7 @@
 	chrome.runtime.onMessage.addListener(msg => {
 		switch (msg.type) {
 			case 'conn state update':
-				state = msg.state; break
-
-			case 'conn lost':
-				errMsg = 'Connection lost'
+				state = msg.state
 		}
 	})
 

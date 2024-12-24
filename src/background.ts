@@ -19,18 +19,20 @@ import { repos } from '@/stores/repos.ts'
 
 
 const connect = (method: ConnMethod, args: ConnArgs, set_first: boolean, onErr?: (err: string) => void) => {
-	const { conn: conn_, details } = try_conn(method, args)
-	if (set_first) conn.change(conn_)
+	try_conn(method, args).then(res => {
+		const { conn: conn_ } = res
 
-	chrome.runtime.sendMessage({type: 'conn state update', state: ConnState.WaitingDetails})
+		if (set_first) conn.change(conn_)
+		if ('err' in res) {
+			if (set_first) conn.setErrMsg(res.err)
+			return onErr?.(res.err)
+		}
 
-	details
-		.then(({ details, err }) => {
-			if (err) {
-				if (set_first) conn.setErrMsg(err)
-				return onErr?.(err)
-			}
-			if (!details) return
+		const { details } = res
+
+		chrome.runtime.sendMessage({type: 'conn state update', state: ConnState.WaitingDetails})
+
+		details.then(details => {
 			if (!set_first) {
 				conn.stop()
 				conn.change(conn_)
@@ -41,6 +43,7 @@ const connect = (method: ConnMethod, args: ConnArgs, set_first: boolean, onErr?:
 
 			chrome.runtime.sendMessage({type: 'conn state update', state: ConnState.Connected})
 		})
+	})
 }
 
 chrome.userScripts.configureWorld({
