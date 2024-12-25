@@ -22,15 +22,20 @@ const connect = (method: ConnMethod, args: ConnArgs, set_first: boolean, onErr?:
 	try_conn(method, args).then(res => {
 		const { conn: conn_ } = res
 
-		if (set_first) conn.change(conn_)
+		if (set_first) {
+			conn.stop()
+			conn.change(conn_)
+			conn.setState(ConnState.WaitingDetails)
+		}
+
 		if ('err' in res) {
 			if (set_first) conn.setErrMsg(res.err)
 			return onErr?.(res.err)
 		}
 
-		const { details } = res
-
 		chrome.runtime.sendMessage({type: 'conn state update', state: ConnState.WaitingDetails})
+
+		const { details } = res
 
 		details.then(details => {
 			if (!set_first) {

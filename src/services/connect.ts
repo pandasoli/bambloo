@@ -14,11 +14,10 @@ type Res = {
 }
 
 
-// maybe a function overload here?
 export const try_conn = async (method: ConnMethod, args: ConnArgs): Promise<Res> => {
 	const bconn = {
 		method,
-		state: ConnState.WaitingDetails,
+		state: ConnState.Connecting,
 		details: { multiple: false }
 	}
 
@@ -38,8 +37,7 @@ export const try_conn = async (method: ConnMethod, args: ConnArgs): Promise<Res>
 			const res = await connect_ws(args as WebSocketArgs)
 			const conn = {...bconn, socket: res.socket, args} as WebSocketConn
 
-			if ('err' in res)
-				return {conn, err: res.err}
+			if ('err' in res) return {conn, err: res.err}
 
 			const { details } = res
 

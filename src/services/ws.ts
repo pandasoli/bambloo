@@ -14,9 +14,9 @@ export const connect_ws = (args: WebSocketArgs) => new Promise<Res>(resolve => {
 	const socket = new WebSocket(`ws://localhost:${args.port}`)
 
 	const details = () => new Promise<ConnDetails>(resolve => {
-		const onMessage = (ev: Event) => {
+		const onMessage = (ev: MessageEvent) => {
 			socket.removeEventListener('message', onMessage)
-			const details = JSON.parse((ev as MessageEvent).data)
+			const details = JSON.parse(ev.data)
 			resolve(details)
 		}
 
@@ -28,7 +28,7 @@ export const connect_ws = (args: WebSocketArgs) => new Promise<Res>(resolve => {
 
 	const onOpen = () => {
 		socket.removeEventListener('error', onErr)
-		resolve({socket, details: details()})
+		resolve({ socket, details: details() })
 	}
 
 	socket.addEventListener('open', onOpen)

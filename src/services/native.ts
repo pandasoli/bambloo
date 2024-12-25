@@ -22,7 +22,7 @@ export const connect_native = (): Res => {
 		const onDisco = () => {
 			port.onMessage.removeListener(onMsg)
 			port.onDisconnect.removeListener(onDisco)
-			resolve({ err: chrome.runtime.lastError?.message })
+			resolve({ err: chrome.runtime.lastError?.message ?? "Couldn't connect to native messaging host" })
 		}
 
 		port.onMessage.addListener(onMsg)
