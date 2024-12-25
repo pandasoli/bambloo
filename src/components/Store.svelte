@@ -97,7 +97,9 @@
 		else load_presences(1)
 	}
 
-	const manage = (manifest: Manifest) => {
+	const manage = (e: MouseEvent, manifest: Manifest) => {
+		e.stopPropagation()
+
 		if ($presences) {
 			const found = $presences.find(e => e.title === manifest.title)
 
@@ -137,12 +139,14 @@
 		</div>
 	{:else}
 		<div id='searchbox'>
-			<input type='text' placeholder='Search here...' />
-
 			<div>
-				<svg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'>
-					<path d='M3.98827 0C1.78336 0 0 1.74248 0 3.89685C0 6.05122 1.78336 7.7937 3.98827 7.7937C4.77548 7.7937 5.50403 7.56805 6.1217 7.18481L9.00293 10L10 9.02579L7.15543 6.25358C7.66679 5.59814 7.97654 4.786 7.97654 3.89685C7.97654 1.74248 6.19318 0 3.98827 0ZM3.98827 0.916905C5.67724 0.916905 7.03812 2.2466 7.03812 3.89685C7.03812 5.5471 5.67724 6.87679 3.98827 6.87679C2.2993 6.87679 0.938416 5.5471 0.938416 3.89685C0.938416 2.2466 2.2993 0.916905 3.98827 0.916905Z' fill='white'/>
-				</svg>
+				<input type='text' placeholder='Search here...' />
+
+				<div>
+					<svg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'>
+						<path d='M3.98827 0C1.78336 0 0 1.74248 0 3.89685C0 6.05122 1.78336 7.7937 3.98827 7.7937C4.77548 7.7937 5.50403 7.56805 6.1217 7.18481L9.00293 10L10 9.02579L7.15543 6.25358C7.66679 5.59814 7.97654 4.786 7.97654 3.89685C7.97654 1.74248 6.19318 0 3.98827 0ZM3.98827 0.916905C5.67724 0.916905 7.03812 2.2466 7.03812 3.89685C7.03812 5.5471 5.67724 6.87679 3.98827 6.87679C2.2993 6.87679 0.938416 5.5471 0.938416 3.89685C0.938416 2.2466 2.2993 0.916905 3.98827 0.916905Z' fill='white'/>
+					</svg>
+				</div>
 			</div>
 		</div>
 
@@ -155,7 +159,7 @@
 						<img src={manifest.images.icon} class='icon' />
 						<span class='title' style='color: {manifest.title_color}'>{manifest.title}</span>
 
-						<button on:click={() => manage(manifest)}>
+						<button on:click={e => manage(e, manifest)}>
 							{#if $presences?.find(e => e.title === manifest.title)}
 											<img src={trashIcon} alt='Trash icon' />
 							{:else} <img src={downloadIcon} alt='Download icon' />
@@ -229,7 +233,7 @@
 			justify-content: center;
 			align-items: center;
 			height: 100%;
-			margin-right: 10px;
+			width: 38px;
 			cursor: pointer;
 
 			&:hover { opacity: .75 }
@@ -261,33 +265,36 @@
 	}
 
 	#searchbox {
-		position: relative;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		display: grid;
+		place-items: center;
 		height: 38px;
 
-		input {
+		& > div {
+			position: relative;
 			width: 70%;
 			height: 20px;
-			border-radius: 10px;
-			background: var(--light-bg);
-			border: none;
-			padding: 3px 9px;
-			font-size: 8pt;
-			outline: none
-		}
 
-		div {
-			position: absolute;
-			display: grid;
-			place-items: center;
-			top: 16px;
-			left: 193px;
-			width: 20px;
-			height: 20px;
-			background: var(--blue);
-			border-radius: 50%
+			input {
+				border-radius: 10px;
+				background: var(--light-bg);
+				border: none;
+				padding: 6px 10px;
+				font-size: 8pt;
+				outline: none
+			}
+
+			div {
+				position: absolute;
+				display: grid;
+				place-items: center;
+				width: 20px;
+				height: 20px;
+				bottom: -7px;
+				right: -7px;
+				background: var(--blue);
+				border-radius: 50%;
+				cursor: pointer
+			}
 		}
 	}
 </style>
