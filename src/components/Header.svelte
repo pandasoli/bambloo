@@ -6,6 +6,7 @@
 	import Button from '@/components/Button.svelte'
 
 
+	/* Way of getting a string list of an enum */
 	const tabs = Object.values(AppTab) as AppTab[]
 </script>
 

@@ -92,20 +92,20 @@ chrome.runtime.onConnect.addListener(async port => {
 
 	port.onDisconnect.addListener(() => {
 		// Store data that is required between connections
-		const presences_ = get(presences)
+		const presences_ = get(presences) ?? undefined
 		const conn_ = get(conn)
 		const repos_ = get(repos)
 		const alltabs_ = get(alltabs)
 
-		const method = conn_ ? conn_.method : null
-		const args = method === ConnMethod.WebSocket ? (conn_ as WebSocketConn).args : null
+		const method = conn_?.method ?? null
+		const args = conn_?.method === ConnMethod.WebSocket ? conn_.args : null
 
 		// Store data
 		const data = {
 			conn: { method, args },
 			repos: repos_,
 			alltabs: alltabs_,
-			presences: presences_ as Presence[]|undefined
+			presences: presences_
 		}
 
 		// Needed to not overwrite invalid data in storage
