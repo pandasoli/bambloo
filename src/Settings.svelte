@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import type { FocusEventHandler } from 'svelte/elements'
 
-	import ConnectionChooser from '@/components/ConnectionChooser.svelte'
+	import ConnChooser from '@/components/ConnChooser.svelte'
 	import LargeButton from '@/components/LargeButton.svelte'
 	import ToolTip from '@/components/ToolTip.svelte'
 
@@ -38,7 +38,7 @@
 
 	<div>
 		<span class='header'>Connection Method</span>
-		<ConnectionChooser />
+		<ConnChooser />
 
 		<br />
 

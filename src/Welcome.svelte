@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import ConnectionChooser from '@/components/ConnectionChooser.svelte'
+	import ConnChooser from '@/components/ConnChooser.svelte'
 
 	import treeIcon from '@/assets/trees/welcome.png'
 </script>
@@ -9,7 +9,7 @@
 
 <main>
 	<h1>Welcome!</h1>
-	<ConnectionChooser />
+	<ConnChooser />
 </main>
 
 <style lang='scss'>
