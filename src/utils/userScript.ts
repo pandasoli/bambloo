@@ -19,6 +19,7 @@ export const register = async (presence: Presence) => {
 	const messaging = `
 		const update = presence => chrome.runtime.sendMessage({ type: 'presence', presence })
 		const log = data => chrome.runtime.sendMessage({ type: 'log', data })
+		const repoName = '${presence.repo}'
 	`
 
 	const code = messaging + text

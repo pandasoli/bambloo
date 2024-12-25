@@ -16,6 +16,7 @@
 
 
 	type Location = { repo: string, path: string }
+	type Item = { repo: string } & Manifest
 
 
 	// Used for "..." animation
@@ -25,7 +26,7 @@
 	let repo_i = 0
 
 	let manifests_path: Location[] = []
-	let manifests: Manifest[] = []
+	let items: Item[] = []
 	let error: string|null = null
 
 	const load_presences = async (amount: number) => {
@@ -43,14 +44,16 @@
 			}
 
 			// Process response
-			const manifest: Manifest = await res.json()
+			const item: Item = await res.json()
 			const pwd = url + path.split('/').slice(0, -1).join('/') + '/'
 
-			if (manifest.images.background.startsWith('.')) manifest.images.background = pwd + manifest.images.background
-			if (manifest.images.icon.startsWith('.')) manifest.images.icon = pwd + manifest.images.icon
-			manifest.script = pwd + manifest.script
+			if (item.images.background.startsWith('.')) item.images.background = pwd + item.images.background
+			if (item.images.icon.startsWith('.')) item.images.icon = pwd + item.images.icon
 
-			manifests = [ ...manifests, manifest ]
+			item.script = pwd + item.script
+			item.repo = repo
+
+			items = [ ...items, item ]
 		}
 	}
 
@@ -58,9 +61,9 @@
 		const more_amount = 10
 
 		if (manifests_path.length < more_amount) {
-			const expected_len = manifests.length + 10
+			const expected_len = items.length + 10
 
-			for (; repo_i < $repos.length && manifests.length < expected_len; ++repo_i) {
+			for (; repo_i < $repos.length && items.length < expected_len; ++repo_i) {
 				const repo = $repos[repo_i]
 				const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/master?recursive=1`)
 
@@ -97,14 +100,14 @@
 		else load_presences(1)
 	}
 
-	const manage = (e: MouseEvent, manifest: Manifest) => {
+	const manage = (e: MouseEvent, item: Item) => {
 		e.stopPropagation()
 
 		if ($presences) {
-			const found = $presences.find(e => e.title === manifest.title)
+			const found = $presences.find(e => e.title === item.title)
 
-			if (found) presences.remove(manifest)
-			else presences.append(manifest)
+			if (found) presences.remove(item, item.repo)
+			else presences.append(item, item.repo)
 		}
 	}
 
@@ -133,7 +136,7 @@
 				<Button type='red' outline on:click={retry}>Retry</Button>
 			</div>
 		</div>
-	{:else if manifests.length === 0}
+	{:else if items.length === 0}
 		<div id='loading'>
 			<span class='info'>{loadingMsgs[loadingMsgsIndex]}</span>
 		</div>
@@ -150,17 +153,17 @@
 			</div>
 		</div>
 
-		<div id='presences' class:loading={manifests.length === 0}>
-			{#each manifests as manifest}
-				<button class='presence' on:click={() => openPresence(manifest)}>
-					<img src={manifest.images.background} class='bg' />
+		<div id='presences' class:loading={items.length === 0}>
+			{#each items as item}
+				<button class='presence' on:click={() => openPresence(item)}>
+					<img src={item.images.background} class='bg' />
 
 					<div>
-						<img src={manifest.images.icon} class='icon' />
-						<span class='title' style='color: {manifest.title_color}'>{manifest.title}</span>
+						<img src={item.images.icon} class='icon' />
+						<span class='title' style='color: {item.title_color}'>{item.title}</span>
 
-						<button on:click={e => manage(e, manifest)}>
-							{#if $presences?.find(e => e.title === manifest.title)}
+						<button on:click={e => manage(e, item)}>
+							{#if $presences?.find(e => e.title === item.title)}
 											<img src={trashIcon} alt='Trash icon' />
 							{:else} <img src={downloadIcon} alt='Download icon' />
 							{/if}
