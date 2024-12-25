@@ -28,7 +28,7 @@
 <div id='popup-container'>
 	{#each $popup as msg}
 		<div class='popup'>
-			<span>{msg}</span>
+			<span>{@html msg}</span>
 		</div>
 	{/each}
 </div>	

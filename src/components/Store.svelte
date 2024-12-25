@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte'
 
 	import StorePresence from '@/StorePresence.svelte'
+	import Button from '@/components/Button.svelte'
 
 	import { repos } from '@/stores/repos.ts'
 	import { presences } from '@/stores/presences.ts'
@@ -37,7 +38,7 @@
 
 			// Check HTTP status code
 			if (res.status !== 200) {
-				error = `Request to file <span class='code'>${path}</span> inside repo <span class='code>${repo}</span> returned status code <span class='code'>${res.status}</span>`
+				error = `Request to file <span class='error code'>${path}</span> inside repo <span class='error code'>${repo}</span> returned status code <span class='error code'>${res.status}</span>`
 				return null
 			}
 
@@ -65,7 +66,7 @@
 
 				// Check HTTP status code
 				if (res.status !== 200) {
-					error = `Request to repo <span class='code'>${repo}</span> returned status code <span class='code'>${res.status}</span>`
+					error = `Request to repo <span class='error code'>${repo}</span> returned status code <span class='error code'>${res.status}</span>`
 					return null
 				}
 
@@ -125,7 +126,10 @@
 	{#if error}
 		<div id='error'>
 			<span class='error'>{@html error}</span>
-			<button class='red outline' on:click={retry}>Retry</button>
+
+			<div>
+				<Button type='red' outline on:click={retry}>Retry</Button>
+			</div>
 		</div>
 	{:else if manifests.length === 0}
 		<div id='loading'>
@@ -201,11 +205,7 @@
 		gap: 4px;
 		height: 100%;
 
-		button {
-			font-size: 9pt;
-			height: 18px;
-			width: 80px
-		}
+		div { width: 100px }
 	}
 
 	.presence {

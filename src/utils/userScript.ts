@@ -1,12 +1,19 @@
 import { get } from 'svelte/store'
 
-import { tabs } from '@/stores/tabs'
+import { tabs } from '@/stores/tabs.ts'
+import { popup } from '@/stores/popup.ts'
 
 import type { Presence } from '@/models/Presence.ts'
 
 
 export const register = async (presence: Presence) => {
 	const res = await fetch(presence.script)
+
+	if (res.status !== 200) {
+		popup.append(`Couldn't fetch script of <span class='error code'>${presence.title}</span>`)
+		return
+	}
+
 	const text = await res.text()
 
 	const messaging = `

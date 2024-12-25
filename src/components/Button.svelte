@@ -24,7 +24,8 @@
 		border: none;
 		font-size: 10pt;
 		border-radius: 4px;
-		height: 26px;
+		height: 20px;
+		width: 100%;
 
 		font-weight: bold;
 		transition: 500ms background;

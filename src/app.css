@@ -96,6 +96,7 @@ textarea {
 
 span { color: var(--text-cl) }
 span.error { color: var(--red) }
+span.warn { color: orange }
 span.info { color: var(--blue) }
 span.center { text-align: center; margin-inline: 0 }
 span.code {
