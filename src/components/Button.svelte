@@ -4,6 +4,7 @@
 	export let type: 'blue'|'red'|undefined = undefined
 	export let outline: boolean|undefined = undefined
 	export let inactive: boolean|undefined = false
+	export let biggy: boolean|undefined = false
 	export let onclick: MouseEventHandler<HTMLButtonElement>|undefined = undefined
 </script>
 
@@ -12,6 +13,7 @@
 	class:blue={type === 'blue'}
 	class:outline={outline}
 	class:inactive={inactive}
+	class:biggy={biggy}
 	on:click={onclick}
 	{ ...$$restProps }
 >
@@ -29,6 +31,8 @@
 
 		font-weight: bold;
 		transition: 500ms background;
+
+		&.biggy { height: 26px }
 
 		&.blue { background: var(--blue); &:hover { background: var(--blue) }}
 		&.red { background: var(--red); &:hover { background: var(--red) }}

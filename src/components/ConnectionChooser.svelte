@@ -106,7 +106,7 @@
 		{#if method === ConnMethod.WebSocket}
 			<div>
 				<input bind:value={ws_conn_args.port} type='number' placeholder='Port'/>
-				<Button type='blue' onclick={connect}>Connect</Button>
+				<Button type='blue' biggy onclick={connect}>Connect</Button>
 			</div>
 		{/if}
 
