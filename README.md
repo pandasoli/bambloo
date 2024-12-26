@@ -1,57 +1,42 @@
-
 <div align=center>
 
-# Bambloo :blueberries::panda_face:
-> A Chrome extension that creates a Discord activity just as you want  
-> [Discord Server](https://discord.gg/4gNjyuXgMG)
-
+# Bambloo 🫐🐼
+> Show your Discord friends what you're up to right now ✨
 </div>
 <br>
 <br>
+
+<img align=right src='https://github.com/user-attachments/assets/dc3d8e81-5c8d-4949-9816-51202a3a7f73' />
+
+[**Bambloo**](https://github.com/pandasoli/bambloo) is a super easy web extension that lets you share
+what you're up to in your browser with your friends on Discord.
+It is straightforward, <ins>configurable</ins> and <samp>pretty</samp> 🫐
+
 <br>
+<br>
+
+- Straightforward
+- Simple
+- User friendly
+- Non hidden complexity
+- Configurable
+
+<br>
+<br>
+<div align=center>
+
+![Number of issues](https://img.shields.io/github/issues/pandasoli/bambloo?color=fab387&labelColor=303446&style=for-the-badge)
+![Number of stars](https://img.shields.io/github/stars/pandasoli/bambloo?color=ed8796&labelColor=303446&style=for-the-badge)
+[![MIT license](https://img.shields.io/github/license/pandasoli/bambloo?style=for-the-badge&label=License&labelColor=313244&color=ca9ee6)](LICENSE)
+
+![Supports linux](https://img.shields.io/badge/Linux-%23.svg?style=for-the-badge&logo=linux&logoColor=fcc624&label=support&labelColor=303446&color=fcc624)
+</div>
 
 > [!WARNING]
-> Under development!
-
-> [!WARNING]
-> If your debugging, don't worry about the error `Uncaught (in promise) Error: Could not establish connection. Receiving end does not exist.`
-> it happens because we're trying to send a message to the popup when it's not open (at `src/utils/update_global.ts`).
+> We are just starting, so there might not be many websites supports and bugs might occur.  
+> If any bug occur please create an issue and we'll reply as soon as possible to fix it.
 
 <br>
 <br>
-<br>
 
-You have a presence store to download "presence makers".
-> Scritps that make an activity object as the extension expects.
-
-<br>
-
-You'll be able to switch between different ways of connecting to Discord
-- WebDiscord (`discord.com/app`) that uses the same technique as [chrome-discord-presence][gh:chrome-discord-presence]
-- LocalDiscord (Locally installed Discord client) uses the same technique as [ytdp][gh:ytdp]
-
-
-Notes
----
-
-The way [chrome-discord-presence][gh:chrome-discord-presence] gets the token doesn't work anymore,
-use [this](https://howtogeek.com/879956/what-is-a-discord-token-and-how-do-you-get-one) instead.
-- Log in using discord.com/app
-- Open the Dev Tools
-- Go to `Network` tab
-- Filter for `/api`
-- Select `country-code`
-- In the `Request Headers` section look for `Authorization`
-
-
-Resouces
----
-
-- [Chrome extension tutorial](https://developer.chrome.com/docs/extensions/get-started)
-- [Firefox extension tutorial](https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtension)
-
-
-[gh:chrome-discord-presence]: https://github.com/seia-soto/chrome-discord-presence
-[gh:ytdp]: https://github.com/XFG16/YouTubeDiscordPresence
-[gh:premid]: https://github.com/PreMiD
-
+## Installation 🐼
