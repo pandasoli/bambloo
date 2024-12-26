@@ -16,7 +16,7 @@
 
 
 	type Location = { repo: string, path: string }
-	type Item = { repo: string } & Manifest
+	type Item = { repo: string, path: string } & Manifest
 
 
 	// Used for "..." animation
@@ -45,13 +45,14 @@
 
 			// Process response
 			const item: Item = await res.json()
-			const pwd = url + path.split('/').slice(0, -1).join('/') + '/'
+			const dir = path.split('/').slice(0, -1).join('/')
 
-			if (item.images.background.startsWith('.')) item.images.background = pwd + item.images.background
-			if (item.images.icon.startsWith('.')) item.images.icon = pwd + item.images.icon
+			if (item.images.background.startsWith('.')) item.images.background = `${url}/${dir}/${item.images.background}`
+			if (item.images.icon.startsWith('.')) item.images.icon = `${url}/${dir}/${item.images.icon}`
 
-			item.script = pwd + item.script
+			item.script = `${url}/${dir}/${item.script}`
 			item.repo = repo
+			item.path = dir
 
 			items = [ ...items, item ]
 		}
@@ -106,8 +107,8 @@
 		if ($presences) {
 			const found = $presences.find(e => e.title === item.title)
 
-			if (found) presences.remove(item, item.repo)
-			else presences.append(item, item.repo)
+			if (found) presences.remove(item)
+			else presences.append(item, item.repo, item.path)
 		}
 	}
 

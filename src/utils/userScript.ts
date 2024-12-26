@@ -16,16 +16,18 @@ export const register = async (presence: Presence) => {
 
 	const text = await res.text()
 
-	const messaging = `
-		const update = presence => chrome.runtime.sendMessage({ type: 'presence', presence })
-		const log = data => chrome.runtime.sendMessage({ type: 'log', data })
-		const repoName = '${presence.repo}'
+	const api = `
+		const bambloo = {
+			update: presence => chrome.runtime.sendMessage({ type: 'presence', presence }),
+			log: data => chrome.runtime.sendMessage({ type: 'log', data }),
+			onMessage: callback => addEventListener('message', e => callback(e.detail)),
+
+			repo: '${presence.repo}',
+			path: '${presence.path}'
+		}
 	`
 
-	const code = messaging + text
-		.split('\n')
-		.slice(0, -2)
-		.join('\n')
+	const code = api + text
 
 	return chrome.userScripts.register([{
 		id: presence.id.toString(),
