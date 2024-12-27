@@ -26,7 +26,7 @@
 </script>
 
 <main>
-	<img src='/logo_discord-blue.png' id='logo' />
+	<img src='/logo/icon-700.png' id='logo' />
 
 	<header>
 		<button on:click={close}>

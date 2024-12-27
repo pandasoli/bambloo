@@ -5,7 +5,7 @@
 </script>
 
 <img src={treeIcon} id='tree' />
-<img src='/logo_discord-blue.png' id='logo' />
+<img src='/logo/icon-700.png' id='logo' />
 
 <main>
 	<h1>Welcome!</h1>
