@@ -9,7 +9,7 @@ import { set_updatters } from '@/utils/storeUpdaters.ts'
 export type UIData = {
 	tab: AppTab
 	config_open: boolean
-	opened_presence: Manifest|null // for Store
+	opened_presence: ({ repo: string, path: string } & Manifest)|null // for Store
 }
 
 const initial: UIData = {
@@ -34,7 +34,7 @@ const toggleConfigOpen = () =>
 		return ui
 	})
 
-const setOpenedPresence = (presence: Manifest | null) =>
+const setOpenedPresence = (presence: ({ repo: string, path: string } & Manifest) | null) =>
 	state.update(ui => {
 		ui.opened_presence = presence
 		return ui

@@ -112,8 +112,8 @@
 		}
 	}
 
-	const openPresence = (manifest: Manifest) => {
-		ui.setOpenedPresence(manifest)
+	const openPresence = (item: Item) => {
+		ui.setOpenedPresence(item)
 		ui.setTab(AppTab.Store)
 	}
 
@@ -177,7 +177,7 @@
 </main>
 
 {#if $ui.opened_presence}
-	<StorePresence manifest={$ui.opened_presence} close={() => ui.setOpenedPresence(null)} />
+	<StorePresence item={$ui.opened_presence} close={() => ui.setOpenedPresence(null)} />
 {/if}
 
 <style lang='scss'>

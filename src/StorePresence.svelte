@@ -4,7 +4,6 @@
 	import ToolTip from '@/components/ToolTip.svelte'
 
 	import type { Manifest } from '@/models/Manifest.ts'
-	import type { Presence } from '@/models/Presence.ts'
 
 	import { presences } from '@/stores/presences.ts'
 
@@ -14,23 +13,26 @@
 	import linkIcon from '@/assets/link.svg'
 
 
-	export let manifest: Manifest
+	type Item = { repo: string, path: string } & Manifest
+
+
+	export let item: Item
 	export let close: () => void
 
-	const presence = $presences?.find(e => e.title === manifest.title)
+	const presence = $presences?.find(e => e.title === item.title)
 	const installed = presence !== undefined
 	let input = presence?.input ?? ''
 
-	const manage = (manifest: Manifest) => {
+	const manage = (item: Item) => {
 		if ($presences) {
-			const found = $presences.find(e => e.title === manifest.title)
+			const found = $presences.find(e => e.title === item.title)
 
-			if (found) presences.remove(manifest)
-			else presences.append(manifest)
+			if (found) presences.remove(item)
+			else presences.append(item, item.repo, item.path)
 		}
 	}
 
-	const change_input: FocusEventHandler<HTMLTextAreaElement> = ev => {
+	const change_input: FocusEventHandler<HTMLTextAreaElement> = () => {
 		if (installed)
 			presences.change_input(presence, input)
 	}
@@ -48,18 +50,18 @@
 	</header>
 
 	<div>
-		<img src={manifest.images.background} id='bg' />
+		<img src={item.images.background} id='bg' />
 
 		<header>
-			<img src={manifest.images.icon} id='icon' />
+			<img src={item.images.icon} id='icon' />
 
 			<div>
-				<h1 id='title'>{manifest.title}</h1>
-				<span id='author' class='blue'>{manifest.author}</span>
+				<h1 id='title'>{item.title}</h1>
+				<span id='author' class='blue'>{item.author}</span>
 			</div>
 
-			<button on:click={() => manage(manifest)}>
-				{#if $presences?.find(e => e.title === manifest.title)}
+			<button on:click={() => manage(item)}>
+				{#if $presences?.find(e => e.title === item.title)}
 								<img src={trashIcon} alt='Trash icon' />
 				{:else} <img src={downloadIcon} alt='Download icon' />
 				{/if}
@@ -68,17 +70,17 @@
 
 		<main>
 			<div id='previews'>
-				{#each manifest.previews as src}
+				{#each item.previews as src}
 					<img {src} />
 				{/each}
 			</div>
 
-			<p id='description'>{manifest.description}</p>
+			<p id='description'>{item.description}</p>
 
 			<div id='urls'>
 				<img src={linkIcon} alt='Link icon' />
 
-				<p>{manifest.urls.join('\n')}</p>
+				<p>{item.urls.join('\n')}</p>
 			</div>
 
 			{#if installed}
