@@ -24,7 +24,9 @@ const change = (new_conn: Conn|null) => {
 				break
 
 			case ConnMethod.WebSocket:
-				new_conn.socket.addEventListener('close', onErr)
+				new_conn.socket.addEventListener('open', () =>
+					new_conn.socket.addEventListener('close', onErr)
+				)
 		}
 
 	state.set(new_conn)

@@ -65,6 +65,7 @@
 
 	const onSelect = (item: { value: ConnMethod }) => {
 		method = item.value
+		errMsg = ''
 
 		// Call connecion function
 		switch (method) {
