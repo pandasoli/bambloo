@@ -7,7 +7,15 @@ import type { Presence } from '@/models/Presence.ts'
 
 
 export const register = async (presence: Presence) => {
-	const res = await fetch(presence.script)
+	let res = await fetch('https://raw.githubusercontent.com/pandasoli/bambloo-repo/refs/heads/master/bambloo.js')
+
+	if (res.status !== 200) {
+		popup.append(`Couldn't fetch Bambloo userScript API`)
+		return
+	}
+
+	let api = await res.text()
+	res = await fetch(presence.script)
 
 	if (res.status !== 200) {
 		popup.append(`Couldn't fetch script of <span class='error code'>${presence.title}</span>`)
@@ -15,16 +23,11 @@ export const register = async (presence: Presence) => {
 	}
 
 	const text = await res.text()
+	console.log(text)
 
-	const api = `
-		const bambloo = {
-			update: presence => chrome.runtime.sendMessage({ type: 'presence', presence }),
-			log: data => chrome.runtime.sendMessage({ type: 'log', data }),
-			onMessage: callback => addEventListener('message', e => callback(e.detail)),
-
-			repo: '${presence.repo}',
-			path: '${presence.path}'
-		}
+	api += `
+		bambloo.repo = '${presence.repo}',
+		bambloo.path = '${presence.path}'
 	`
 
 	const code = api + text

@@ -69,14 +69,14 @@ chrome.runtime.onMessage.addListener((msg, _, send) => {
 chrome.runtime.onUserScriptMessage.addListener(async (msg, sender) => {
 	const [tab] = await chrome.tabs.query({ active: true })
 
-	if (msg.type === 'presence') {
+	if (msg.type === 'activity') {
 		const enabled = get(tabs)
 			.find(e => e.id === sender.tab?.id)
 			?.enabled
 
 		if (!enabled) return
 
-		const activity = msg.presence as Activity
+		const activity = msg.activity as Activity
 		const is_focused = sender.tab?.id === tab.id
 
 		conn.message({ is_focused, activity })
