@@ -14,7 +14,10 @@ export const register = async (presence: Presence) => {
 		return
 	}
 
-	let api = await res.text()
+	const api = (await res.text())
+		.replace(/<!-- repo -->/, presence.repo)
+		.replace(/<!-- path -->/, presence.path)
+
 	res = await fetch(presence.script)
 
 	if (res.status !== 200) {
@@ -23,13 +26,6 @@ export const register = async (presence: Presence) => {
 	}
 
 	const text = await res.text()
-	console.log(text)
-
-	api += `
-		bambloo.repo = '${presence.repo}',
-		bambloo.path = '${presence.path}'
-	`
-
 	const code = api + text
 
 	return chrome.userScripts.register([{
