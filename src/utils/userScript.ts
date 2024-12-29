@@ -18,10 +18,8 @@ export const register = async (presence: Presence) => {
 
 	const res = await fetch(presence.script)
 
-	if (res.status !== 200) {
-		popup.append(`Couldn't fetch script of <span class='error code'>${presence.title}</span>`)
-		return
-	}
+	if (res.status !== 200)
+		return popup.append(`Couldn't fetch script of <span class='warn code'>${presence.title}</span>`)
 
 	const text = await res.text()
 	const code = api + text

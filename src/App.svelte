@@ -5,6 +5,7 @@
 	import SettingsScreen from '@/Settings.svelte'
 	import Header from '@/components/Header.svelte'
 	import Store from '@/components/Store.svelte'
+	import Button from '@/components/Button.svelte'
 
 	import { conn } from '@/stores/conn.ts'
 	import { ui } from '@/stores/ui.ts'
@@ -16,6 +17,10 @@
 
 	import presencesTreeIcon from '@/assets/trees/presences.png'
 	import storeTreeIcon from '@/assets/trees/store.png'
+
+
+	const errorRetry = (index: number) =>
+		chrome.runtime.sendMessage({ type: 'error', index })
 
 
 	popup.subscribe(() =>
@@ -33,7 +38,17 @@
 	{/each}
 </div>	
 
-{#if $conn?.state !== ConnState.Connected}
+{#if $ui.error}
+	<div class='err-panel'>
+		<span class='error'>{@html $ui.error.msg }</span>
+
+		<div class='buttons'>
+			{#each $ui.error.buttons as btn, i}
+				<Button type='red' onclick={() => errorRetry(i)} outline={btn.outline}>{ btn.text }</Button>
+			{/each}
+		</div>
+	</div>
+{:else if $conn?.state !== ConnState.Connected}
 	<WelcomeScreen />
 {:else}
 	{#if $presences?.length === 0}
@@ -71,6 +86,17 @@
 		font-size: 10px;
 
 		span { color: black }
+	}
+
+	.err-panel {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		gap: 8px;
+		height: 100%;
+
+		.buttons { width: 80% }
 	}
 
 	#tree {

@@ -101,6 +101,9 @@ chrome.runtime.onConnect.addListener(async port => {
 
 // Run on background start
 ;(async () => {
+	tabs.load()
+	await presence_api.load()
+
 	const { conn: conn_data } = await chrome.storage.local.get('conn')
 	const { presences: presences_data } = await chrome.storage.local.get('presences')
 	const { repos: repos_data } = await chrome.storage.local.get('repos')
@@ -142,7 +145,4 @@ chrome.runtime.onConnect.addListener(async port => {
 		else
 			alltabs.set(alltabs_data)
 	}
-
-	tabs.load()
-	presence_api.load()
 })()
