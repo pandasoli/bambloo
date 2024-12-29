@@ -16,6 +16,7 @@ import { presences } from '@/stores/presences.ts'
 import { tabs } from '@/stores/tabs.ts'
 import { alltabs } from '@/stores/alltabs.ts'
 import { repos } from '@/stores/repos.ts'
+import { presence_api } from '@/stores/presence_api.ts'
 
 
 chrome.runtime.onMessage.addListener((msg, _, send) => {
@@ -143,4 +144,5 @@ chrome.runtime.onConnect.addListener(async port => {
 	}
 
 	tabs.load()
+	presence_api.load()
 })()

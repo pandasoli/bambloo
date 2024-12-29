@@ -3,23 +3,20 @@ import { get } from 'svelte/store'
 import { tabs } from '@/stores/tabs.ts'
 import { popup } from '@/stores/popup.ts'
 import { conn } from '@/stores/conn.ts'
+import { presence_api } from '@/stores/presence_api'
 
 import type { Presence } from '@/models/Presence.ts'
 
 
 export const register = async (presence: Presence) => {
-	let res = await fetch('https://raw.githubusercontent.com/pandasoli/bambloo-repo/refs/heads/master/bambloo.js')
+	const api_code = get(presence_api)
+	if (!api_code) return
 
-	if (res.status !== 200) {
-		popup.append(`Couldn't fetch Bambloo userScript API`)
-		return
-	}
-
-	const api = (await res.text())
+	const api = api_code
 		.replace(/<!-- repo -->/, presence.repo)
 		.replace(/<!-- path -->/, presence.path)
 
-	res = await fetch(presence.script)
+	const res = await fetch(presence.script)
 
 	if (res.status !== 200) {
 		popup.append(`Couldn't fetch script of <span class='error code'>${presence.title}</span>`)
