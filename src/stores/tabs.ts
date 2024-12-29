@@ -6,7 +6,7 @@ import type { Tab } from '@/models/Tab.ts'
 import type { Presence } from '@/models/Presence.ts'
 
 import { set_updatters } from '@/utils/storeUpdaters.ts'
-import * as userScript from '@/utils/userScript.ts'
+import * as presenceScript from '@/utils/presence_scripts.ts'
 
 
 const state = writable<Tab[]>([])
@@ -60,7 +60,7 @@ const load = () => {
 			tab.enabled = old.enabled
 
 			if (tab.enabled && presence?.enabled)
-				userScript.sendMessage(id, { type: 'start', input })
+				presenceScript.sendMessage(id, { type: 'start', input })
 
 			return tabs
 				.map(e => e.id === id ? tab : e)
@@ -81,7 +81,7 @@ const append = (raw_tab: chrome.tabs.Tab) =>
 			const input = presence.input
 
 			if (presence.enabled)
-				userScript.sendMessage(tab.id, tab.enabled ? { type: 'start', input } : { type: 'stop' })
+				presenceScript.sendMessage(tab.id, tab.enabled ? { type: 'start', input } : { type: 'stop' })
 		}
 
 		tabs.push(tab)
@@ -108,7 +108,7 @@ const toggle_enabled = (id: number) =>
 			const input = presence?.input
 
 			if (presence?.enabled)
-				userScript.sendMessage(tab.id, tab.enabled ? { type: 'start', input } : { type: 'stop' })
+				presenceScript.sendMessage(tab.id, tab.enabled ? { type: 'start', input } : { type: 'stop' })
 		}
 
 		return tabs

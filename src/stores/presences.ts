@@ -7,7 +7,7 @@ import { tabs } from '@/stores/tabs.ts'
 import { popup } from '@/stores/popup.ts'
 
 import { set_updatters } from '@/utils/storeUpdaters.ts'
-import * as userScript from '@/utils/userScript'
+import * as presenceScript from '@/utils/presence_scripts.ts'
 
 
 /*
@@ -29,7 +29,7 @@ const append = (manifest: Manifest, repo: string, path: string) =>
 		const presence: Presence = { ...manifest, id, repo, path, enabled: true }
 
 		presences.push(presence)
-		userScript.register(presence)
+		presenceScript.register(presence)
 			.catch(popup.append)
 
 		return presences
@@ -43,7 +43,7 @@ const remove = (manifest: Manifest) =>
 		presences = presences.filter(e => e.title !== manifest.title)
 
 		if (presence) {
-			userScript.unregister(presence)
+			presenceScript.unregister(presence)
 
 			tabs.update(tabs =>
 				tabs.map(tab => {
@@ -62,8 +62,8 @@ const toggle_enabled = (presence: Presence) =>
 
 		presence.enabled = !presence.enabled
 
-		if (presence.enabled) userScript.register(presence).catch(popup.append)
-		else userScript.unregister(presence)
+		if (presence.enabled) presenceScript.register(presence).catch(popup.append)
+		else presenceScript.unregister(presence)
 
 		return presences
 	})

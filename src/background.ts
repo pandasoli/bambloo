@@ -5,7 +5,6 @@ import type { Presence } from '@/models/Presence.ts'
 import type { Activity } from '@/models/Activity.ts'
 import type { Tab } from '@/models/Tab.ts'
 
-import * as userScript from '@/utils/userScript.ts'
 import { storeDataLocally } from '@/utils/storeData.ts'
 import { tryset_conn } from '@/utils/tryset_conn.ts'
 
@@ -122,14 +121,9 @@ chrome.runtime.onConnect.addListener(async port => {
 	if (presences_data !== undefined) {
 		if (!Array.isArray(presences_data))
 			presences.panic(presences_data)
-		else {
-			presences.set(presences_data)
-
-			presences_data.forEach((e: Presence) => {
-				if (e.enabled) userScript.register(e)
-					.catch(e => popup.append(String(e)))
-			})
-		}
+		else
+			presences_data.forEach((e: Presence) =>
+				presences.append(e, e.repo, e.path))
 	}
 
 	if (repos_data !== undefined) {
