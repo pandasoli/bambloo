@@ -2,8 +2,9 @@ import { get } from 'svelte/store'
 
 import { ConnMethod, ConnState } from '@/models/Conn.ts'
 import type { Presence } from '@/models/Presence.ts'
-import type { ConnArgs, WebSocketConn } from '@/models/Conn.ts'
+import type { ConnArgs } from '@/models/Conn.ts'
 import type { Activity } from '@/models/Activity.ts'
+import type { Tab } from '@/models/Tab.ts'
 
 import { try_conn } from '@/services/connect.ts'
 
@@ -51,37 +52,94 @@ const connect = (method: ConnMethod, args: ConnArgs, set_first: boolean, onErr?:
 	})
 }
 
+chrome.runtime.onMessage.addListener((msg, _, send) => {
+	switch (msg.type) {
+		case 'connect':
+			const method: ConnMethod = msg.method
+			const set_first: boolean = msg.set_first
+
+			connect(method, msg.args, set_first, send)
+			return true
+	}
+})
+
+const tabHostUpdate = (tabId: number, callback: () => void) => {
+	/*
+	 * In theory the tab might not be in the list because
+	 * stores/tabs listens to tabs.onRemoved and it could
+	 * be executed first and the tab removed from the list
+	 * but in my tests this works.
+	 */
+	const tab = get(tabs).find(e => e.id === tabId) as Tab
+
+	if (tab.presence_id === undefined) return
+	if (!tab.enabled) return
+
+	const presences_ = get(presences)
+	if (!presences_) return
+
+	const presence = presences_.find(e => e.id === tab.presence_id) as Presence
+	if (!presence.enabled) return
+
+	callback()
+}
+
+chrome.tabs.onRemoved.addListener(tabId =>
+	tabHostUpdate(tabId, () =>
+		conn.message({ event: 'remove', tabId })))
+
+chrome.tabs.onActivated.addListener(info =>
+	tabHostUpdate(info.tabId, () =>
+		conn.message({ event: 'focus', tabId: info.tabId })))
+
+const onPresenseMessage = async (msg: any, tabId: number) => {
+	const tab = get(tabs).find(e => e.id === tabId) as Tab
+
+	switch (msg.type) {
+		case 'log':
+			console.log(`[presence:${tab.title}]`, msg.data)
+			break
+	
+		case 'activity':
+			const activity = msg.activity as Activity
+			conn.message({ event: 'update', tabId, activity })
+	}
+}
+
 chrome.userScripts.configureWorld({
 	csp: "script-src 'self' 'unsafe-eval'",
 	messaging: true
 })
 
-chrome.runtime.onMessage.addListener((msg, _, send) => {
-	if (msg.type === 'connect') {
-		const method: ConnMethod = msg.method
-		const set_first: boolean = msg.set_first
-
-		connect(method, msg.args, set_first, send)
-		return true
-	}
+chrome.runtime.onUserScriptMessage.addListener((msg, sender) => {
+	if (!sender.id)
+		return console.warn(`Couldn't get id of tab ${sender.tab?.title}`)
+	onPresenseMessage(msg, Number(sender.tab?.id))
 })
 
-chrome.runtime.onUserScriptMessage.addListener(async (msg, sender) => {
-	const [tab] = await chrome.tabs.query({ active: true })
+const storeLocalData = () => {
+	// Store data that is required between connections
+	const presences_ = get(presences) ?? undefined
+	const conn_ = get(conn)
+	const repos_ = get(repos)
+	const alltabs_ = get(alltabs)
 
-	if (msg.type === 'activity') {
-		const enabled = get(tabs)
-			.find(e => e.id === sender.tab?.id)
-			?.enabled
+	const method = conn_?.method ?? null
+	const args = conn_?.method === ConnMethod.WebSocket ? conn_.args : null
 
-		if (!enabled) return
-
-		const activity = msg.activity as Activity
-		const is_focused = sender.tab?.id === tab.id
-
-		conn.message({ is_focused, activity })
+	// Store data
+	const data = {
+		conn: { method, args },
+		repos: repos_,
+		alltabs: alltabs_,
+		presences: presences_
 	}
-})
+
+	// Needed to not overwrite invalid data in storage
+	if (!data.presences) delete data.presences
+
+	chrome.storage.local.set(data)
+}
 
 chrome.runtime.onConnect.addListener(async port => {
 	const update = (data: any, name: string) =>
@@ -95,29 +153,7 @@ chrome.runtime.onConnect.addListener(async port => {
 	update(get(repos), 'repos')
 	update(get(alltabs), 'alltabs')
 
-	port.onDisconnect.addListener(() => {
-		// Store data that is required between connections
-		const presences_ = get(presences) ?? undefined
-		const conn_ = get(conn)
-		const repos_ = get(repos)
-		const alltabs_ = get(alltabs)
-
-		const method = conn_?.method ?? null
-		const args = conn_?.method === ConnMethod.WebSocket ? conn_.args : null
-
-		// Store data
-		const data = {
-			conn: { method, args },
-			repos: repos_,
-			alltabs: alltabs_,
-			presences: presences_
-		}
-
-		// Needed to not overwrite invalid data in storage
-		if (!data.presences) delete data.presences
-
-		chrome.storage.local.set(data)
-	})
+	port.onDisconnect.addListener(storeLocalData)
 })
 
 // Run on background start

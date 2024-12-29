@@ -2,6 +2,7 @@ import { get } from 'svelte/store'
 
 import { tabs } from '@/stores/tabs.ts'
 import { popup } from '@/stores/popup.ts'
+import { conn } from '@/stores/conn.ts'
 
 import type { Presence } from '@/models/Presence.ts'
 
@@ -39,8 +40,10 @@ export const register = async (presence: Presence) => {
 
 export const unregister = (presence: Presence) => {
 	get(tabs).forEach(tab => {
-		if (tab.id && tab.presence_id === presence.id)
+		if (tab.id && tab.presence_id === presence.id) {
+			conn.message({ event: 'remove', tabId: tab.id })
 			sendMessage(tab.id, { type: 'stop' })
+		}
 	})
 
 	return chrome.userScripts.unregister({
