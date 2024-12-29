@@ -23,7 +23,7 @@ type UIData = {
 }
 
 const initial: UIData = {
-	tab: AppTab.Presences,
+	tab: AppTab.Store,
 	config_open: false
 }
 
