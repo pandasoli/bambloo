@@ -1,8 +1,10 @@
 import { writable } from 'svelte/store'
 
 import type { Presence } from '@/models/Presence.ts'
+import { AppTab } from '@/models/AppTab'
 import type { Manifest } from '@/models/Manifest.ts'
 
+import { ui } from '@/stores/ui.ts'
 import { tabs } from '@/stores/tabs.ts'
 import { popup } from '@/stores/popup.ts'
 
@@ -19,6 +21,16 @@ const state = writable<Presence[]|null>([])
 const bad_data = writable<any>()
 set_updatters(state, 'presences')
 set_updatters(bad_data, 'presences bad data')
+
+const load = async () => {
+	const { presences: data } = await chrome.storage.local.get('presences')
+	if (data === undefined) return ui.setTab(AppTab.Store)
+
+	if (!Array.isArray(data)) return panic(data)
+
+	/* TODO: Do not assume they're all valid */
+	data.forEach(append)
+}
 
 const append = (manifest: Manifest) =>
 	state.update(presences => {
@@ -93,6 +105,7 @@ const panic = (data: any) => {
 export const presences_bad_data = bad_data
 export const presences = {
 	...state,
+	load,
 	append,
 	remove,
 	toggle_enabled,

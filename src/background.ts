@@ -103,46 +103,11 @@ chrome.runtime.onConnect.addListener(async port => {
 
 // Run on background start
 ;(async () => {
-	tabs.load()
 	await presence_api.load()
 
-	const { conn: conn_data } = await chrome.storage.local.get('conn')
-	const { presences: presences_data } = await chrome.storage.local.get('presences')
-	const { repos: repos_data } = await chrome.storage.local.get('repos')
-	const { alltabs: alltabs_data } = await chrome.storage.local.get('alltabs')
-
-	// TODO: Check not only if data is undefined
-	// but if it fits in the model types
-
-	if (conn_data !== undefined && conn_data?.method !== null) {
-		if (typeof conn_data?.method !== 'number')
-			popup.append('Connection method stored is not valid')
-		else
-			tryset_conn(conn_data.method, conn_data.args, true)
-	}
-
-	if (presences_data !== undefined) {
-		if (!Array.isArray(presences_data))
-			presences.panic(presences_data)
-		else
-			presences_data.forEach(presences.append)
-	}
-	else
-		ui.setTab(AppTab.Store)
-
-	if (repos_data !== undefined) {
-		if (!Array.isArray(repos_data)) {
-			repos.panic(repos_data)
-			popup.append('Repos list stored is not valid')
-		}
-		else
-			repos.set(repos_data)
-	}
-
-	if (alltabs_data !== undefined) {
-		if (typeof alltabs_data !== 'boolean')
-			popup.append('AllTabs option stored is not valid')
-		else
-			alltabs.set(alltabs_data)
-	}
+	tabs.load()
+	conn.load()
+	presences.load()
+	repos.load()
+	alltabs.load()
 })()
