@@ -23,12 +23,13 @@ const load = async () => {
 	const { conn: data } = await chrome.storage.local.get('conn')
 	if (data === undefined) return
 
-	const invalid = () =>
-		popup.append('Connection method stored is not valid')
+	if (typeof data !== 'object') return popup.append('Connection info stored is not valid')
 
-	if (typeof data !== 'object') return invalid()
-	if (typeof data.method !== 'number' && data.method !== null) return invalid()
-	if (!Array.isArray(data.args)) return invalid()
+	if (data.method === null) return
+
+	if (typeof data.method !== 'number') return popup.append('Connection method stored is not valid')
+	if (typeof data.args !== 'object' && data.args !== null) return popup.append('Connection args stored are not valid')
+	if (typeof data.args === 'object' && typeof data.args.port !== 'number') return popup.append('Connection port stored are not valid')
 
 	tryset_conn(data.method, data.args, true)
 }
@@ -41,9 +42,10 @@ const change = (new_conn: Conn|null) => {
 				break
 
 			case ConnMethod.WebSocket:
-				new_conn.socket.addEventListener('open', () =>
+				new_conn.socket.addEventListener('open', () => {
 					new_conn.socket.addEventListener('close', onErr)
-				)
+					new_conn.socket.addEventListener('error', onErr)
+				})
 		}
 
 	state.set(new_conn)
@@ -91,6 +93,7 @@ const stop = () =>
 
 			case ConnMethod.WebSocket:
 				conn.socket.removeEventListener('close', onErr)
+				conn.socket.removeEventListener('error', onErr)
 				conn.socket.close()
 		}
 
