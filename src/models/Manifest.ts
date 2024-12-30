@@ -18,6 +18,11 @@ export interface Manifest {
 
 	__meta__: {
 		repo: string
-		path: string // Path inside repository
+		/* Working directory of the manifest in
+		 * the repository. Ex:
+		 *     src/search-engines/duckduckgo
+		 *     src/streamings/youtube
+		 */
+		path: string
 	}
 }

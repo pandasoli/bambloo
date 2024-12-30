@@ -11,6 +11,7 @@
 	import downloadIcon from '@/assets/download.svg'
 	import trashIcon from '@/assets/trash.svg'
 	import linkIcon from '@/assets/link.svg'
+	import gitIcon from '@/assets/git.svg'
 
 
 	export let item: Manifest
@@ -75,10 +76,17 @@
 
 			<p id='description'>{item.description}</p>
 
-			<div id='urls'>
-				<img src={linkIcon} alt='Link icon' />
+			<div id='details'>
+				<div>
+					<img src={gitIcon} alt='Git icon' />
+					<p>{item.__meta__.repo}</p>
+				</div>
 
-				<p>{item.urls.join('\n')}</p>
+				<div id='urls'>
+					<img src={linkIcon} alt='Link icon' />
+
+					<p>{item.urls.join('\n')}</p>
+				</div>
 			</div>
 
 			{#if installed}
@@ -226,15 +234,30 @@
 		color: var(--header-text-cl)
 	}
 
-	#urls {
-		padding: 8px;
-		display: flex;
+	#details {
+		display: grid;
 		gap: 10px;
-		background: var(--light-bg);
-		border-radius: 4px;
 
-		img { width: 18px; height: 14px }
+		& > div {
+			display: flex;
+			align-items: center;
+			gap: 10px
+		}
+
+		img { width: 18px; height: 18px }
 		p { margin: 0; color: var(--header-text-cl) }
+
+		#urls {
+			display: flex;
+			gap: 10px;
+			padding: 8px;
+			border-radius: 4px;
+			background: var(--light-bg);
+			overflow-x: auto;
+
+			img { width: 18px; height: 14px }
+			p { margin: 0; color: var(--header-text-cl) }
+		}
 	}
 
 	footer {
