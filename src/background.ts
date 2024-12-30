@@ -1,6 +1,7 @@
 import { get } from 'svelte/store'
 
 import { ConnMethod } from '@/models/Conn.ts'
+import { AppTab } from '@/models/AppTab.ts'
 import type { Presence } from '@/models/Presence.ts'
 import type { Activity } from '@/models/Activity.ts'
 import type { Tab } from '@/models/Tab.ts'
@@ -124,6 +125,8 @@ chrome.runtime.onConnect.addListener(async port => {
 		else
 			presences_data.forEach(presences.append)
 	}
+	else
+		ui.setTab(AppTab.Store)
 
 	if (repos_data !== undefined) {
 		if (!Array.isArray(repos_data))
