@@ -122,8 +122,7 @@ chrome.runtime.onConnect.addListener(async port => {
 		if (!Array.isArray(presences_data))
 			presences.panic(presences_data)
 		else
-			presences_data.forEach((e: Presence) =>
-				presences.append(e, e.repo, e.path))
+			presences_data.forEach(presences.append)
 	}
 
 	if (repos_data !== undefined) {
