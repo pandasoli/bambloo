@@ -15,7 +15,7 @@ export type ErrButton = {
 type UIData = {
 	tab: AppTab
 	config_open: boolean
-	presence_open?: boolean // for Store
+	presence_open: Manifest | null // for Store
 	error?: {
 		msg: string
 		buttons: ErrButton[]
@@ -24,7 +24,8 @@ type UIData = {
 
 const initial: UIData = {
 	tab: AppTab.Store,
-	config_open: false
+	config_open: false,
+	presence_open: null
 }
 
 
@@ -43,9 +44,9 @@ const toggleConfigOpen = () =>
 		return ui
 	})
 
-const togglePresenceOpen = () =>
+const setPresenceOpen = (manifest: Manifest | null) =>
 	state.update(ui => {
-		ui.presence_open = !ui.presence_open
+		ui.presence_open = manifest
 		return ui
 	})
 
@@ -69,6 +70,6 @@ export const ui = {
 	...state,
 	setTab,
 	toggleConfigOpen,
-	togglePresenceOpen,
+	setPresenceOpen,
 	setError
 }

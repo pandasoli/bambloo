@@ -25,7 +25,6 @@
 
 	let manifests_path: Location[] = []
 	let items: Manifest[] = []
-	let item_open: Manifest
 	let error: string|null = null
 
 	const load_presences = async (amount: number) => {
@@ -110,10 +109,8 @@
 		}
 	}
 
-	const openPresence = (item: Manifest) => {
-		ui.togglePresenceOpen()
-		item_open = item
-	}
+	const openPresence = (item: Manifest) =>
+		ui.setPresenceOpen(item)
 
 	onMount(() => {
 		load_repos()
@@ -175,7 +172,7 @@
 </main>
 
 {#if $ui.presence_open}
-	<StorePresence item={item_open} close={() => ui.togglePresenceOpen()} />
+	<StorePresence item={$ui.presence_open} close={() => ui.setPresenceOpen(null)} />
 {/if}
 
 <style lang='scss'>
