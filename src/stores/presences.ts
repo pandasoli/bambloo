@@ -16,8 +16,9 @@ import * as presenceScript from '@/utils/presence_scripts.ts'
 	It's only overwritten when the user does so.
 */
 const state = writable<Presence[]|null>([])
-const problematic_data = writable<any>()
+const bad_data = writable<any>()
 set_updatters(state, 'presences')
+set_updatters(bad_data, 'presences bad data')
 
 const append = (manifest: Manifest) =>
 	state.update(presences => {
@@ -85,12 +86,11 @@ const change_input = (presence: Presence, input: string) =>
 
 const panic = (data: any) => {
 	state.set(null)
-	problematic_data.set(data)
+	bad_data.set(data)
 }
 
 
-export const problem = { ...problematic_data }
-
+export const presences_bad_data = bad_data
 export const presences = {
 	...state,
 	append,

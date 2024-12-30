@@ -2,10 +2,12 @@
 	import type { FocusEventHandler } from 'svelte/elements'
 
 	import ConnChooser from '@/components/ConnChooser.svelte'
+	import Button from '@/components/Button.svelte'
 	import LargeButton from '@/components/LargeButton.svelte'
 	import ToolTip from '@/components/ToolTip.svelte'
 
-	import { repos } from '@/stores/repos'
+	import { repos, repos_bad_data } from '@/stores/repos.ts'
+  import { popup } from '@/stores/popup.ts'
 
 	import discordIcon from '@/assets/discord.svg'
 	import githubIcon from '@/assets/github.svg'
@@ -14,8 +16,24 @@
 	export let close: () => void
 
 
-	let repos_text = $repos.join('\n')
+	let repos_text = $repos?.join('\n') ?? ''
 
+
+	const errDeleteRepos = () => repos.set(repos.defaults)
+	const errRetryRepos = async () => {
+		const { repos: repos_data } = await chrome.storage.local.get('repos')
+
+		if (repos_data !== undefined) {
+			if (!Array.isArray(repos_data)) {
+				repos.panic(repos_data)
+				popup.append('Repos list stored is not valid')
+			}
+			else
+				repos.set(repos_data)
+		}
+		else
+			repos.set(repos.defaults)
+	}
 
 	const update_repos: FocusEventHandler<HTMLTextAreaElement> = () =>
 		repos.set(
@@ -43,12 +61,25 @@
 		<br />
 
 		<span class='header'>Repositories</span>
-		<textarea
-			id='repos'
-			placeholder='Presence repos separated by line'
-			bind:value={repos_text}
-			on:focusout={update_repos}
-		></textarea>
+		{#if $repos}
+			<textarea
+				id='repos'
+				placeholder='Presence repos separated by line'
+				bind:value={repos_text}
+				on:focusout={update_repos}
+			></textarea>
+		{:else}
+			<div class='err-panel'>
+				<span class='error'>Could not parse local JSON data</span>
+
+				<div class='buttons btns-2'>
+					<Button type='red' outline onclick={errDeleteRepos}>Delete my data</Button>
+					<Button type='red' onclick={errRetryRepos}>Retry parsing</Button>
+				</div>
+
+				<code>{$repos_bad_data}</code>
+			</div>
+		{/if}
 
 		<br />
 		<br />

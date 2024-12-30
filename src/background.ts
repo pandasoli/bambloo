@@ -12,10 +12,10 @@ import { tryset_conn } from '@/utils/tryset_conn.ts'
 import { conn } from '@/stores/conn.ts'
 import { popup } from '@/stores/popup.ts'
 import { ui } from '@/stores/ui.ts'
-import { presences } from '@/stores/presences.ts'
+import { presences, presences_bad_data } from '@/stores/presences.ts'
 import { tabs } from '@/stores/tabs.ts'
 import { alltabs } from '@/stores/alltabs.ts'
-import { repos } from '@/stores/repos.ts'
+import { repos, repos_bad_data } from '@/stores/repos.ts'
 import { presence_api } from '@/stores/presence_api.ts'
 
 
@@ -95,6 +95,8 @@ chrome.runtime.onConnect.addListener(async port => {
 	update(get(tabs), 'tabs')
 	update(get(repos), 'repos')
 	update(get(alltabs), 'alltabs')
+	update(get(presences_bad_data), 'presences bad data')
+	update(get(repos_bad_data), 'repos bad data')
 
 	port.onDisconnect.addListener(saveDataLocally)
 })
@@ -129,8 +131,10 @@ chrome.runtime.onConnect.addListener(async port => {
 		ui.setTab(AppTab.Store)
 
 	if (repos_data !== undefined) {
-		if (!Array.isArray(repos_data))
+		if (!Array.isArray(repos_data)) {
+			repos.panic(repos_data)
 			popup.append('Repos list stored is not valid')
+		}
 		else
 			repos.set(repos_data)
 	}

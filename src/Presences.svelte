@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import { presences, problem } from '@/stores/presences.ts'
+	import { presences, presences_bad_data } from '@/stores/presences.ts'
 	import { ui } from '@/stores/ui.ts'
 
 	import type { Presence } from '@/models/Presence.ts'
@@ -9,6 +9,20 @@
 
 	import treeIcon from '@/assets/trees/presences.png'
 
+
+	const errDeletePresences = () => presences.set([])
+	const errRetryPresences = async () => {
+		const { presences: presences_data } = await chrome.storage.local.get('presences')
+
+		if (presences_data !== undefined) {
+			if (!Array.isArray(presences_data))
+				presences.panic(presences_data)
+			else
+				presences_data.forEach(presences.append)
+		}
+		else
+			presences.set([])
+	}
 
 	const toggle = (presence: Presence) =>
 		presences.toggle_enabled(presence)
@@ -34,12 +48,12 @@
 			<span class='error'>Could not parse local JSON data</span>
 
 			<div class='buttons'>
-				<Button type='red' outline>Delete my data</Button>
-				<Button type='red'>Retry parsing</Button>
+				<Button type='red' outline onclick={errDeletePresences}>Delete my data</Button>
+				<Button type='red' onclick={errRetryPresences}>Retry parsing</Button>
 			</div>
 		</div>
 
-		<code>{$problem}</code>
+		<code>{$presences_bad_data}</code>
 	{/if}
 </main>
 

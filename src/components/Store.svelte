@@ -4,9 +4,10 @@
 	import StorePresence from '@/StorePresence.svelte'
 	import Button from '@/components/Button.svelte'
 
-	import { repos } from '@/stores/repos.ts'
+	import { repos, repos_bad_data } from '@/stores/repos.ts'
 	import { presences } from '@/stores/presences.ts'
 	import { ui } from '@/stores/ui.ts'
+  import { popup } from '@/stores/popup.ts'
 
 	import type { Manifest } from '@/models/Manifest.ts'
 
@@ -61,8 +62,8 @@
 		if (manifests_path.length < more_amount) {
 			const expected_len = items.length + 10
 
-			for (; repo_i < $repos.length && items.length < expected_len; ++repo_i) {
-				const repo = $repos[repo_i]
+			for (; repo_i < ($repos?.length ?? 0) && items.length < expected_len; ++repo_i) {
+				const repo = $repos?.[repo_i]
 				const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/master?recursive=1`)
 
 				// Check HTTP status code
@@ -86,7 +87,9 @@
 		load_presences(more_amount)
 	}
 
-	const retry = () => {
+	const errRetry = () => {
+		if (!$repos) return
+
 		error = null
 
 		/* Identify where the error comes from
@@ -112,8 +115,28 @@
 	const openPresence = (item: Manifest) =>
 		ui.setPresenceOpen(item)
 
-	onMount(() => {
+	const errDeleteRepos = () => {
+		repos.set(repos.defaults)
 		load_repos()
+	}
+
+	const errRetryRepos = async () => {
+		const { repos: repos_data } = await chrome.storage.local.get('repos')
+
+		if (repos_data !== undefined) {
+			if (!Array.isArray(repos_data)) {
+				repos.panic(repos_data)
+				popup.append('Repos list stored is not valid')
+			}
+			else
+				repos.set(repos_data)
+		}
+		else
+			repos.set(repos.defaults)
+	}
+
+	onMount(() => {
+		if ($repos) load_repos()
 
 		const interval = setInterval(() =>
 			loadingMsgsIndex = (loadingMsgsIndex + 1) % loadingMsgs.length
@@ -124,12 +147,23 @@
 </script>
 
 <main>
-	{#if error}
-		<div id='error'>
+	{#if !$repos}
+		<div class='err-panel'>
+			<span class='error'>Could not parse local JSON data</span>
+
+			<div class='btns-2'>
+				<Button type='red' outline onclick={errDeleteRepos}>Delete my data</Button>
+				<Button type='red' onclick={errRetryRepos}>Retry parsing</Button>
+			</div>
+
+			<code>{$repos_bad_data}</code>
+		</div>
+	{:else if error}
+		<div class='err-panel'>
 			<span class='error'>{@html error}</span>
 
-			<div>
-				<Button type='red' outline on:click={retry}>Retry</Button>
+			<div class='buttons'>
+				<Button type='red' outline on:click={errRetry}>Retry</Button>
 			</div>
 		</div>
 	{:else if items.length === 0}
@@ -199,17 +233,7 @@
 		span { font-weight: bold }
 	}
 
-	#error {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
-		gap: 4px;
-		height: 100%;
-
-		div { width: 100px }
-	}
+	.err-panel { height: 100% }
 
 	.presence {
 		position: relative;
