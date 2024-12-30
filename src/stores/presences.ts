@@ -19,14 +19,20 @@ const state = writable<Presence[]|null>([])
 const problematic_data = writable<any>()
 set_updatters(state, 'presences')
 
-const append = (manifest: Manifest, repo: string, path: string) =>
+const append = (manifest: Manifest) =>
 	state.update(presences => {
 		if (!presences) return presences
 
 		let id = 0
 		while (presences.some(e => e.id === id)) id++
 
-		const presence: Presence = { ...manifest, id, repo, path, enabled: true }
+		const presence: Presence = {
+			...manifest,
+			id,
+			repo: manifest.__meta__.repo,
+			path: manifest.__meta__.path,
+			enabled: true
+		}
 
 		presences.push(presence)
 		presenceScript.register(presence)

@@ -13,22 +13,20 @@
 	import linkIcon from '@/assets/link.svg'
 
 
-	type Item = { repo: string, path: string } & Manifest
-
-
-	export let item: Item
+	export let item: Manifest
 	export let close: () => void
+
 
 	const presence = $presences?.find(e => e.title === item.title)
 	const installed = presence !== undefined
 	let input = presence?.input ?? ''
 
-	const manage = (item: Item) => {
+	const manage = (item: Manifest) => {
 		if ($presences) {
 			const found = $presences.find(e => e.title === item.title)
 
 			if (found) presences.remove(item)
-			else presences.append(item, item.repo, item.path)
+			else presences.append(item)
 		}
 	}
 

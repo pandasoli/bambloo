@@ -9,14 +9,12 @@
 	import { ui } from '@/stores/ui.ts'
 
 	import type { Manifest } from '@/models/Manifest.ts'
-	import { AppTab } from '@/models/AppTab.ts'
 
 	import downloadIcon from '@/assets/download.svg'
 	import trashIcon from '@/assets/trash.svg'
 
 
 	type Location = { repo: string, path: string }
-	type Item = { repo: string, path: string } & Manifest
 
 
 	// Used for "..." animation
@@ -26,7 +24,8 @@
 	let repo_i = 0
 
 	let manifests_path: Location[] = []
-	let items: Item[] = []
+	let items: Manifest[] = []
+	let item_open: Manifest
 	let error: string|null = null
 
 	const load_presences = async (amount: number) => {
@@ -44,15 +43,14 @@
 			}
 
 			// Process response
-			const item: Item = await res.json()
+			const item: Manifest = await res.json()
 			const dir = path.split('/').slice(0, -1).join('/')
 
 			if (item.images.background.startsWith('.')) item.images.background = `${url}/${dir}/${item.images.background}`
 			if (item.images.icon.startsWith('.')) item.images.icon = `${url}/${dir}/${item.images.icon}`
 
 			item.script = `${url}/${dir}/${item.script}`
-			item.repo = repo
-			item.path = dir
+			item.__meta__ = { repo, path: dir }
 
 			items = [ ...items, item ]
 		}
@@ -101,20 +99,20 @@
 		else load_presences(1)
 	}
 
-	const manage = (e: MouseEvent, item: Item) => {
+	const manage = (e: MouseEvent, item: Manifest) => {
 		e.stopPropagation()
 
 		if ($presences) {
 			const found = $presences.find(e => e.title === item.title)
 
 			if (found) presences.remove(item)
-			else presences.append(item, item.repo, item.path)
+			else presences.append(item)
 		}
 	}
 
-	const openPresence = (item: Item) => {
-		ui.setOpenedPresence(item)
-		ui.setTab(AppTab.Store)
+	const openPresence = (item: Manifest) => {
+		ui.togglePresenceOpen()
+		item_open = item
 	}
 
 	onMount(() => {
@@ -176,8 +174,8 @@
 	{/if}
 </main>
 
-{#if $ui.opened_presence}
-	<StorePresence item={$ui.opened_presence} close={() => ui.setOpenedPresence(null)} />
+{#if $ui.presence_open}
+	<StorePresence item={item_open} close={() => ui.togglePresenceOpen()} />
 {/if}
 
 <style lang='scss'>

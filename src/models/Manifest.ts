@@ -15,4 +15,9 @@ export interface Manifest {
 	urls: string[]
 
 	script: string
+
+	__meta__: {
+		repo: string
+		path: string // Path inside repository
+	}
 }
