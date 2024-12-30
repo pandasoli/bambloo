@@ -5,7 +5,7 @@ import type { Presence } from '@/models/Presence.ts'
 import type { Activity } from '@/models/Activity.ts'
 import type { Tab } from '@/models/Tab.ts'
 
-import { storeDataLocally } from '@/utils/storeData.ts'
+import { saveDataLocally } from '@/utils/saveData.ts'
 import { tryset_conn } from '@/utils/tryset_conn.ts'
 
 import { conn } from '@/stores/conn.ts'
@@ -95,7 +95,7 @@ chrome.runtime.onConnect.addListener(async port => {
 	update(get(repos), 'repos')
 	update(get(alltabs), 'alltabs')
 
-	port.onDisconnect.addListener(storeDataLocally)
+	port.onDisconnect.addListener(saveDataLocally)
 })
 
 // Run on background start

@@ -8,7 +8,7 @@ import { repos } from '@/stores/repos.ts'
 import { alltabs } from '@/stores/alltabs.ts'
 
 
-export const storeDataLocally = () => {
+export const saveDataLocally = () => {
 	// Store data that is required between connections
 	const presences_ = get(presences) ?? undefined
 	const conn_ = get(conn)
