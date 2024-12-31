@@ -20,14 +20,19 @@ set_updatters(bad_data, 'repos bad data')
 
 const load = async () => {
 	const { repos: data } = await chrome.storage.local.get('repos')
-	if (data === undefined) return
+	if (data === undefined) {
+		state.set(defaults)
+		return true
+	}
 
 	if (!Array.isArray(data)) {
 		panic(data)
-		return popup.append('Repos list stored is not valid')
+		popup.append('Repos list stored is not valid')
+		return false
 	}
 
 	state.set(data)
+	return true
 }
 
 const panic = (data: any) => {

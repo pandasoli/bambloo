@@ -7,7 +7,6 @@
 	import ToolTip from '@/components/ToolTip.svelte'
 
 	import { repos, repos_bad_data } from '@/stores/repos.ts'
-  import { popup } from '@/stores/popup.ts'
 
 	import discordIcon from '@/assets/discord.svg'
 	import githubIcon from '@/assets/github.svg'
@@ -20,20 +19,7 @@
 
 
 	const errDeleteRepos = () => repos.set(repos.defaults)
-	const errRetryRepos = async () => {
-		const { repos: repos_data } = await chrome.storage.local.get('repos')
-
-		if (repos_data !== undefined) {
-			if (!Array.isArray(repos_data)) {
-				repos.panic(repos_data)
-				popup.append('Repos list stored is not valid')
-			}
-			else
-				repos.set(repos_data)
-		}
-		else
-			repos.set(repos.defaults)
-	}
+	const errRetryRepos = async () => repos.load()
 
 	const update_repos: FocusEventHandler<HTMLTextAreaElement> = () =>
 		repos.set(

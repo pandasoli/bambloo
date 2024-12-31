@@ -120,20 +120,8 @@
 		load_repos()
 	}
 
-	const errRetryRepos = async () => {
-		const { repos: repos_data } = await chrome.storage.local.get('repos')
-
-		if (repos_data !== undefined) {
-			if (!Array.isArray(repos_data)) {
-				repos.panic(repos_data)
-				popup.append('Repos list stored is not valid')
-			}
-			else
-				repos.set(repos_data)
-		}
-		else
-			repos.set(repos.defaults)
-	}
+	const errRetryRepos = async () =>
+		await repos.load() && load_repos()
 
 	onMount(() => {
 		if ($repos) load_repos()
