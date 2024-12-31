@@ -7,7 +7,6 @@
 	import { repos, repos_bad_data } from '@/stores/repos.ts'
 	import { presences } from '@/stores/presences.ts'
 	import { ui } from '@/stores/ui.ts'
-  import { popup } from '@/stores/popup.ts'
 
 	import type { Manifest } from '@/models/Manifest.ts'
 
@@ -139,7 +138,7 @@
 		<div class='err-panel'>
 			<span class='error'>Could not parse local JSON data</span>
 
-			<div class='btns-2'>
+			<div class='buttons btns-2'>
 				<Button type='red' outline onclick={errDeleteRepos}>Delete my data</Button>
 				<Button type='red' onclick={errRetryRepos}>Retry parsing</Button>
 			</div>
