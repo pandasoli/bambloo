@@ -54,6 +54,8 @@ In the [Releases tab](https://github.com/pandasoli/bambloo/releases) you'll find
 Under the `Assets` drop-down are the files, you can choose whether you prefer  
 a zip file or a tarball. Download the one with the name "bambloo-extension".
 
+If you prefer, you can build yourself by cloning this repo and running `bin run build`.
+
 <br>
 
 After downloading extract the file and follow the next steps accordingly to your browser:
