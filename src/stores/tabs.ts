@@ -80,8 +80,8 @@ const append = (raw_tab: chrome.tabs.Tab) =>
 			const presence = get(presences)?.find(e => e.id === tab.presence_id) as Presence
 			const input = presence.input
 
-			if (presence.enabled)
-				presenceScript.sendMessage(tab.id, tab.enabled ? { type: 'start', input } : { type: 'stop' })
+			if (presence.enabled && tab.enabled)
+				presenceScript.sendMessage(tab.id, { type: 'start', input })
 		}
 
 		tabs.push(tab)

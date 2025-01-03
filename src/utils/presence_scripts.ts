@@ -24,6 +24,7 @@ export const register = async (presence: Presence) => {
 	const text = await res.text()
 	const code = api + text
 
+	console.log('[register]', presence.id)
 	return chrome.userScripts.register([{
 		id: presence.id.toString(),
 		world: 'USER_SCRIPT',
@@ -41,6 +42,7 @@ export const unregister = (presence: Presence) => {
 		}
 	})
 
+	console.log('[unregister]', presence.id)
 	return chrome.userScripts.unregister({
 		ids: [ presence.id.toString() ]
 	})

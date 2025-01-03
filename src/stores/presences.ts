@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store'
+import { writable, get } from 'svelte/store'
 
 import type { Presence } from '@/models/Presence.ts'
 import { AppTab } from '@/models/AppTab'
@@ -81,8 +81,10 @@ const toggle_enabled = (presence: Presence) =>
 
 		presence.enabled = !presence.enabled
 
-		if (presence.enabled) presenceScript.register(presence).catch(popup.append)
-		else presenceScript.unregister(presence)
+		get(tabs).forEach(tab => {
+			if (tab.presence_id === presence.id && tab.enabled && tab.id)
+				presenceScript.sendMessage(tab.id, presence.enabled ? { type: 'start', input: presence.input } : { type: 'stop' })
+		})
 
 		return presences
 	})
