@@ -11,18 +11,7 @@
 
 
 	const errDeletePresences = () => presences.set([])
-	const errRetryPresences = async () => {
-		const { presences: presences_data } = await chrome.storage.local.get('presences')
-
-		if (presences_data !== undefined) {
-			if (!Array.isArray(presences_data))
-				presences.panic(presences_data)
-			else
-				presences_data.forEach(presences.append)
-		}
-		else
-			presences.set([])
-	}
+	const errRetryPresences = () => presences.load()
 
 	const toggle = (presence: Presence) =>
 		presences.toggle_enabled(presence)
