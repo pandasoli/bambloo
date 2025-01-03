@@ -8,17 +8,11 @@ export const set_updatters = <T>(state: Writable<T>, name: string) => {
 	 * don't want to send to the background or to the popup
 	 */
 	let internal = true
-	/* It is not necessary to only send messages when popup
-	 * is open, but it reduces the number of errors
-	 */
-	let connected = false
 
 	state.subscribe(content => {
 		if (!internal) {
-			if (connected) {
-				const data = JSON.parse(JSON.stringify(content))
-				chrome.runtime.sendMessage({ type: `${name} update`, data })
-			}
+			const data = JSON.parse(JSON.stringify(content))
+			chrome.runtime.sendMessage({ type: `${name} update`, data })
 		}
 		else
 			internal = false
@@ -31,10 +25,6 @@ export const set_updatters = <T>(state: Writable<T>, name: string) => {
 		}
 	})
 
-	chrome.runtime.onConnect.addListener(port => {
-		connected = true
-		chrome.runtime.sendMessage({ type: `${name} update`, data: get(state) })
-
-		port.onDisconnect.addListener(() => connected = false)
-	})
+	chrome.runtime.onConnect.addListener(() =>
+		chrome.runtime.sendMessage({ type: `${name} update`, data: get(state) }))
 }
