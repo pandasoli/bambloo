@@ -28,8 +28,8 @@ const load = async () => {
 	if (data.method === null) return
 
 	if (typeof data.method !== 'number') return popup.append('Connection method stored is not valid')
-	if (typeof data.args !== 'object' && data.args !== null) return popup.append('Connection args stored are not valid')
-	if (typeof data.args === 'object' && typeof data.args.port !== 'number') return popup.append('Connection port stored are not valid')
+	if (typeof data.args !== 'object') return popup.append('Connection args stored are not valid')
+	if (data.args !== null && typeof data.args.port !== 'number') return popup.append('Connection port stored are not valid')
 
 	tryset_conn(data.method, data.args, true)
 }

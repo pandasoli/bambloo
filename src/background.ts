@@ -84,22 +84,8 @@ chrome.runtime.onUserScriptMessage.addListener((msg, sender) => {
 	onPresenseMessage(msg, Number(sender.tab?.id))
 })
 
-chrome.runtime.onConnect.addListener(async port => {
-	const update = (data: any, name: string) =>
-		chrome.runtime.sendMessage({ type: `${name} update`, data })
-
-	update(get(conn), 'conn')
-	update(get(popup), 'popup')
-	update(get(ui), 'ui')
-	update(get(presences), 'presences')
-	update(get(tabs), 'tabs')
-	update(get(repos), 'repos')
-	update(get(alltabs), 'alltabs')
-	update(get(presences_bad_data), 'presences bad data')
-	update(get(repos_bad_data), 'repos bad data')
-
-	port.onDisconnect.addListener(saveDataLocally)
-})
+chrome.runtime.onConnect.addListener(async port =>
+	port.onDisconnect.addListener(saveDataLocally))
 
 // Run on background start
 ;(async () => {
