@@ -92,6 +92,11 @@ const change_input = (presence: Presence, input: string) =>
 
 		presence.input = input
 
+		get(tabs).forEach(tab => {
+			if (tab.presence_id === presence.id && tab.enabled)
+				presenceScript.sendMessage(tab.id!, { type: 'start', input })
+		})
+
 		return presences
 	})
 
