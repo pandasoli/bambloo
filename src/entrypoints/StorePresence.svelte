@@ -14,20 +14,20 @@
 	import gitIcon from '@/assets/git.svg'
 
 
-	export let item: Manifest
+	export let manifest: Manifest
 	export let close: () => void
 
 
-	const presence = $presences?.find(e => e.title === item.title)
+	const presence = $presences?.find(e => e.title === manifest.title)
 	const installed = presence !== undefined
 	let input = presence?.input ?? ''
 
-	const manage = (item: Manifest) => {
+	const manage = (manifest: Manifest) => {
 		if ($presences) {
-			const found = $presences.find(e => e.title === item.title)
+			const found = $presences.find(e => e.title === manifest.title)
 
-			if (found) chrome.runtime.sendMessage({ type: 'presence remove', manifest: item })
-			else presences.append(item)
+			if (found) chrome.runtime.sendMessage({ type: 'presence remove', manifest: manifest })
+			else presences.append(manifest)
 		}
 	}
 
@@ -49,18 +49,18 @@
 	</header>
 
 	<div>
-		<img src={item.images.background} id='bg' />
+		<img src={manifest.images.background} id='bg' />
 
 		<header>
-			<img src={item.images.icon} id='icon' />
+			<img src={manifest.images.icon} id='icon' />
 
 			<div>
-				<h1 id='title'>{item.title}</h1>
-				<span id='author' class='blue'>{item.author}</span>
+				<h1 id='title'>{manifest.title}</h1>
+				<span id='author' class='blue'>{manifest.author}</span>
 			</div>
 
-			<button on:click={() => manage(item)}>
-				{#if $presences?.find(e => e.title === item.title)}
+			<button on:click={() => manage(manifest)}>
+				{#if $presences?.find(e => e.title === manifest.title)}
 								<img src={trashIcon} alt='Trash icon' />
 				{:else} <img src={downloadIcon} alt='Download icon' />
 				{/if}
@@ -69,23 +69,23 @@
 
 		<main>
 			<div id='previews'>
-				{#each item.previews as src}
+				{#each manifest.previews as src}
 					<img {src} />
 				{/each}
 			</div>
 
-			<p id='description'>{item.description}</p>
+			<p id='description'>{manifest.description}</p>
 
 			<div id='details'>
 				<div>
 					<img src={gitIcon} alt='Git icon' />
-					<p>{item.__meta__.repo}</p>
+					<p>{manifest.__meta__.repo}</p>
 				</div>
 
 				<div id='urls'>
 					<img src={linkIcon} alt='Link icon' />
 
-					<p>{item.urls.join('\n')}</p>
+					<p>{manifest.urls.join('\n')}</p>
 				</div>
 			</div>
 

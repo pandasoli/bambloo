@@ -24,7 +24,7 @@
 	let repo_i = 0
 
 	let manifests_path: Location[] = []
-	let items: Manifest[] = []
+	let manifests: Manifest[] = []
 	let error: string|null = null
 
 	const load_presences = async (amount: number) => {
@@ -42,16 +42,16 @@
 			}
 
 			// Process response
-			const item: Manifest = await res.json()
+			const manifest: Manifest = await res.json()
 			const dir = path.split('/').slice(0, -1).join('/')
 
-			if (item.images.background.startsWith('.')) item.images.background = `${url}/${dir}/${item.images.background}`
-			if (item.images.icon.startsWith('.')) item.images.icon = `${url}/${dir}/${item.images.icon}`
+			if (manifest.images.background.startsWith('.')) manifest.images.background = `${url}/${dir}/${manifest.images.background}`
+			if (manifest.images.icon.startsWith('.')) manifest.images.icon = `${url}/${dir}/${manifest.images.icon}`
 
-			item.script = `${url}/${dir}/${item.script}`
-			item.__meta__ = { repo, path: dir }
+			manifest.script = `${url}/${dir}/${manifest.script}`
+			manifest.__meta__ = { repo, path: dir }
 
-			items = [ ...items, item ]
+			manifests = [ ...manifests, manifest ]
 		}
 	}
 
@@ -59,9 +59,9 @@
 		const more_amount = 10
 
 		if (manifests_path.length < more_amount) {
-			const expected_len = items.length + 10
+			const expected_len = manifests.length + 10
 
-			for (; repo_i < ($repos?.length ?? 0) && items.length < expected_len; ++repo_i) {
+			for (; repo_i < ($repos?.length ?? 0) && manifests.length < expected_len; ++repo_i) {
 				const repo = $repos?.[repo_i]
 				const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/master?recursive=1`)
 
@@ -100,17 +100,17 @@
 		else load_presences(1)
 	}
 
-	const manage = (e: MouseEvent, item: Manifest) => {
+	const manage = (e: MouseEvent, manifest: Manifest) => {
 		e.stopPropagation()
 
-		const found = $presences?.some(e => e.title === item.title)
+		const found = $presences?.some(e => e.title === manifest.title)
 
-		if (found) chrome.runtime.sendMessage({ type: 'presence remove', manifest: item })
-		else presences.append(item)
+		if (found) chrome.runtime.sendMessage({ type: 'presence remove', manifest })
+		else presences.append(manifest)
 	}
 
-	const openPresence = (item: Manifest) =>
-		ui.setPresenceOpen(item)
+	const openPresence = (manifest: Manifest) =>
+		ui.setPresenceOpen(manifest)
 
 	const errDeleteRepos = () => {
 		repos.set(repos.defaults)
@@ -151,7 +151,7 @@
 				<Button type='red' outline on:click={errRetry}>Retry</Button>
 			</div>
 		</div>
-	{:else if items.length === 0}
+	{:else if manifests.length === 0}
 		<div id='loading'>
 			<span class='info'>{loadingMsgs[loadingMsgsIndex]}</span>
 		</div>
@@ -168,17 +168,17 @@
 			</div>
 		</div>
 
-		<div id='presences' class:loading={items.length === 0}>
-			{#each items as item}
-				<div class='presence' on:click={() => openPresence(item)}>
-					<img src={item.images.background} class='bg' />
+		<div id='presences' class:loading={manifests.length === 0}>
+			{#each manifests as manifest}
+				<div class='presence' on:click={() => openPresence(manifest)}>
+					<img src={manifest.images.background} class='bg' />
 
 					<div>
-						<img src={item.images.icon} class='icon' />
-						<span class='title' style='color: {item.title_color}'>{item.title}</span>
+						<img src={manifest.images.icon} class='icon' />
+						<span class='title' style='color: {manifest.title_color}'>{manifest.title}</span>
 
-						<button on:click={e => manage(e, item)}>
-							{#if $presences?.find(e => e.title === item.title)}
+						<button on:click={e => manage(e, manifest)}>
+							{#if $presences?.find(e => e.title === manifest.title)}
 											<img src={trashIcon} alt='Trash icon' />
 							{:else} <img src={downloadIcon} alt='Download icon' />
 							{/if}
@@ -191,7 +191,7 @@
 </main>
 
 {#if $ui.presence_open}
-	<StorePresence item={$ui.presence_open} close={() => ui.setPresenceOpen(null)} />
+	<StorePresence manifest={$ui.presence_open} close={() => ui.setPresenceOpen(null)} />
 {/if}
 
 <style lang='less'>
