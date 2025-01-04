@@ -11,7 +11,7 @@ import { try_conn } from '@/services/connect.ts'
  * connection is already active, it disconnects the current
  * one before replacing it with the newly connection.
  */
-export const tryset_conn = (method: ConnMethod, args: ConnArgs, set_first: boolean, onErr?: (err: string) => void) => {
+export const tryset_conn = (method: ConnMethod, args: ConnArgs, set_first: boolean, callback?: (err?: string) => void) => {
 	try_conn(method, args).then(res => {
 		const { conn: conn_ } = res
 
@@ -23,7 +23,7 @@ export const tryset_conn = (method: ConnMethod, args: ConnArgs, set_first: boole
 
 		if ('err' in res) {
 			if (set_first) conn.setErrMsg(res.err)
-			return onErr?.(res.err)
+			return callback?.(res.err)
 		}
 
 		browser.runtime.sendMessage({type: 'conn state update', state: ConnState.WaitingDetails})
@@ -40,6 +40,7 @@ export const tryset_conn = (method: ConnMethod, args: ConnArgs, set_first: boole
 			conn.setState(ConnState.Connected)
 
 			browser.runtime.sendMessage({type: 'conn state update', state: ConnState.Connected})
+			callback?.()
 		})
 	})
 }

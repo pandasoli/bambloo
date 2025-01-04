@@ -58,8 +58,10 @@
 				null
 		})
 			.then(err => {
-				state = ConnState.Stopped
-				errMsg = err
+				if (err) {
+					state = ConnState.Stopped
+					errMsg = err
+				}
 			})
 	}
 
