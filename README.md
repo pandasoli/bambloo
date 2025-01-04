@@ -6,7 +6,7 @@
 <br>
 <br>
 
-<img align=right src='https://github.com/user-attachments/assets/dc3d8e81-5c8d-4949-9816-51202a3a7f73' />
+<img align=right src='docs/preview.png' />
 
 [**Bambloo**](https://github.com/pandasoli/bambloo) is a super easy web extension that lets you share
 what you're up to in your browser with your friends on Discord.
@@ -28,8 +28,9 @@ It is straightforward, <ins>configurable</ins> and <samp>pretty</samp> 🫐
 ![Number of stars](https://img.shields.io/github/stars/pandasoli/bambloo?color=ed8796&labelColor=303446&style=for-the-badge)
 [![MIT license](https://img.shields.io/github/license/pandasoli/bambloo?style=for-the-badge&label=License&labelColor=313244&color=ca9ee6)](LICENSE)
 
-![Supports linux](https://img.shields.io/badge/Linux-support-fcc624?logoColor=fcc624&labelColor=303446)
-![Supports Chrome 120+](https://img.shields.io/badge/Chrome-120%2B-C1E1C1?labelColor=313244)
+![Linux support](https://img.shields.io/badge/Linux-support-fdfd96?logoColor=fcc624&labelColor=303446)
+![Chrome 120+ support](https://img.shields.io/badge/Chrome-120%2B-C1E1C1?labelColor=313244)
+![Firefox support](https://img.shields.io/badge/Firefox-support-ed8796?labelColor=313244)
 </div>
 
 > [!WARNING]
@@ -64,13 +65,23 @@ After downloading extract the file and follow the next steps accordingly to your
 	<summary>Google Chrome</summary>
 <br>
 
-Inside your browser, type `chrome://extensions` in your searchbar or,  
-click on the 3-dot button in the upper right corner, hover over the  
-"Extensions" option and click on "Manage Extensions".
+1. Inside your browser, type `chrome://extensions` in your searchbar or,
+	click on the 3-dot button in the upper right corner, hover over the
+	"Extensions" option and click on "Manage Extensions"
 
-In the upper right corner enable `Developer mode`, after that  
-click on the "Load unpacked" button in the upper left corner and  
-search for and select the folder you extracted.
+2. In the upper right corner enable `Developer mode`
+3. Click on the "Load unpacked" button in the upper left corner
+4. Search for and select the folder you extracted
+</details>
+
+<details>
+	<summary>Firefox</summary>
+<br>
+
+1. Inside your browser, type `about:debugging#/runtime/this-firefox` in the searchbar
+
+2. Click on the "Load Temporary Add-on..." button under the "Temporary Extensions" drop-down
+3. Search for and select the `manifest.json` file inside the folder you extracted
 </details>
 
 <br>
