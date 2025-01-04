@@ -5,6 +5,7 @@ import type { Activity } from '@/models/Activity.ts'
 
 import { saveDataLocally } from '@/utils/saveData.ts'
 import { tryset_conn } from '@/utils/tryset_conn.ts'
+import * as presenceScripts from '@/utils/presence_scripts.ts'
 
 import { conn } from '@/stores/conn.ts'
 import { presences } from '@/stores/presences.ts'
@@ -57,8 +58,7 @@ export default defineBackground(() => {
 
 			case 'presence toggle': presences.toggle_enabled(msg.id); break
 			case 'tab toggle': tabs.toggle_enabled(msg.id); break
-			case 'presence append': presences.append(msg.manifest); break
-			case 'presence remove': presences.remove(msg.manifest)
+			case 'presence remove': presences.remove(msg.manifest) 
 		}
 	})
 
@@ -93,10 +93,14 @@ export default defineBackground(() => {
 	;(async () => {
 		await presence_api.load()
 
-		tabs.load()
+		const { fill, start } = tabs.load()
 		conn.load()
 		presences.load()
 		repos.load()
 		alltabs.load()
+
+		fill()
+		presenceScripts.load()
+		start()
 	})()
 })

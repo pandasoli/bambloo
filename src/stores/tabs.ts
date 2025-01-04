@@ -44,24 +44,31 @@ const load = () => {
 	browser.tabs.onCreated.addListener(tab => append(tab))
 	browser.tabs.onRemoved.addListener(id => remove(id))
 
-	browser.tabs.onUpdated.addListener((id, info, raw_tab) => {
-		if (info.status !== 'complete') return
+	return {
+		fill: () => browser.tabs.onUpdated.addListener((id, info, raw_tab) => {
+			if (info.status !== 'complete') return
 
-		state.update(tabs => {
-			const old = tabs.find(e => e.id === id)!
-			const tab = fill_tab(raw_tab)
+			state.update(tabs => {
+				const old = tabs.find(e => e.id === id)!
+				const tab = fill_tab(raw_tab)
+
+				tab.enabled = old.enabled
+
+				return tabs.map(e => e.id === id ? tab : e)
+			})
+		}),
+
+		start: () => browser.tabs.onUpdated.addListener((id, info) => {
+			if (info.status !== 'complete') return
+
+			const tab = get(tabs).find(e => e.id === id)!
 			const presence = get(presences)?.find(e => e.id === tab.presence_id)
 			const input = presence?.input
 
-			tab.enabled = old.enabled
-
 			if (tab.enabled && presence?.enabled)
 				presenceScript.sendMessage(id, { type: 'start', input })
-
-			return tabs
-				.map(e => e.id === id ? tab : e)
 		})
-	})
+	}
 }
 
 const append = (raw_tab: chrome.tabs.Tab) =>
@@ -73,7 +80,7 @@ const append = (raw_tab: chrome.tabs.Tab) =>
 			return tabs
 		}
 
-		if (tab.presence_id) {
+		if (tab.presence_id !== undefined) {
 			const presence = get(presences)?.find(e => e.id === tab.presence_id)!
 			const input = presence.input
 
@@ -93,7 +100,7 @@ const toggle_enabled = (id: number) =>
 		const tab = tabs.find(e => e.id === id)!
 		tab.enabled = !tab.enabled
 
-		if (tab.presence_id) {
+		if (tab.presence_id !== undefined) {
 			const presence = get(presences)?.find(e => e.id === tab.presence_id)!
 			const input = presence.input
 			const enabled = presence.enabled && tab.enabled

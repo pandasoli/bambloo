@@ -26,10 +26,8 @@
 		if ($presences) {
 			const found = $presences.find(e => e.title === item.title)
 
-			browser.runtime.sendMessage({
-				type: 'presence ' + (found ? 'remove' : 'append'),
-				manifest: item
-			})
+			if (found) chrome.runtime.sendMessage({ type: 'presence remove', manifest: item })
+			else presences.append(item)
 		}
 	}
 
