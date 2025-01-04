@@ -19,7 +19,7 @@
 	</button>
 {/if}
 
-<style lang='scss'>
+<style lang='less'>
 	button, a {
 		display: flex;
 		align-items: center;

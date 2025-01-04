@@ -26,7 +26,7 @@ export const tryset_conn = (method: ConnMethod, args: ConnArgs, set_first: boole
 			return onErr?.(res.err)
 		}
 
-		chrome.runtime.sendMessage({type: 'conn state update', state: ConnState.WaitingDetails})
+		browser.runtime.sendMessage({type: 'conn state update', state: ConnState.WaitingDetails})
 
 		const { details } = res
 
@@ -39,7 +39,7 @@ export const tryset_conn = (method: ConnMethod, args: ConnArgs, set_first: boole
 			conn.setDetails(details)
 			conn.setState(ConnState.Connected)
 
-			chrome.runtime.sendMessage({type: 'conn state update', state: ConnState.Connected})
+			browser.runtime.sendMessage({type: 'conn state update', state: ConnState.Connected})
 		})
 	})
 }

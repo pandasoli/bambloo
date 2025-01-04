@@ -24,7 +24,7 @@ set_updatters(state, 'presences')
 set_updatters(bad_data, 'presences bad data')
 
 const load = async () => {
-	const { presences: data } = await chrome.storage.local.get('presences')
+	const { presences: data } = await browser.storage.local.get('presences')
 	if (data === undefined) return ui.setTab(AppTab.Store)
 
 	if (!Array.isArray(data)) return panic(data)

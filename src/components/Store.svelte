@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import { onMount } from 'svelte'
 
-	import StorePresence from '@/StorePresence.svelte'
+	import StorePresence from '@/entrypoints/StorePresence.svelte'
 	import Button from '@/components/Button.svelte'
 
 	import { repos, repos_bad_data } from '@/stores/repos.ts'
@@ -170,7 +170,7 @@
 
 		<div id='presences' class:loading={items.length === 0}>
 			{#each items as item}
-				<button class='presence' on:click={() => openPresence(item)}>
+				<div class='presence' on:click={() => openPresence(item)}>
 					<img src={item.images.background} class='bg' />
 
 					<div>
@@ -184,7 +184,7 @@
 							{/if}
 						</button>
 					</div>
-				</button>
+				</div>
 			{/each}
 		</div>
 	{/if}
@@ -194,7 +194,7 @@
 	<StorePresence item={$ui.presence_open} close={() => ui.setPresenceOpen(null)} />
 {/if}
 
-<style lang='scss'>
+<style lang='less'>
 	main {
 		display: flex;
 		flex-direction: column;

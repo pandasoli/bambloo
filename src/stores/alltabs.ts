@@ -8,7 +8,7 @@ const state = writable<boolean>(true)
 set_updatters(state, 'alltabs')
 
 const load = async () => {
-	const { alltabs: data } = await chrome.storage.local.get('alltabs')
+	const { alltabs: data } = await browser.storage.local.get('alltabs')
 	if (data === undefined) return
 
 	if (typeof data !== 'boolean')

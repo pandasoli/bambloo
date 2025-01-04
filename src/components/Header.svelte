@@ -23,7 +23,7 @@
 	{/each}
 </main>
 
-<style>
+<style lang='less'>
 	main {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);

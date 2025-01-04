@@ -1,8 +1,8 @@
 <script lang='ts'>
-	import WelcomeScreen from '@/Welcome.svelte'
-  import PresencesTab from '@/Presences.svelte'
-	import TabsTab from '@/Tabs.svelte'
-	import SettingsScreen from '@/Settings.svelte'
+	import WelcomeScreen from '@/entrypoints/Welcome.svelte'
+  import PresencesTab from '@/entrypoints/Presences.svelte'
+	import TabsTab from '@/entrypoints/Tabs.svelte'
+	import SettingsScreen from '@/entrypoints/Settings.svelte'
 	import Header from '@/components/Header.svelte'
 	import Store from '@/components/Store.svelte'
 	import Button from '@/components/Button.svelte'
@@ -20,7 +20,7 @@
 
 
 	const errorRetry = (index: number) =>
-		chrome.runtime.sendMessage({ type: 'error', index })
+		browser.runtime.sendMessage({ type: 'error', index })
 
 
 	popup.subscribe(() =>
@@ -70,7 +70,7 @@
 	{/if}
 {/if}
 
-<style lang='scss'>
+<style lang='less'>
 	#popup-container {
 		position: absolute;
 		top: 0;

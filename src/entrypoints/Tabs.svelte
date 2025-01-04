@@ -13,7 +13,7 @@
 
 
 	const toggle = (tab: Tab) =>
-		chrome.runtime.sendMessage({ type: 'tab toggle', id: tab.id })
+		browser.runtime.sendMessage({ type: 'tab toggle', id: tab.id })
 </script>
 
 <img src={treeIcon} id='tree' />
@@ -50,7 +50,7 @@
 	</div>
 </main>
 
-<style lang='scss'>
+<style lang='less'>
 	#tree {
 		position: absolute;
 		width: 261px;

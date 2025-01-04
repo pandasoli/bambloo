@@ -51,7 +51,7 @@
 	</div>
 </main>
 
-<style lang='scss'>
+<style lang='less'>
 	main { position: relative }
 
 	#header {

@@ -2,8 +2,6 @@
 	import { presences, presences_bad_data } from '@/stores/presences.ts'
 	import { ui } from '@/stores/ui.ts'
 
-	import type { Presence } from '@/models/Presence.ts'
-
 	import CheckBox from '@/components/CheckBox.svelte'
 	import Button from '@/components/Button.svelte'
 
@@ -14,7 +12,7 @@
 	const errRetryPresences = () => presences.load()
 
 	const toggle = (id: number) =>
-		chrome.runtime.sendMessage({ type: 'presence toggle', id })
+		browser.runtime.sendMessage({ type: 'presence toggle', id })
 </script>
 
 {#if $presences !== null}
@@ -52,7 +50,7 @@
 	</svg>
 </button>
 
-<style lang='scss'>
+<style lang='less'>
 	#tree {
 		position: absolute;
 		width: 100%;

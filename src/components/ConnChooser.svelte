@@ -38,7 +38,7 @@
 
 	let ws_conn_args: WebSocketArgs = { port: 8765 }
 
-	chrome.runtime.onMessage.addListener(msg => {
+	browser.runtime.onMessage.addListener(msg => {
 		switch (msg.type) {
 			case 'conn state update':
 				state = msg.state
@@ -49,7 +49,7 @@
 		state = ConnState.Connecting
 		errMsg = null
 
-		chrome.runtime.sendMessage({
+		browser.runtime.sendMessage({
 			type: 'connect',
 			method,
 			set_first: $conn === null,
@@ -116,7 +116,7 @@
 	</div>
 </main>
 
-<style lang='scss'>
+<style lang='less'>
 	#aux {
 		display: flex;
 		flex-direction: column;

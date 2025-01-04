@@ -14,28 +14,28 @@
 	<div />
 </button>
 
-<style lang='scss'>
-	$width: 38px;
-	$padding: 3px;
+<style lang='less'>
+	@width: 38px;
+	@padding: 3px;
 
 	button {
 		position: relative;
 		display: flex;
-		width: $width;
+		width: @width;
 		height: 18px;
-		padding: $padding;
+		padding: @padding;
 		border-radius: 8px;
 		background: var(--light-bg);
 
 		&.enabled { background: var(--blue) }
-		&.enabled div { background: white; right: $padding }
+		&.enabled div { background: white; right: @padding }
 	}
 
 	div {
 		position: absolute;
 		width: 12px;
 		height: 12px;
-		right: calc($width - $padding - 12px);
+		right: calc(@width - @padding - 12px);
 		border-radius: 50%;
 		background: var(--header-text-cl);
 		transition: 250ms right

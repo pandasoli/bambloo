@@ -116,7 +116,7 @@
 	</div>
 </main>
 
-<style lang='scss'>
+<style lang='less'>
 	#container {
 		position: absolute;
 		display: flex;

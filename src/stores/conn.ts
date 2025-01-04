@@ -20,7 +20,7 @@ const onErr = () => {
 
 
 const load = async () => {
-	const { conn: data } = await chrome.storage.local.get('conn')
+	const { conn: data } = await browser.storage.local.get('conn')
 	if (data === undefined) return
 
 	if (typeof data !== 'object') return popup.append('Connection info stored is not valid')

@@ -8,6 +8,10 @@ import { presence_api } from '@/stores/presence_api'
 import type { Presence } from '@/models/Presence.ts'
 
 
+if (import.meta.env.FIREFOX)
+	var scripts: {presence_id: number, fn: () => void}[] = []
+
+
 export const register = async (presence: Presence) => {
 	const api_code = get(presence_api)
 	if (!api_code) return
@@ -24,13 +28,36 @@ export const register = async (presence: Presence) => {
 	const text = await res.text()
 	const code = api + text
 
-	return chrome.userScripts.register([{
-		id: presence.id.toString(),
-		world: 'USER_SCRIPT',
-		matches: presence.urls,
-		runAt: 'document_start',
-		js: [{ code }]
-	}])
+	if (import.meta.env.CHROME)
+		return browser.userScripts.register([{
+			id: presence.id.toString(),
+			world: 'USER_SCRIPT',
+			matches: presence.urls,
+			runAt: 'document_start',
+			js: [{ code }]
+		}])
+	else if (import.meta.env.FIREFOX) {
+		const onUpdate = (tabId: number, info: chrome.tabs.TabChangeInfo) => {
+			if (info.status !== 'complete') return
+
+			const tab = get(tabs).find(e => e.id === tabId)!
+			if (tab.presence_id !== presence.id) return
+
+			browser.scripting.executeScript({
+				target: { tabId },
+				args: [code],
+				func: code => eval(code)
+			})
+			sendMessage(tabId, { type: 'start' })
+		}
+
+		browser.tabs.onUpdated.addListener(onUpdate)
+
+		scripts.push({
+			presence_id: presence.id,
+			fn: () => browser.tabs.onUpdated.removeListener(onUpdate)
+		})
+	}
 }
 
 export const unregister = (presence: Presence) => {
@@ -41,13 +68,20 @@ export const unregister = (presence: Presence) => {
 		}
 	})
 
-	return chrome.userScripts.unregister({
-		ids: [ presence.id.toString() ]
-	})
+	if (import.meta.env.CHROME)
+		return borwser.userScripts.unregister({
+			ids: [ presence.id.toString() ]
+		})
+	else if (import.meta.env.FIREFOX) {
+		const script = scripts.find(e => e.presence_id === presence.id)!
+
+		script.fn()
+		scripts = scripts.filter(e => e.presence_id !== presence.id)
+	}
 }
 
 export const sendMessage = (tabId: number, data: unknown) =>
-	chrome.scripting.executeScript({
+	browser.scripting.executeScript({
 		target: { tabId },
 		args: [data],
 		func: detail =>

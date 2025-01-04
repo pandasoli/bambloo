@@ -96,7 +96,7 @@
 	</div>
 </main>
 
-<style lang='scss'>
+<style lang='less'>
 	main {
 		position: absolute;
 		display: flex;

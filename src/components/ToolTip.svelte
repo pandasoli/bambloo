@@ -47,7 +47,7 @@
 	</p>
 </div>
 
-<style lang='scss'>
+<style lang='less'>
 	span:hover + div {
 		visibility: visible;
 		opacity: 1

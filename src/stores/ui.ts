@@ -57,7 +57,7 @@ const setError = (msg: string, buttons: ErrButton[]) =>
 	})
 
 
-chrome.runtime.onMessage.addListener(msg => {
+browser.runtime.onMessage.addListener(msg => {
 	switch (msg.type) {
 		case 'error':
 			const i = msg.index

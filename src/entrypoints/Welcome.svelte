@@ -12,7 +12,7 @@
 	<ConnChooser />
 </main>
 
-<style lang='scss'>
+<style lang='less'>
 	h1 {
 		color: white;
 		margin-bottom: 120px;

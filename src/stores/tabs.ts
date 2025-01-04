@@ -39,12 +39,12 @@ const fill_tab = (raw_tab: chrome.tabs.Tab): Tab => {
 }
 
 const load = () => {
-	chrome.tabs.query({}, tabs => state.set(tabs.map(fill_tab)))
+	browser.tabs.query({}, tabs => state.set(tabs.map(fill_tab)))
 
-	chrome.tabs.onCreated.addListener(tab => append(tab))
-	chrome.tabs.onRemoved.addListener(id => remove(id))
+	browser.tabs.onCreated.addListener(tab => append(tab))
+	browser.tabs.onRemoved.addListener(id => remove(id))
 
-	chrome.tabs.onUpdated.addListener((id, info, raw_tab) => {
+	browser.tabs.onUpdated.addListener((id, info, raw_tab) => {
 		if (info.status !== 'complete') return
 
 		state.update(tabs => {

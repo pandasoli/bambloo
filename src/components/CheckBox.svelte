@@ -16,7 +16,7 @@
 	</svg>
 </button>
 
-<style lang='scss'>
+<style lang='less'>
 	button {
 		display: flex;
 		justify-content: center;

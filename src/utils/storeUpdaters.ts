@@ -12,21 +12,21 @@ export const set_updatters = <T>(state: Writable<T>, name: string) => {
 	state.subscribe(content => {
 		if (!internal) {
 			const data = JSON.parse(JSON.stringify(content))
-			chrome.runtime.sendMessage({ type: `${name} update`, data })
+			browser.runtime.sendMessage({ type: `${name} update`, data })
 		}
 		else
 			internal = false
 	})
 
-	chrome.runtime.onMessage.addListener(msg => {
+	browser.runtime.onMessage.addListener(msg => {
 		if (msg.type === `${name} update`) {
 			internal = true
 			state.set(msg.data)
 		}
 	})
 
-	chrome.runtime.onConnect.addListener(() => {
+	browser.runtime.onConnect.addListener(() => {
 		const data = JSON.parse(JSON.stringify(get(state)))
-		chrome.runtime.sendMessage({ type: `${name} update`, data })
+		browser.runtime.sendMessage({ type: `${name} update`, data })
 	})
 }

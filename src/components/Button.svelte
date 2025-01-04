@@ -20,7 +20,7 @@
 	<slot />
 </button>
 
-<style lang='scss'>
+<style lang='less'>
 	button {
 		display: block;
 		border: none;

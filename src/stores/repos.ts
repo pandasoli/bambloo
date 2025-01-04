@@ -14,12 +14,12 @@ const defaults = [ 'pandasoli/bambloo-repo' ]
 	It's only overwritten when the user does so.
 */
 const state = writable<string[]|null>(defaults)
-const bad_data = writable<any>()
+const bad_data = writable<any>(null)
 set_updatters(state, 'repos')
 set_updatters(bad_data, 'repos bad data')
 
 const load = async () => {
-	const { repos: data } = await chrome.storage.local.get('repos')
+	const { repos: data } = await browser.storage.local.get('repos')
 	if (data === undefined) {
 		state.set(defaults)
 		return true

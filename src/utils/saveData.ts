@@ -29,5 +29,5 @@ export const saveDataLocally = () => {
 	// Needed to not overwrite invalid data in storage
 	if (!data.presences) delete data.presences
 
-	chrome.storage.local.set(data)
+	browser.storage.local.set(data)
 }
