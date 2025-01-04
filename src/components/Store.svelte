@@ -105,8 +105,10 @@
 
 		const found = $presences?.some(e => e.title === item.title)
 
-		if (found) presences.remove(item)
-		else presences.append(item)
+		browser.runtime.sendMessage({
+			type: 'presence ' + (found ? 'remove' : 'append'),
+			manifest: item
+		})
 	}
 
 	const openPresence = (item: Manifest) =>

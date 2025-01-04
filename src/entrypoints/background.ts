@@ -55,12 +55,10 @@ export default defineBackground(() => {
 				return true
 			}
 
-			case 'presence toggle':
-				presences.toggle_enabled(msg.id)
-				break
-
-			case 'tab toggle':
-				tabs.toggle_enabled(msg.id)
+			case 'presence toggle': presences.toggle_enabled(msg.id); break
+			case 'tab toggle': tabs.toggle_enabled(msg.id); break
+			case 'presence append': presences.append(msg.manifest); break
+			case 'presence remove': presences.remove(msg.manifest)
 		}
 	})
 
