@@ -36,7 +36,7 @@
 		<div class='err-panel'>
 			<span class='error'>Could not parse local JSON data</span>
 
-			<div class='buttons'>
+			<div class='buttons btns-2'>
 				<Button type='red' outline onclick={errDeletePresences}>Delete my data</Button>
 				<Button type='red' onclick={errRetryPresences}>Retry parsing</Button>
 			</div>
