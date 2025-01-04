@@ -69,7 +69,7 @@ export const unregister = (presence: Presence) => {
 	})
 
 	if (import.meta.env.CHROME)
-		return borwser.userScripts.unregister({
+		return browser.userScripts.unregister({
 			ids: [ presence.id.toString() ]
 		})
 	else if (import.meta.env.FIREFOX) {
