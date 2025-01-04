@@ -29,7 +29,33 @@ const load = async () => {
 
 	if (!Array.isArray(data)) return panic(data)
 
-	/* TODO: Do not assume they're all valid */
+	const check_item = (item: any) => {
+		if (typeof item !== 'object' || item === null) {panic(data); return false}
+
+		if (typeof item.title !== 'string') {panic(data); return false}
+		if (typeof item.description !== 'string') {panic(data); return false}
+		if (typeof item.author !== 'string') {panic(data); return false}
+
+		if (typeof item.title_color !== 'string') {panic(data); return false}
+
+		if (typeof item.images !== 'object' || item.images === null) {panic(data); return false}
+		if (typeof item.images.background !== 'string') {panic(data); return false}
+		if (typeof item.images.icon !== 'string') {panic(data); return false}
+
+		if (!Array.isArray(item.previews)) {panic(data); return false}
+		if (!item.images.preview.every((e: any) => typeof e === 'string')) {panic(data); return false}
+
+		if (!Array.isArray(item.urls)) {panic(data); return false}
+		if (!item.urls.preview.every((e: any) => typeof e === 'string')) {panic(data); return false}
+
+		if (typeof item.script !== 'string') {panic(data); return false}
+
+		return true
+	}
+
+	const success = data.every(check_item)
+	if (!success) return
+
 	data.forEach(append)
 }
 
