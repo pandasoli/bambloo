@@ -103,12 +103,10 @@
 	const manage = (e: MouseEvent, item: Manifest) => {
 		e.stopPropagation()
 
-		if ($presences) {
-			const found = $presences.find(e => e.title === item.title)
+		const found = $presences?.some(e => e.title === item.title)
 
-			if (found) presences.remove(item)
-			else presences.append(item)
-		}
+		if (found) presences.remove(item)
+		else presences.append(item)
 	}
 
 	const openPresence = (item: Manifest) =>

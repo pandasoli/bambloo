@@ -35,7 +35,7 @@ const load = async () => {
 
 const append = (manifest: Manifest) =>
 	state.update(presences => {
-		if (!presences) return presences
+		if (!presences) presences = []
 
 		let id = 0
 		while (presences.some(e => e.id === id)) id++
@@ -48,11 +48,10 @@ const append = (manifest: Manifest) =>
 			enabled: true
 		}
 
-		presences.push(presence)
 		presenceScript.register(presence)
 			.catch(popup.append)
 
-		return presences
+		return [ ...presences, presence ]
 	})
 
 const remove = (manifest: Manifest) =>
