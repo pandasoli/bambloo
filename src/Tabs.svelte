@@ -1,7 +1,6 @@
 <script lang='ts'>
 	import { alltabs } from '@/stores/alltabs.ts'
 	import { tabs } from '@/stores/tabs.ts'
-	import { popup } from '@/stores/popup.ts'
 	import { conn } from '@/stores/conn.ts'
 
 	import type { Tab } from '@/models/Tab.ts'
@@ -13,15 +12,8 @@
 	import worldIcon from '@/assets/world.svg'
 
 
-	const toggle = (tab: Tab) => {
-		if (tab.id === undefined) {
-			popup.append('Cannot toggle tab with no id')
-			console.error('Cannot toggle tab with no id', tab)
-			return
-		}
-
-		tabs.toggle_enabled(tab.id)
-	}
+	const toggle = (tab: Tab) =>
+		chrome.runtime.sendMessage({ type: 'tab toggle', id: tab.id })
 </script>
 
 <img src={treeIcon} id='tree' />

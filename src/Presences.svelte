@@ -13,8 +13,8 @@
 	const errDeletePresences = () => presences.set([])
 	const errRetryPresences = () => presences.load()
 
-	const toggle = (presence: Presence) =>
-		presences.toggle_enabled(presence)
+	const toggle = (id: number) =>
+		chrome.runtime.sendMessage({ type: 'presence toggle', id })
 </script>
 
 {#if $presences !== null}
@@ -27,7 +27,7 @@
 			<div class='presence'>
 				<img src={presence.images.icon} />
 				<span>{presence.title}</span>
-				<CheckBox checked={presence.enabled} onchange={() => toggle(presence)} />
+				<CheckBox checked={presence.enabled} onchange={() => toggle(presence.id)} />
 			</div>
 
 			{#if i < $presences.length - 1} <hr /> {/if}

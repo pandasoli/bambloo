@@ -7,6 +7,7 @@ import type { Manifest } from '@/models/Manifest.ts'
 import { ui } from '@/stores/ui.ts'
 import { tabs } from '@/stores/tabs.ts'
 import { popup } from '@/stores/popup.ts'
+import { conn } from '@/stores/conn.ts'
 
 import { set_updatters } from '@/utils/storeUpdaters.ts'
 import * as presenceScript from '@/utils/presence_scripts.ts'
@@ -69,18 +70,25 @@ const remove = (manifest: Manifest) =>
 		return presences.filter(e => e.title !== manifest.title)
 	})
 
-const toggle_enabled = (presence: Presence) =>
+const toggle_enabled = (id: number) =>
 	state.update(presences => {
 		if (!presences) return presences
 
+		const presence = presences.find(e => e.id === id)!
 		presence.enabled = !presence.enabled
 
-		get(tabs).forEach(tab => {
-			if (tab.presence_id === presence.id)
-				presenceScript.sendMessage(tab.id!, presence.enabled && tab.enabled
-					? { type: 'start', input: presence.input }
-					: { type: 'stop' }
-				)
+		get(tabs)
+		.filter(e => e.presence_id === id)
+		.forEach(tab => {
+			const enabled = presence.enabled && tab.enabled
+			const input = presence.input
+
+			conn.message({
+				event: enabled ? 'update' : 'remove',
+				tabId: tab.id
+			})
+			presenceScript.sendMessage(tab.id!,
+				enabled ? { type: 'start', input } : { type: 'stop' })
 		})
 
 		return presences

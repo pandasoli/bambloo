@@ -1,6 +1,7 @@
 import { get, writable } from 'svelte/store'
 
 import { presences } from '@/stores/presences.ts'
+import { conn } from '@/stores/conn.ts'
 
 import type { Tab } from '@/models/Tab.ts'
 
@@ -90,15 +91,19 @@ const remove = (id: number) =>
 const toggle_enabled = (id: number) =>
 	state.update(tabs => {
 		const tab = tabs.find(e => e.id === id)!
-
 		tab.enabled = !tab.enabled
 
-		if (tab.id && tab.presence_id) {
+		if (tab.presence_id) {
 			const presence = get(presences)?.find(e => e.id === tab.presence_id)!
 			const input = presence.input
+			const enabled = presence.enabled && tab.enabled
 
-			if (presence.enabled && tab.enabled)
-				presenceScript.sendMessage(tab.id, { type: 'start', input })
+			conn.message({
+				event: enabled ? 'update' : 'remove',
+				tabId: tab.id
+			})
+			presenceScript.sendMessage(tab.id!,
+				enabled ? { type: 'start', input } : { type: 'stop' })
 		}
 
 		return tabs

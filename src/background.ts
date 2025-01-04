@@ -1,9 +1,7 @@
 import { get } from 'svelte/store'
 
 import { ConnMethod } from '@/models/Conn.ts'
-import type { Presence } from '@/models/Presence.ts'
 import type { Activity } from '@/models/Activity.ts'
-import type { Tab } from '@/models/Tab.ts'
 
 import { saveDataLocally } from '@/utils/saveData.ts'
 import { tryset_conn } from '@/utils/tryset_conn.ts'
@@ -18,12 +16,20 @@ import { presence_api } from '@/stores/presence_api.ts'
 
 chrome.runtime.onMessage.addListener((msg, _, send) => {
 	switch (msg.type) {
-		case 'connect':
+		case 'connect': {
 			const method: ConnMethod = msg.method
 			const set_first: boolean = msg.set_first
 
 			tryset_conn(method, msg.args, set_first, send)
 			return true
+		}
+
+		case 'presence toggle':
+			presences.toggle_enabled(msg.id)
+			break
+
+		case 'tab toggle':
+			tabs.toggle_enabled(msg.id)
 	}
 })
 
