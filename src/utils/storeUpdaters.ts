@@ -25,6 +25,8 @@ export const set_updatters = <T>(state: Writable<T>, name: string) => {
 		}
 	})
 
-	chrome.runtime.onConnect.addListener(() =>
-		chrome.runtime.sendMessage({ type: `${name} update`, data: get(state) }))
+	chrome.runtime.onConnect.addListener(() => {
+		const data = JSON.parse(JSON.stringify(get(state)))
+		chrome.runtime.sendMessage({ type: `${name} update`, data })
+	})
 }

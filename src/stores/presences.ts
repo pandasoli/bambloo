@@ -19,7 +19,7 @@ import * as presenceScript from '@/utils/presence_scripts.ts'
 	It's only overwritten when the user does so.
 */
 const state = writable<Presence[]|null>([])
-const bad_data = writable<any>()
+const bad_data = writable<any>(null)
 set_updatters(state, 'presences')
 set_updatters(bad_data, 'presences bad data')
 
