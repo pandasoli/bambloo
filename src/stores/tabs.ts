@@ -3,7 +3,6 @@ import { get, writable } from 'svelte/store'
 import { presences } from '@/stores/presences.ts'
 
 import type { Tab } from '@/models/Tab.ts'
-import type { Presence } from '@/models/Presence.ts'
 
 import { set_updatters } from '@/utils/storeUpdaters.ts'
 import * as presenceScript from '@/utils/presence_scripts.ts'
@@ -24,7 +23,7 @@ const fill_tab = (raw_tab: chrome.tabs.Tab): Tab => {
 
 				const regex = new RegExp(str)
 				/* url cannot be null as checked above */
-				return regex.test(raw_tab.url as string)
+				return regex.test(raw_tab.url!)
 			})
 		)
 
@@ -48,11 +47,7 @@ const load = () => {
 		if (info.status !== 'complete') return
 
 		state.update(tabs => {
-			/* There must be a tab in the list
-			 * because when a tab closes it is
-			 * removed from the list
-			 */
-			const old = tabs.find(e => e.id === id) as Tab
+			const old = tabs.find(e => e.id === id)!
 			const tab = fill_tab(raw_tab)
 			const presence = get(presences)?.find(e => e.id === tab.presence_id)
 			const input = presence?.input
@@ -72,43 +67,38 @@ const append = (raw_tab: chrome.tabs.Tab) =>
 	state.update(tabs => {
 		const tab = fill_tab(raw_tab)
 
-		if (tab.id && tab.presence_id) {
-			/* There must be a presence with this id
-			 * because when a presence is uninstalled
-			 * its id is removed from all tabs
-			 */
-			const presence = get(presences)?.find(e => e.id === tab.presence_id) as Presence
+		if (!tab.id) {
+			console.warn('[tabsStore>append]', `Tab "${raw_tab.title}" has no id`)
+			return tabs
+		}
+
+		if (tab.presence_id) {
+			const presence = get(presences)?.find(e => e.id === tab.presence_id)!
 			const input = presence.input
 
 			if (presence.enabled && tab.enabled)
 				presenceScript.sendMessage(tab.id, { type: 'start', input })
 		}
 
-		tabs.push(tab)
-		return tabs
+		return [ ...tabs, tab ]
 	})
 
 const remove = (id: number) =>
 	state.update(tabs =>
-		tabs.filter(e => e.id !== id)
-	)
+		tabs.filter(e => e.id !== id))
 
 const toggle_enabled = (id: number) =>
 	state.update(tabs => {
-		/* There must be a tab in the list
-		 * because when a tab closes it is
-		 * removed from the list
-		 */
-		const tab = tabs.find(e => e.id === id) as Tab
+		const tab = tabs.find(e => e.id === id)!
 
 		tab.enabled = !tab.enabled
 
 		if (tab.id && tab.presence_id) {
-			const presence = get(presences)?.find(e => e.id === tab.presence_id)
-			const input = presence?.input
+			const presence = get(presences)?.find(e => e.id === tab.presence_id)!
+			const input = presence.input
 
-			if (presence?.enabled)
-				presenceScript.sendMessage(tab.id, tab.enabled ? { type: 'start', input } : { type: 'stop' })
+			if (presence.enabled && tab.enabled)
+				presenceScript.sendMessage(tab.id, { type: 'start', input })
 		}
 
 		return tabs

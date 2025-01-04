@@ -58,21 +58,15 @@ const remove = (manifest: Manifest) =>
 	state.update(presences => {
 		if (!presences) return presences
 
-		const presence = presences.find(e => e.title === manifest.title)
-		presences = presences.filter(e => e.title !== manifest.title)
+		const presence = presences.find(e => e.title === manifest.title)!
 
-		if (presence) {
-			presenceScript.unregister(presence)
+		presenceScript.unregister(presence)
 
-			tabs.update(tabs =>
-				tabs.map(tab => {
-					if (tab.presence_id === presence.id) delete tab.presence_id
-					return tab
-				})
-			)
-		}
+		tabs.update(tabs =>
+			tabs.map(tab =>
+				tab.presence_id === presence.id ? {...tab, presence_id: undefined} : tab))
 
-		return presences
+		return presences.filter(e => e.title !== manifest.title)
 	})
 
 const toggle_enabled = (presence: Presence) =>
@@ -82,8 +76,11 @@ const toggle_enabled = (presence: Presence) =>
 		presence.enabled = !presence.enabled
 
 		get(tabs).forEach(tab => {
-			if (tab.presence_id === presence.id && tab.enabled && tab.id)
-				presenceScript.sendMessage(tab.id, presence.enabled ? { type: 'start', input: presence.input } : { type: 'stop' })
+			if (tab.presence_id === presence.id)
+				presenceScript.sendMessage(tab.id!, presence.enabled && tab.enabled
+					? { type: 'start', input: presence.input }
+					: { type: 'stop' }
+				)
 		})
 
 		return presences

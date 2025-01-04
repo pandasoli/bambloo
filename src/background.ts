@@ -1,7 +1,6 @@
 import { get } from 'svelte/store'
 
 import { ConnMethod } from '@/models/Conn.ts'
-import { AppTab } from '@/models/AppTab.ts'
 import type { Presence } from '@/models/Presence.ts'
 import type { Activity } from '@/models/Activity.ts'
 import type { Tab } from '@/models/Tab.ts'
@@ -10,12 +9,10 @@ import { saveDataLocally } from '@/utils/saveData.ts'
 import { tryset_conn } from '@/utils/tryset_conn.ts'
 
 import { conn } from '@/stores/conn.ts'
-import { popup } from '@/stores/popup.ts'
-import { ui } from '@/stores/ui.ts'
-import { presences, presences_bad_data } from '@/stores/presences.ts'
+import { presences } from '@/stores/presences.ts'
 import { tabs } from '@/stores/tabs.ts'
 import { alltabs } from '@/stores/alltabs.ts'
-import { repos, repos_bad_data } from '@/stores/repos.ts'
+import { repos } from '@/stores/repos.ts'
 import { presence_api } from '@/stores/presence_api.ts'
 
 
@@ -31,13 +28,7 @@ chrome.runtime.onMessage.addListener((msg, _, send) => {
 })
 
 const tabHostUpdate = (tabId: number, callback: () => void) => {
-	/*
-	 * In theory the tab might not be in the list because
-	 * stores/tabs listens to tabs.onRemoved and it could
-	 * be executed first and the tab removed from the list
-	 * but in my tests this works.
-	 */
-	const tab = get(tabs).find(e => e.id === tabId) as Tab
+	const tab = get(tabs).find(e => e.id === tabId)!
 
 	if (tab.presence_id === undefined) return
 	if (!tab.enabled) return
@@ -45,7 +36,7 @@ const tabHostUpdate = (tabId: number, callback: () => void) => {
 	const presences_ = get(presences)
 	if (!presences_) return
 
-	const presence = presences_.find(e => e.id === tab.presence_id) as Presence
+	const presence = presences_.find(e => e.id === tab.presence_id)!
 	if (!presence.enabled) return
 
 	callback()
@@ -60,7 +51,7 @@ chrome.tabs.onActivated.addListener(({ tabId }) =>
 		conn.message({ event: 'focus', tabId: tabId })))
 
 const onPresenseMessage = async (msg: any, tabId: number) => {
-	const tab = get(tabs).find(e => e.id === tabId) as Tab
+	const tab = get(tabs).find(e => e.id === tabId)!
 
 	switch (msg.type) {
 		case 'log':

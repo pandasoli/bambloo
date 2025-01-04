@@ -24,7 +24,6 @@ export const register = async (presence: Presence) => {
 	const text = await res.text()
 	const code = api + text
 
-	console.log('[register]', presence.id)
 	return chrome.userScripts.register([{
 		id: presence.id.toString(),
 		world: 'USER_SCRIPT',
@@ -36,22 +35,21 @@ export const register = async (presence: Presence) => {
 
 export const unregister = (presence: Presence) => {
 	get(tabs).forEach(tab => {
-		if (tab.id && tab.presence_id === presence.id) {
+		if (tab.presence_id === presence.id) {
 			conn.message({ event: 'remove', tabId: tab.id })
-			sendMessage(tab.id, { type: 'stop' })
+			sendMessage(tab.id!, { type: 'stop' })
 		}
 	})
 
-	console.log('[unregister]', presence.id)
 	return chrome.userScripts.unregister({
 		ids: [ presence.id.toString() ]
 	})
 }
 
-export const sendMessage = (tabId: number, data: any) =>
+export const sendMessage = (tabId: number, data: unknown) =>
 	chrome.scripting.executeScript({
 		target: { tabId },
 		args: [data],
-		func: (detail: unknown) =>
+		func: detail =>
 			dispatchEvent(new CustomEvent('message', { detail }))
 	})
