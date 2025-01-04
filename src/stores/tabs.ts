@@ -41,8 +41,8 @@ const fill_tab = (raw_tab: chrome.tabs.Tab): Tab => {
 const load = () => {
 	browser.tabs.query({}, tabs => state.set(tabs.map(fill_tab)))
 
-	browser.tabs.onCreated.addListener(tab => append(tab))
-	browser.tabs.onRemoved.addListener(id => remove(id))
+	browser.tabs.onCreated.addListener(append)
+	browser.tabs.onRemoved.addListener(remove)
 
 	return {
 		fill: () => browser.tabs.onUpdated.addListener((id, info, raw_tab) => {
@@ -71,25 +71,9 @@ const load = () => {
 	}
 }
 
-const append = (raw_tab: chrome.tabs.Tab) =>
-	state.update(tabs => {
-		const tab = fill_tab(raw_tab)
-
-		if (!tab.id) {
-			console.warn('[tabsStore>append]', `Tab "${raw_tab.title}" has no id`)
-			return tabs
-		}
-
-		if (tab.presence_id !== undefined) {
-			const presence = get(presences)?.find(e => e.id === tab.presence_id)!
-			const input = presence.input
-
-			if (presence.enabled && tab.enabled)
-				presenceScript.sendMessage(tab.id, { type: 'start', input })
-		}
-
-		return [ ...tabs, tab ]
-	})
+const append = (tab: chrome.tabs.Tab) =>
+	state.update(tabs =>
+		[ ...tabs, fill_tab(tab) ])
 
 const remove = (id: number) =>
 	state.update(tabs =>
