@@ -88,9 +88,18 @@ const remove = (manifest: Manifest) =>
 
 		presenceScript.unregister(presence)
 
+		get(tabs).forEach(tab => {
+			if (tab.presence_id === presence.id) {
+				conn.message({ event: 'remove', tabId: tab.id })
+				sendMessage(tab.id!, { type: 'stop' })
+			}
+		})
+
 		tabs.update(tabs =>
 			tabs.map(tab =>
-				tab.presence_id === presence.id ? {...tab, presence_id: undefined} : tab))
+				tab.presence_id === presence.id
+				? {...tab, presence_id: undefined} : tab
+			))
 
 		return presences.filter(e => e.title !== manifest.title)
 	})

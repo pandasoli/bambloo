@@ -69,13 +69,6 @@ export const register = async (presence: Presence) => {
 }
 
 export const unregister = (presence: Presence) => {
-	get(tabs).forEach(tab => {
-		if (tab.presence_id === presence.id) {
-			conn.message({ event: 'remove', tabId: tab.id })
-			sendMessage(tab.id!, { type: 'stop' })
-		}
-	})
-
 	if (import.meta.env.CHROME)
 		return browser.userScripts.unregister({
 			ids: [ presence.id.toString() ]
