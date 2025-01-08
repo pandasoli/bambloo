@@ -43,7 +43,7 @@ const load = async () => {
 		if (typeof item.images.icon !== 'string') {panic(data); return false}
 
 		if (!Array.isArray(item.previews)) {panic(data); return false}
-		if (!item.images.preview.every((e: any) => typeof e === 'string')) {panic(data); return false}
+		if (!item.previews.every((e: any) => typeof e === 'string')) {panic(data); return false}
 
 		if (!Array.isArray(item.urls)) {panic(data); return false}
 		if (!item.urls.preview.every((e: any) => typeof e === 'string')) {panic(data); return false}
