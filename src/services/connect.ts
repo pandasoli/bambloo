@@ -1,7 +1,7 @@
 import type { Conn, ConnDetails, ConnArgs, WebSocketArgs, NativeMessagingConn, WebSocketConn } from '@/models/Conn.ts'
 import { ConnMethod, ConnState } from '@/models/Conn.ts'
 
-import { connect_native } from '@/services/native.ts'
+import { connect_native } from '@/services/natmsg.ts'
 import { connect_ws } from '@/services/ws.ts'
 
 

@@ -10,7 +10,7 @@ type Res = {
 
 
 export const connect_native = (): Res => {
-	const port = browser.runtime.connectNative('com.elisoli.chrome.echo')
+	const port = browser.runtime.connectNative('com.elisoli.bambloo.discord')
 
 	const details: DetailsPromise = new Promise(resolve => {
 		const onMsg = (details: ConnDetails) => {

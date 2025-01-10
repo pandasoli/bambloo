@@ -19,6 +19,8 @@ bun.lockb
 
 # Cache
 __pycache__
+bin
+obj
 
 # Editor directories and files
 .vscode/*

@@ -1,0 +1,8 @@
+{
+	"name": "com.elisoli.bambloo.discord",
+	"description": "Bambloo - NativeMessaging host for Discord communication",
+	"path": "$PATH",
+	"type": "stdio",
+	"allowed_origins": [ "chrome-extension://$ID/" ]
+	"allowed_extensions": [ "$ID" ]
+}

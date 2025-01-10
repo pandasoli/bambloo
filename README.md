@@ -29,8 +29,9 @@ It is straightforward, <ins>configurable</ins> and <samp>pretty</samp> 🫐
 [![MIT license](https://img.shields.io/github/license/pandasoli/bambloo?style=for-the-badge&label=License&labelColor=313244&color=ca9ee6)](LICENSE)
 
 ![Linux support](https://img.shields.io/badge/Linux-support-fdfd96?logoColor=fcc624&labelColor=303446)
+![Windows support](https://img.shields.io/badge/Windows-10+-a7c7e7?logoColor=fcc624&labelColor=303446)
 ![Chrome 120+ support](https://img.shields.io/badge/Chrome-120%2B-C1E1C1?labelColor=313244)
-![Firefox support](https://img.shields.io/badge/Firefox-support-ed8796?labelColor=313244)
+![Firefox 50.0+ support](https://img.shields.io/badge/Firefox-50.0%2B-ed8796?labelColor=313244)
 </div>
 
 > [!WARNING]
@@ -93,7 +94,7 @@ The extension alone is not enough, it needs a way to talk to Discord.
 The way we found is having a program (a host) running on your system next to Discord.
 
 We have a variety of hosts, you can choose the one you feel most comfortable with.  
-Hosts differ by connection method, but don't worry about that unless you're a developer,  
+Hosts differ by connection method, but don't worry about this unless you're a developer,  
 and programming language, you might prefer a Python host, or maybe a binary one?
 
 <br>
@@ -111,34 +112,40 @@ and programming language, you might prefer a Python host, or maybe a binary one?
  	The difference from a Native Messaging host is that you'll have to run this host  
   on your terminal whenever you want to use **Bambloo**.
 
+<details>
+	<summary>Hosts system support table</summary>
+<br>
+
+| Language | Connection Method | Supported systems
+| --       | --                | --
+| Python   | WebSocket         | `Linux` `Windows`
+| Python   | NativeMessaging   | `Linux` `Windows`
+| C#       | WebSocket         | `Linux` `Windows`
+
+</details>
 <br>
 
 That being said let's install a host!  
-In the [Releases tab](https://github.com/pandasoli/bambloo/releases) you'll also find files named "\<method\>-hosts".  
-Download it and extract, if it is a WebSocket host you can already run it, otherwise read this:
+In the [Releases tab](https://github.com/pandasoli/bambloo/releases) you'll also find files named "\<method\>-hosts". Download and extract one,  
+and if you chose a WebSocket host you can just run the file called `ws-bambloo`, otherwise:
 
 <br>
 
 ### How to install Native Messaging hosts
 
-There is probably a shell file called `install.sh` in the extracted folder,  
-you can run it passing the args `--browser=<name> lang=<name>` and it will be installed.
+In the extracted folder there's a file called `install.sh` for Linux, and `install.cmd` for Windows.
 
-<br>
+To install the host run this file with the arguments:
+- `--browser <browser name>`
+- (optional) `--dist <host installation folder>`
+- (optional) `--lang <host programming language>`
+- (for Firefox) `--id <extension ID>`
+- (for Chrome) `--id <extension ID>`
 
-> [!IMPORTANT]
-> Update `"path"` inside `com.elisoli.bambloo.host.json` to your host's path and  
-> the first `"allowed_origins"` value to the extension ID that's in your  
-> browser's "Manage extensions" page.
+The "Extension ID" is found in the page you loaded the extension into your browser.
 
-<br>
-
-If your browser is not supported by this file you can install it manually:
-- (if needed) Compile the host you chose
-- Find your browser's config path, it's usually under `~/.config`
-- Look for a folder called "NativeMessagingHosts"
-- Copy the file `com.elisoli.bambloo.host.json` to this folder
-
+If your browser is not supported by this file, join our Discord server and
+our professionals will help you and add oficial support to your browser.
 <br>
 <br>
 

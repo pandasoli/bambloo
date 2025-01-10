@@ -41,6 +41,13 @@ export default defineConfig({
 			128: 'logo/icon-128.png'
 		},
 
+		browser_specific_settings: {
+			gecko: {
+				id: 'discord@bambloo.org',
+				strict_min_version: '50.0'
+			}
+		},
+
 		permissions: ['nativeMessaging', 'storage', 'tabs', 'userScripts', 'scripting'],
 		host_permissions: ['<all_urls>']
 	}
