@@ -46,7 +46,7 @@ const load = async () => {
 		if (!item.previews.every((e: any) => typeof e === 'string')) {panic(data); return false}
 
 		if (!Array.isArray(item.urls)) {panic(data); return false}
-		if (!item.urls.preview.every((e: any) => typeof e === 'string')) {panic(data); return false}
+		if (!item.urls.every((e: any) => typeof e === 'string')) {panic(data); return false}
 
 		if (typeof item.script !== 'string') {panic(data); return false}
 
