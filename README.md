@@ -120,7 +120,6 @@ and programming language, you might prefer a Python host, or maybe a binary one?
 | --       | --                | --
 | Python   | WebSocket         | `Linux` `Windows`
 | Python   | NativeMessaging   | `Linux` `Windows`
-| C#       | WebSocket         | `Linux` `Windows`
 
 </details>
 <br>
