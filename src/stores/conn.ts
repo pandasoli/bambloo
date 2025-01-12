@@ -39,12 +39,16 @@ const change = (new_conn: Conn|null) => {
 		switch (new_conn.method) {
 			case ConnMethod.NativeMessaging:
 				new_conn.port.onDisconnect.addListener(onErr)
+				new_conn.port.onMessage.addListener(msg =>
+					popup.update(popup => [ ...popup, msg.msg ]))
 				break
 
 			case ConnMethod.WebSocket:
-				new_conn.socket.addEventListener('open', () => {
-					new_conn.socket.addEventListener('close', onErr)
-					new_conn.socket.addEventListener('error', onErr)
+				new_conn.socket.addEventListener('close', onErr)
+				new_conn.socket.addEventListener('error', onErr)
+				new_conn.socket.addEventListener('message', ev => {
+					const data = JSON.parse(ev.data)
+					popup.update(popup => [ ...popup, data.msg ])
 				})
 		}
 
@@ -105,7 +109,6 @@ const message = (data: any) => {
 
 	switch (conn_?.method) {
 		case ConnMethod.NativeMessaging:
-			console.log(data)
 			conn_.port.postMessage(data)
 			break
 

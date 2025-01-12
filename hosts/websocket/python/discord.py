@@ -6,15 +6,16 @@ import json
 import struct
 import uuid
 from typing import TypedDict, Optional, Any
+from enum import Enum
 
 if sys.platform == 'linux':
 	import socket
-	from socket import socket as Socket
 elif sys.platform == 'win32':
 	import win32file
 	import win32pipe
 
 
+# Discord data structures
 class ActivityTimestamps(TypedDict, total=False):
 	start: Optional[int]
 	end: Optional[int]
@@ -87,68 +88,110 @@ class AuthorizationResponse(TypedDict):
 	evt: str
 	nonce: Optional[str]
 
+# Library data structures
+class ConnectStatus(Enum):
+	Connected = 0
+	SocketsRetriveError = 1
+	NoSockets = 2
+	ConnectionError = 3
+
 
 class StreamString:
-	def __init__(self, io_stream):
-		self.io_stream = io_stream
+	os:     str
+	socket: Any
 
-	def read_bytes(self) -> tuple[int, bytes]:
-		raw_metadata = win32file.ReadFile(self.io_stream, 8)[1]
-		if isinstance(raw_metadata, str):
-			raw_metadata = raw_metadata.encode()
+	def __init__(self, os: str, socket: Any):
+		self.os = os
+		self.socket = socket
+
+	def read_bytes(self) -> tuple[bool, str|None, tuple[int, bytes]|None]:
+		try:
+			res = self.read_bytes_()
+			return (True, None, res)
+		except Exception as e:
+			return (False, str(e), None)
+
+	def write_bytes(self, data: bytes) -> tuple[bool, str|None]:
+		try:
+			self.write_bytes_(data)
+			return (True, None)
+		except Exception as e:
+			return (False, str(e))
+
+	def close(self):
+		match self.os:
+			case 'linux': self.socket.close()
+			case 'win32': win32file.CloseHandle(self.socket)
+
+	def read_bytes_(self) -> tuple[int, bytes]:
+		raw_metadata: bytes
+		buf: bytes
+
+		match self.os:
+			case 'linux': raw_metadata = self.socket.recv(8)
+			case 'win32': raw_metadata = win32file.ReadFile(self.socket, 8)[1]
+			case _: raise Exception('Unsupported system')
 
 		metadata = struct.unpack('<II', raw_metadata)
 		size = metadata[1]
 
-		buf = win32file.ReadFile(self.io_stream, size)[1]
-		if isinstance(buf, str):
-			buf = buf.encode()
+		match self.os:
+			case 'linux': buf = self.socket.recv(size)
+			case 'win32': buf = win32file.ReadFile(self.socket, size)[1]
+			case _: raise Exception('Unsupported system')
 
 		return (metadata[0], buf)
 
-	def write_bytes(self, data: bytes):
-		win32file.WriteFile(self.io_stream, data)
+	def write_bytes_(self, data: bytes):
+		match self.os:
+			case 'linux': self.socket.sendall(data)
+			case 'win32': win32file.WriteFile(self.socket, data)
+			case _: raise Exception('Unsupported system')
 
 
 class Discord:
-	client_id:        str
-	tried_connection: bool
-	os:               str
+	client_id: str
+	connected: bool
+	os:        str
 
-	# For Linux
-	socket:           Any # Socket is undefined on Windows
-
-	# For Windows
-	pipe:             Any
-	buf:              StreamString
+	socket:    Any
+	buf:       StreamString
 
 	def __init__(self, client_id: str):
 		self.client_id = client_id
+		self.connected = False
 		self.os = sys.platform
 
 		if self.os not in ('linux', 'win32'):
 			raise Exception('Not supported system')
 
-	def authorize(self) -> tuple[bool, str, AuthorizationResponse|Error|None]:
+	def authorize(self) -> tuple[bool, str|None, AuthorizationResponse|Error|None]:
+		if not self.connected: return (False, 'Not connected', None)
+
 		payload = {
 			'client_id': self.client_id,
 			'v': 1
 		}
 
-		try:
-			_, msg = self.call(0, payload)
-			data = json.loads(msg)
+		done, msg, res = self.__call(0, payload)
+		if not done:
+			self.connected = False
+			return (False, msg, None)
+		if not res: return (False, msg, None) # Remove |None from res
 
-			if 'code' in data: return (False, msg, Error(data))
+		_, msg = res
+		data = json.loads(msg)
 
-			return (True, msg, AuthorizationResponse(data))
-		except socket.error as e:
-			return (False, str(e), None)
+		if 'code' in data: return (False, msg, Error(data))
+
+		return (True, msg, AuthorizationResponse(data))
 
 	def clear_activity(self):
 		return self.set_activity(None)
 
-	def set_activity(self, activity: Activity|None) -> tuple[bool, str, SetActivityResponse|Error|None]:
+	def set_activity(self, activity: Activity|None) -> tuple[bool, str|None, SetActivityResponse|Error|None]:
+		if not self.connected: return (False, 'Not connected', None)
+
 		payload = {
 			'cmd': 'SET_ACTIVITY',
 			'nonce': str(uuid.uuid4()),
@@ -158,21 +201,26 @@ class Discord:
 			}
 		}
 
-		try:
-			_, msg = self.call(1, payload)
-			data = json.loads(msg)
+		done, msg, res = self.__call(1, payload)
+		if not done:
+			self.connected = False
+			return (False, msg, None)
+		if not res: return (False, msg, None) # Remove |None from res
 
-			if 'code' in data: return (False, msg, Error(data))
-			if data.get('evt') == 'ERROR': return (False, msg, SetActivityResponse(data))
+		_, msg = res
+		data = json.loads(msg)
 
-			return (True, msg, SetActivityResponse(data))
-		except socket.error as e:
-			return (False, str(e), None)
+		if 'code' in data: return (False, msg, Error(data))
+		if data.get('evt') == 'ERROR': return (False, msg, SetActivityResponse(data))
 
-	def connect(self) -> tuple[bool, str|None]:
-		success, sockets, msg = self.get_sockets()
-		if not success: return (False, msg)
-		if not sockets: return (False, 'No sockets')
+		return (True, msg, SetActivityResponse(data))
+
+	def connect(self) -> tuple[ConnectStatus, str|None]:
+		if self.connected: self.buf.close()
+
+		done, msg, sockets = self.__get_sockets()
+		if not done: return (ConnectStatus.SocketsRetriveError, msg)
+		if not sockets: return (ConnectStatus.NoSockets, None)
 
 		match self.os:
 			case 'linux': self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -183,76 +231,74 @@ class Discord:
 					case 'linux':
 						self.socket.connect(sock)
 						self.socket.setblocking(False)
-						return (True, None)
 
 					case 'win32':
-						self.pipe = win32file.CreateFile(
+						self.socket = win32file.CreateFile(
 							sock,
 							win32file.GENERIC_READ | win32file.GENERIC_WRITE,
-							0,
-							None,
+							0, None,
 							win32file.OPEN_EXISTING,
-							0,
-							None
+							0, None
 						)
 
-						self.buf = StreamString(self.pipe)
-						return (True, None)
-			except:
-				self.socket.close()
+				self.buf = StreamString(self.os, self.socket)
+				self.connected = True
+				return (ConnectStatus.Connected, None)
+			except: ...
 
-		return (False, "Couldn't connect to any socket")
+		return (ConnectStatus.ConnectionError, "Couldn't connect to any socket")
 
-	def get_sockets(self) -> tuple[bool, list[str]|None, str|None]:
-		cmd = ''
+	def __get_sockets(self) -> tuple[bool, str|None, list[str]|None]:
+		cmd: str
 
 		match self.os:
 			case 'linux': cmd = 'ss -lx | grep -o [^[:space:]]*discord[^[:space:]]*'
 			case 'win32': cmd = 'powershell -Command (Get-ChildItem \\\\.\\pipe\\).FullName | findstr discord'
+			case _: raise Exception('Unsupported system')
 
 		process = subprocess.run(cmd, capture_output=True, text=True, shell=True)
 		stdout = process.stdout
-		# stderr = process.stderr
+		stderr = process.stderr
 
-		return (True, stdout.strip().split('\n'), None)
+		if stderr:
+			return (False, stderr, None)
+
+		return (True, None, stdout.strip().split('\n'))
 
 	# might throw error
-	def call(self, opcode: int, payload: dict) -> tuple[int, str]:
+	def __call(self, opcode: int, payload: dict) -> tuple[bool, str|None, tuple[int, str]|None]:
 		data = json.dumps(payload)
 		msg = struct.pack('<ii', opcode, len(data)) + data.encode()
 
-		match self.os:
-			case 'linux': self.socket.sendall(msg)
-			case 'win32': self.buf.write_bytes(msg)
+		done, msg = self.buf.write_bytes(msg)
+		if not done: return (False, msg, None)
 
 		time.sleep(2)
-		msg = ''
-		opcode = 0
 
-		match self.os:
-			case 'linux':
-				res = b''
+		done, msg, res = self.buf.read_bytes()
+		if not done: return (False, msg, None)
+		if not res: return (False, msg, None)
 
-				while True:
-					try:
-						chunk = self.socket.recv(1024)
-						if not chunk: break
-						res += chunk
-					except BlockingIOError:
-						break
-					except socket.timeout:
-						# Timeout occurred while waiting for data
-						break
+		opcode = res[0]
+		data = res[1].decode()
 
-				opcode = struct.unpack('<ii', res[:8])[0]
-				msg = res[8:].decode()
+		return (True, None, (opcode, data))
 
-			case 'win32':
-				opcode, res = self.buf.read_bytes()
-				msg = res.decode()
-
-		return (opcode, msg)
-
+				# res = b''
+				#
+				# while True:
+				# 	try:
+				# 		chunk = self.socket.recv(1024)
+				# 		if not chunk: break
+				# 		res += chunk
+				# 	except BlockingIOError:
+				# 		break
+				# 	except socket.timeout:
+				# 		# Timeout occurred while waiting for data
+				# 		break
+				#
+				# opcode = struct.unpack('<ii', res[:8])[0]
+				# msg = res[8:].decode()
 
 if __name__ == '__main__':
 	discord = Discord('1059272441194623126')

@@ -2,7 +2,7 @@ import asyncio
 import websockets
 import argparse
 import json
-from discord import Discord, Activity
+from discord import ConnectStatus, Discord, Activity
 
 discord: Discord
 port = 8765
@@ -11,9 +11,37 @@ activities = {}
 test_mode: bool = False
 
 
-async def websocket_handler(socket):
+async def send(socket, data):
+	msg = json.dumps(data)
+	await socket.send(msg)
+
+async def set_activity(socket, activity: Activity|None):
+	done, msg, res = discord.set_activity(activity)
+	if not done:
+		if not res:
+			await send(socket, { 'err': 'disconnected', 'msg': msg })
+		else:
+			await send(socket, { 'err': 'invalid', 'msg': msg })
+
+async def connect(socket):
+	global discord
+	discord = Discord('1321929356599365644')
+
+	status, msg = discord.connect()
+	if status != ConnectStatus.Connected:
+		if socket: await send(socket, { 'err': 'connection', 'msg': msg })
+		else: print('Not connected:', msg)
+		return
+
+	done, msg, _ = discord.authorize()
+	if not done:
+		if socket: await send(socket, { 'err': 'authorization', 'msg': msg })
+		else: print('Unauthozied:', msg)
+		return
+
+async def handler(socket):
 	print(f'{socket.remote_address} connected')
-	await socket.send(json.dumps(details))
+	await send(socket, details)
 
 	focusedId: int = 0
 
@@ -38,7 +66,7 @@ async def websocket_handler(socket):
 					activities[tabId] = activity
 
 					if not test_mode:
-						discord.set_activity(Activity(activity))
+						await set_activity(socket, Activity(activity))
 					else:
 						print('tabId', tabId)
 
@@ -54,7 +82,7 @@ async def websocket_handler(socket):
 
 					if not test_mode:
 						if focusedId == tabId:
-							discord.clear_activity()
+							await set_activity(socket, None)
 					else:
 						print('tabId', tabId)
 
@@ -68,9 +96,12 @@ async def websocket_handler(socket):
 					focusedId = tabId
 
 					if not test_mode:
-						discord.set_activity(Activity(activity))
+						await set_activity(socket, Activity(activity))
 					else:
 						print('tabId', tabId)
+
+				case 'reconnect':
+					await connect(socket)
 
 				case _:
 					print(f'Not implemented event {event}')
@@ -79,18 +110,9 @@ async def websocket_handler(socket):
 		print(f'{socket.remote_address} closed connection')
 
 async def main():
-	# Discord connection
-	if not test_mode:
-		discord = Discord('1321929356599365644')
+	await connect(None)
 
-		connected = discord.connect()
-		if not connected: return print('Not connected')
-
-		authorized = discord.authorize()
-		if not authorized: return print('Unauthozied')
-
-	# Server starting
-	server = await websockets.serve(websocket_handler, 'localhost', port)
+	server = await websockets.serve(handler, 'localhost', port)
 	print(f'ws://localhost:{port}')
 
 	await server.wait_closed()
