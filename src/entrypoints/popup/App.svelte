@@ -48,7 +48,7 @@
 	<div class='err-panel'>
 		<span class='error'>{@html $ui.error.msg }</span>
 
-		<div class='buttons'>
+		<div class={`buttons ${$ui.error.buttons.length > 1 ? 'btns-2' : ''}`}>
 			{#each $ui.error.buttons as btn, i}
 				<Button type='red' onclick={() => errorRetry(i)} outline={btn.outline}>{ btn.text }</Button>
 			{/each}
@@ -121,17 +121,6 @@
 		font-size: 10px;
 
 		span { color: black }
-	}
-
-	.err-panel {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		gap: 8px;
-		height: 100%;
-
-		.buttons { width: 80% }
 	}
 
 	#discord-connection {
