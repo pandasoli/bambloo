@@ -50,15 +50,14 @@ export default defineBackground(() => {
 		switch (msg.type) {
 			case 'connect': {
 				const method: ConnMethod = msg.method
-				const set_first: boolean = msg.set_first
-
-				tryset_conn(method, msg.args, set_first, send)
+				tryset_conn(method, msg.args, send)
 				return true
 			}
 
-			case 'presence toggle': presences.toggle_enabled(msg.id); break
+			case 'reconnect discord': conn.reconnect(); break
 			case 'tab toggle': tabs.toggle_enabled(msg.id); break
-			case 'presence remove': presences.remove(msg.manifest) 
+			case 'presence toggle': presences.toggle_enabled(msg.id); break
+			case 'presence remove': presences.remove(msg.manifest)
 		}
 	})
 

@@ -7,7 +7,7 @@ from sys			        import stdout, stdin, exit
 from threading        import Thread
 from discord          import ConnectStatus, Discord, Activity
 
-discord = Discord('1321929356599365644')
+discord: Discord
 details = { 'multiple': False }
 activities = {}
 
@@ -23,12 +23,14 @@ def error(msg: str):
 	logger.error(msg)
 
 def set_activity(activity: Activity|None):
+	global discord
+
 	done, msg, res = discord.set_activity(activity)
 	if not done:
 		if not res:
-			send({ 'err': 'disconnected', 'msg': msg })
+			send({ 'type': 'err', 'event': 'connection', 'msg': msg })
 		else:
-			send({ 'err': 'invalid', 'msg': msg })
+			send({ 'type': 'err', 'event': 'setting activity', 'msg': msg })
 
 def connect():
 	global discord
@@ -36,11 +38,13 @@ def connect():
 
 	status, msg = discord.connect()
 	if status != ConnectStatus.Connected:
-		return send({ 'err': 'connection', 'msg': msg })
+		return send({ 'type': 'err', 'event': 'connection', 'msg': msg })
 
 	done, msg, _ = discord.authorize()
 	if not done:
-		return send({ 'err': 'authorization', 'msg': msg })
+		return send({ 'type': 'err', 'event': 'authorization', 'msg': msg })
+
+	send({ 'type': 'info', 'event': 'connected', 'msg': msg })
 
 def read():
 	send(details)
@@ -55,7 +59,7 @@ def read():
 		text_len_bytes: bytes = stdin.buffer.read(4)
 
 		if len(text_len_bytes) == 0:
-			send({ 'err': 'exiting', 'msg': 'Host exiting' })
+			send({ 'type': 'err', 'event': 'exiting' })
 			break
 
 		text_len: int = struct.unpack('@I', text_len_bytes)[0]

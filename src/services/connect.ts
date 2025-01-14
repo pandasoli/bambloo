@@ -1,5 +1,6 @@
 import type { Conn, ConnDetails, ConnArgs, WebSocketArgs, NativeMessagingConn, WebSocketConn } from '@/models/Conn.ts'
 import { ConnMethod, ConnState } from '@/models/Conn.ts'
+import { DiscordState } from '@/models/DiscordState.ts'
 
 import { connect_native } from '@/services/natmsg.ts'
 import { connect_ws } from '@/services/ws.ts'
@@ -18,6 +19,7 @@ export const try_conn = async (method: ConnMethod, args: ConnArgs): Promise<Res>
 	const bconn = {
 		method,
 		state: ConnState.Connecting,
+		discordState: DiscordState.Disconnected,
 		details: { multiple: false }
 	}
 

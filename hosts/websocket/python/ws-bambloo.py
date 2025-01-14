@@ -5,6 +5,7 @@ import json
 from discord import ConnectStatus, Discord, Activity
 
 discord: Discord
+connectionMsg: dict = {}
 port = 8765
 details = { 'multiple': True }
 activities = {}
@@ -12,36 +13,44 @@ test_mode: bool = False
 
 
 async def send(socket, data):
-	msg = json.dumps(data)
-	await socket.send(msg)
+	if socket:
+		msg = json.dumps(data)
+		await socket.send(msg)
+	else:
+		print(data)
 
 async def set_activity(socket, activity: Activity|None):
+	global discord, connectionMsg
+
 	done, msg, res = discord.set_activity(activity)
 	if not done:
 		if not res:
-			await send(socket, { 'err': 'disconnected', 'msg': msg })
+			connectionMsg = { 'type': 'err', 'event': 'connection', 'msg': msg }
+			await send(socket, connectionMsg)
 		else:
-			await send(socket, { 'err': 'invalid', 'msg': msg })
+			await send(socket, { 'type': 'err', 'event': 'setting activity', 'msg': msg })
 
 async def connect(socket):
-	global discord
+	global discord, connectionMsg
 	discord = Discord('1321929356599365644')
 
 	status, msg = discord.connect()
 	if status != ConnectStatus.Connected:
-		if socket: await send(socket, { 'err': 'connection', 'msg': msg })
-		else: print('Not connected:', msg)
-		return
+		connectionMsg = { 'type': 'err', 'event': 'connection', 'msg': msg }
+		return await send(socket, connectionMsg)
 
 	done, msg, _ = discord.authorize()
 	if not done:
-		if socket: await send(socket, { 'err': 'authorization', 'msg': msg })
-		else: print('Unauthozied:', msg)
-		return
+		connectionMsg = { 'type': 'err', 'event': 'authorization', 'msg': msg }
+		return await send(socket, connectionMsg)
+
+	connectionMsg = { 'type': 'info', 'event': 'connected', 'msg': msg }
+	await send(socket, connectionMsg)
 
 async def handler(socket):
 	print(f'{socket.remote_address} connected')
 	await send(socket, details)
+	await send(socket, connectionMsg)
 
 	focusedId: int = 0
 

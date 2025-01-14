@@ -1,3 +1,5 @@
+import { DiscordState } from '@/models/DiscordState.ts'
+
 
 export enum ConnState {
 	Stopped,
@@ -18,6 +20,7 @@ export interface WebSocketArgs { port: number }
 interface ConnBase {
 	method: ConnMethod
 	state: ConnState
+	discordState: DiscordState
 	errMsg?: string
 	details: ConnDetails
 }

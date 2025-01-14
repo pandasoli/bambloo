@@ -4,6 +4,7 @@ import { popup } from '@/stores/popup.ts'
 
 import type { Conn, ConnDetails } from '@/models/Conn.ts'
 import { ConnMethod, ConnState } from '@/models/Conn.ts'
+import { DiscordState } from '@/models/DiscordState.ts'
 
 import { set_updatters } from '@/utils/storeUpdaters.ts'
 import { tryset_conn } from '@/utils/tryset_conn.ts'
@@ -31,25 +32,47 @@ const load = async () => {
 	if (typeof data.args !== 'object') return popup.append('Connection args stored are not valid')
 	if (data.args !== null && typeof data.args.port !== 'number') return popup.append('Connection port stored are not valid')
 
-	tryset_conn(data.method, data.args, true)
+	tryset_conn(data.method, data.args)
 }
 
 const change = (new_conn: Conn|null) => {
+	const onMessage = (msg: any) => {
+		console.log(msg)
+		switch (msg.type) {
+			case 'err':
+				switch (msg.event) {
+					case 'connection':
+					case 'authorization':
+						return state.update(conn => ({
+							...conn,
+							discordState: DiscordState.Disconnected,
+							errMsg: msg.msg
+						} as Conn))
+					case 'setting activity':
+				}
+				break
+
+			case 'info':
+				if (msg.event === 'connected')
+					return state.update(conn =>
+						({ ...conn, discordState: DiscordState.Connected } as Conn))
+		}
+
+		popup.update(popup => [ ...popup, msg.msg ])
+	}
+
 	if (new_conn)
 		switch (new_conn.method) {
 			case ConnMethod.NativeMessaging:
 				new_conn.port.onDisconnect.addListener(onErr)
-				new_conn.port.onMessage.addListener(msg =>
-					popup.update(popup => [ ...popup, msg.msg ]))
+				new_conn.port.onMessage.addListener(onMessage)
 				break
 
 			case ConnMethod.WebSocket:
 				new_conn.socket.addEventListener('close', onErr)
 				new_conn.socket.addEventListener('error', onErr)
-				new_conn.socket.addEventListener('message', ev => {
-					const data = JSON.parse(ev.data)
-					popup.update(popup => [ ...popup, data.msg ])
-				})
+				new_conn.socket.addEventListener('message', ev =>
+					onMessage(JSON.parse(ev.data)))
 		}
 
 	state.set(new_conn)
@@ -104,6 +127,13 @@ const stop = () =>
 		return conn
 	})
 
+/** Reconnect to Discord */
+const reconnect = () => {
+	message({ event: 'reconnect' })
+	state.update(conn =>
+		({ ...conn, discordState: DiscordState.Connecting }))
+}
+
 const message = (data: any) => {
 	const conn_ = get(conn)
 
@@ -126,5 +156,6 @@ export const conn = {
 	setDetails,
 	setErrMsg,
 	stop,
+	reconnect,
 	message
 }

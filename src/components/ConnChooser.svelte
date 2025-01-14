@@ -52,7 +52,6 @@
 		browser.runtime.sendMessage({
 			type: 'connect',
 			method,
-			set_first: $conn === null,
 			args:
 				method === ConnMethod.WebSocket ? ws_conn_args :
 				null

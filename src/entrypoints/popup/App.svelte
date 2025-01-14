@@ -14,13 +14,19 @@
 
 	import { AppTab } from '@/models/AppTab.ts'
 	import { ConnState } from '@/models/Conn.ts'
+	import { DiscordState } from '@/models/DiscordState.ts'
 
 	import presencesTreeIcon from '@/assets/trees/presences.png'
 	import storeTreeIcon from '@/assets/trees/store.png'
+	import discordBlueIcon from '@/assets/discord_blue.svg'
+	import reloadIcon from '@/assets/reload.svg'
 
 
 	const errorRetry = (index: number) =>
 		browser.runtime.sendMessage({ type: 'error', index })
+
+	const reconnectDiscord = () =>
+		browser.runtime.sendMessage({ type: 'reconnect discord' })
 
 
 	popup.subscribe(() =>
@@ -55,6 +61,35 @@
 		<img src={presencesTreeIcon} id='tree' />
 		<Store />
 	{:else}
+		{#if $conn.discordState !== DiscordState.Connected}
+			<div id='discord-connection'>
+				<img src={discordBlueIcon} />
+
+				<div>
+					<span>Discord has disconnected</span>
+
+					{#if $conn.errMsg}
+						<details>
+							<summary>Details</summary>
+							<p>{ $conn.errMsg }</p>
+						</details>
+					{/if}
+				</div>
+
+				{#if $conn.discordState === DiscordState.Disconnected}
+					<button on:click={reconnectDiscord}>
+						<img src={reloadIcon} />
+					</button>
+				{:else}
+					<div class='loading'>
+						<div />
+						<div />
+						<div />
+					</div>
+				{/if}
+			</div>
+		{/if}
+
 		<Header />
 
 		{#if      $ui.tab === AppTab.Presences} <PresencesTab />
@@ -97,6 +132,63 @@
 		height: 100%;
 
 		.buttons { width: 80% }
+	}
+
+	#discord-connection {
+		display: flex;
+		align-items: start;
+		gap: 10px;
+		padding: 6px;
+		width: 110%;
+		min-height: 50px;
+		transform: translateX(-5%);
+		border-radius: 8px;
+		z-index: 1;
+		background: var(--light-bg);
+
+		img { width: 22px; height: 38px }
+
+		& > div:first-of-type {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+
+			span { flex: 1; color: white }
+			summary { color: var(--text-cl) }
+		}
+
+		button, .loading {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+			height: 38px;
+			width: 38px;
+			gap: 4px
+		}
+
+		button {
+			img { width: 60% }
+
+			&:hover { opacity: .75 }
+		}
+
+		.loading div {
+			width: 5px;
+			height: 5px;
+			border-radius: 50%;
+			background: var(--blue);
+			animation: bounce 1.5s infinite ease-in-out;
+
+			&:nth-child(2) { animation-delay: .2s }
+			&:nth-child(3) { animation-delay: .4s }
+		}
+	}
+
+	@keyframes bounce {
+		0%, 100% { transform: translateY(0) }
+		80% { transform: translateY(2px) }
+		40% { transform: translateY(-10px) }
 	}
 
 	#tree {
