@@ -112,8 +112,11 @@
 			</div>
 		{/if}
 
-		{#if state !== ConnState.Stopped} <span class='info'>{loadingMsgs[loadingMsgsI]}</span> {/if}
-		{#if errMsg} <span class='error'>{errMsg}</span> {/if}
+		{#if state !== ConnState.Stopped}
+			<span class='info'>{loadingMsgs[loadingMsgsI]}</span>
+		{:else if errMsg}
+			<span class='error'>{errMsg}</span>
+		{/if}
 	</div>
 </main>
 
