@@ -85,8 +85,12 @@ const remove = (manifest: Manifest) =>
 		if (!presences) return presences
 
 		const presence = presences.find(e => e.title === manifest.title)!
+		presences = presences.filter(e => e.title !== manifest.title)
 
 		presenceScript.unregister(presence)
+
+		if (presences.length === 0)
+			ui.setTab(AppTab.Store)
 
 		get(tabs).forEach(tab => {
 			if (tab.presence_id === presence.id) {
@@ -101,7 +105,7 @@ const remove = (manifest: Manifest) =>
 				? {...tab, presence_id: undefined} : tab
 			))
 
-		return presences.filter(e => e.title !== manifest.title)
+		return presences
 	})
 
 const toggle_enabled = (id: number) =>

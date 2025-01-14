@@ -6,10 +6,14 @@
 	import Button from '@/components/Button.svelte'
 
 	import treeIcon from '@/assets/trees/presences.png'
+	import { AppTab } from '@/models/AppTab.ts'
 
 
-	const errDeletePresences = () => presences.set([])
 	const errRetryPresences = () => presences.load()
+	const errDeletePresences = () => {
+		presences.set([])
+		ui.setTab(AppTab.Store)
+	}
 
 	const toggle = (id: number) =>
 		browser.runtime.sendMessage({ type: 'presence toggle', id })
