@@ -20,7 +20,7 @@ export default defineConfig({
 
 	manifest: {
 		name: 'Bambloo',
-		description: "Let your Discord friends knwo what's in your browser",
+		description: "Let your Discord crew know what your browser is up to!",
 		minimum_chrome_version: '120',
 		version: '1.0.0',
 
