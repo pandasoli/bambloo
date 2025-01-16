@@ -1,6 +1,4 @@
 <script lang='ts'>
-	import { get } from 'svelte/store'
-
 	import discordBlueIcon from '@/assets/discord_blue.svg'
 	import reloadIcon from '@/assets/reload.svg'
 
@@ -9,29 +7,11 @@
 	import { DiscordState } from '@/models/DiscordState.ts'
 
 
-	let state = $conn?.discordState
-	let mutable = true
-
-
-	const reconnectDiscord = () => {
-		mutable = false
-		state = DiscordState.Connecting
-
+	const reconnectDiscord = () =>
 		browser.runtime.sendMessage({ type: 'reconnect discord' })
-
-		setTimeout(() => {
-			mutable = true
-			state = get(conn)?.discordState ?? DiscordState.Disconnected
-		}, 2000)
-	}
-
-
-	conn.subscribe(conn => {
-		if (conn && mutable) state = conn.discordState
-	})
 </script>
 
-<div id='discord-connection' class:invalid={state === DiscordState.Disconnected}>
+<div id='discord-connection' class:invalid={$conn?.discordState === DiscordState.Disconnected}>
 	<img src={discordBlueIcon} alt='Discord icon' />
 
 	<div>
@@ -45,7 +25,7 @@
 		{/if}
 	</div>
 
-	{#if state === DiscordState.Disconnected}
+	{#if $conn?.discordState === DiscordState.Disconnected}
 		<button on:click={reconnectDiscord} aria-label='Reconnect'>
 			<img src={reloadIcon} alt='Reconnect icon' />
 		</button>
