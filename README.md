@@ -137,10 +137,9 @@ If you prefer a TUI installer, there's the `init.cmd` file inside `win32-tui` fo
 
 To install the host run this file with the arguments:
 - `--browser <browser name>`
+- `--id <extension ID>`
 - (optional) `--dist <host installation folder>`
 - (optional) `--lang <host programming language>`
-- (for Firefox) `--id <extension ID>`
-- (for Chrome) `--id <extension ID>`
 
 The "Extension ID" is found in the page you loaded the extension into your browser.
 
