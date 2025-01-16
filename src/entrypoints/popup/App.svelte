@@ -6,6 +6,7 @@
 	import Header from '@/components/Header.svelte'
 	import Store from '@/components/Store.svelte'
 	import Button from '@/components/Button.svelte'
+	import DiscordDisconnect from '@/components/DiscordDisconnect.svelte'
 
 	import { conn } from '@/stores/conn.ts'
 	import { ui } from '@/stores/ui.ts'
@@ -18,15 +19,10 @@
 
 	import presencesTreeIcon from '@/assets/trees/presences.png'
 	import storeTreeIcon from '@/assets/trees/store.png'
-	import discordBlueIcon from '@/assets/discord_blue.svg'
-	import reloadIcon from '@/assets/reload.svg'
 
 
 	const errorRetry = (index: number) =>
 		browser.runtime.sendMessage({ type: 'error', index })
-
-	const reconnectDiscord = () =>
-		browser.runtime.sendMessage({ type: 'reconnect discord' })
 
 
 	popup.subscribe(() =>
@@ -42,7 +38,7 @@
 			<span>{@html msg}</span>
 		</div>
 	{/each}
-</div>	
+</div>
 
 {#if $ui.error}
 	<div class='err-panel'>
@@ -62,32 +58,7 @@
 		<Store />
 	{:else}
 		{#if $conn.discordState !== DiscordState.Connected}
-			<div id='discord-connection'>
-				<img src={discordBlueIcon} />
-
-				<div>
-					<span>Discord has disconnected</span>
-
-					{#if $conn.errMsg}
-						<details>
-							<summary>Details</summary>
-							<p>{ $conn.errMsg }</p>
-						</details>
-					{/if}
-				</div>
-
-				{#if $conn.discordState === DiscordState.Disconnected}
-					<button on:click={reconnectDiscord}>
-						<img src={reloadIcon} />
-					</button>
-				{:else}
-					<div class='loading'>
-						<div />
-						<div />
-						<div />
-					</div>
-				{/if}
-			</div>
+			<DiscordDisconnect />
 		{/if}
 
 		<Header />
@@ -121,63 +92,6 @@
 		font-size: 10px;
 
 		span { color: black }
-	}
-
-	#discord-connection {
-		display: flex;
-		align-items: start;
-		gap: 10px;
-		padding: 6px;
-		width: 110%;
-		min-height: 50px;
-		transform: translateX(-5%);
-		border-radius: 8px;
-		z-index: 1;
-		background: var(--light-bg);
-
-		img { width: 22px; height: 38px }
-
-		& > div:first-of-type {
-			display: flex;
-			flex-direction: column;
-			flex: 1;
-
-			span { flex: 1; color: white }
-			summary { color: var(--text-cl) }
-		}
-
-		button, .loading {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			cursor: pointer;
-			height: 38px;
-			width: 38px;
-			gap: 4px
-		}
-
-		button {
-			img { width: 60% }
-
-			&:hover { opacity: .75 }
-		}
-
-		.loading div {
-			width: 5px;
-			height: 5px;
-			border-radius: 50%;
-			background: var(--blue);
-			animation: bounce 1.5s infinite ease-in-out;
-
-			&:nth-child(2) { animation-delay: .2s }
-			&:nth-child(3) { animation-delay: .4s }
-		}
-	}
-
-	@keyframes bounce {
-		0%, 100% { transform: translateY(0) }
-		80% { transform: translateY(2px) }
-		40% { transform: translateY(-10px) }
 	}
 
 	#tree {
