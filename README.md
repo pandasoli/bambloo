@@ -132,7 +132,8 @@ and if you chose a WebSocket host you can just run the file called `ws-bambloo`,
 
 ### How to install Native Messaging hosts
 
-In the extracted folder there's a file called `install.sh` for Linux, and `install.cmd` for Windows.
+In the extracted folder there's a file called `install.sh` for Linux, and `install.cmd` for Windows.  
+If you prefer a TUI installer, there's the `init.cmd` file inside `win32-tui` for Windows.
 
 To install the host run this file with the arguments:
 - `--browser <browser name>`
