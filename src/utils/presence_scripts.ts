@@ -2,7 +2,6 @@ import { get, writable } from 'svelte/store'
 
 import { tabs } from '@/stores/tabs.ts'
 import { popup } from '@/stores/popup.ts'
-import { conn } from '@/stores/conn.ts'
 import { presence_api } from '@/stores/presence_api'
 import { presences } from '@/stores/presences.ts'
 
@@ -42,8 +41,9 @@ export const register = async (presence: Presence) => {
 	if (!api_code) return
 
 	const api = api_code
-		.replace(/<!-- repo -->/, presence.repo)
-		.replace(/<!-- path -->/, presence.path)
+		.replace(/<!-- repo -->/g, presence.repo)
+		.replace(/<!-- path -->/g, presence.path)
+		.replace(/<!-- id -->/g, presence.id.toString())
 
 	const res = await fetch(presence.script)
 

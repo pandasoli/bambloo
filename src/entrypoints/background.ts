@@ -33,6 +33,10 @@ const tabHostUpdate = (tabId: number, callback: () => void) => {
 const onPresenseMessage = async (msg: any, tabId: number) => {
 	const tab = get(tabs).find(e => e.id === tabId)!
 
+	// Prevent generic presences to set activity for any tab
+	if (msg.id !== tab.presence_id)
+		return
+
 	switch (msg.type) {
 		case 'log':
 			console.log(`[presence:${tab.title}]`, msg.data)
@@ -40,6 +44,7 @@ const onPresenseMessage = async (msg: any, tabId: number) => {
 	
 		case 'activity':
 			const activity = msg.activity as Activity
+			console.log(activity)
 			conn.message({ event: 'update', tabId, activity })
 	}
 }

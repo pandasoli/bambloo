@@ -4,6 +4,7 @@ import { presences } from '@/stores/presences.ts'
 import { conn } from '@/stores/conn.ts'
 
 import type { Tab } from '@/models/Tab.ts'
+import type { Presence } from '@/models/Presence.ts'
 
 import { set_updatters } from '@/utils/storeUpdaters.ts'
 import * as presenceScript from '@/utils/presence_scripts.ts'
@@ -13,23 +14,29 @@ const state = writable<Tab[]>([])
 set_updatters(state, 'tabs')
 
 const fill_tab = (raw_tab: chrome.tabs.Tab): Tab => {
-	let presence_id: number|undefined = undefined
-
-	if (raw_tab.id && raw_tab.url) {
+	const find_presence_id = (url: string) => {
 		const presence = get(presences)?.find(presence =>
-			presence.urls.some(url => {
-				const str = url
+			presence.urls.some(url_ => {
+				const str = url_
 					.replace(/\./g, '\\.')
 					.replace(/\*/g, '.*')
 
-				const regex = new RegExp(str)
 				/* url cannot be null as checked above */
-				return regex.test(raw_tab.url!)
+				return new RegExp(str).test(url)
 			})
 		)
 
-		presence_id = presence?.id
+		const generic = presence ? undefined :
+			get(presences)?.find(presence =>
+				presence.urls.some(url => url === '<all_urls>')
+			)
+
+		return presence?.id ?? generic?.id
 	}
+
+	const presence_id = raw_tab.id && raw_tab.url
+		? find_presence_id(raw_tab.url)
+		: undefined
 
 	return {
 		...raw_tab,
