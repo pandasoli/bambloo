@@ -46,6 +46,10 @@ It is straightforward, <ins>configurable</ins> and <samp>pretty</samp> 🫐
 </div>
 
 <br>
+
+[CS50 Demo Video](https://www.youtube.com/embed/aONnDZ7mH9w)
+
+<br>
 <br>
 
 ## Installing the Extension 🫐
