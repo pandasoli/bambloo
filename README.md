@@ -54,7 +54,11 @@ It is straightforward, <ins>configurable</ins> and <samp>pretty</samp> 🫐
 
 ## Installing the Extension 🫐
 
+The extension is already available on Firefox add-ons store, you can find here: [firefox/addon/bambloo](https://addons.mozilla.org/en-US/firefox/addon/bambloo)
+
 While the extension is not available on the Chrome Store you can install it manually.
+
+---
 
 In the [Releases tab](https://github.com/pandasoli/bambloo/releases) you'll find the versions with their changelog and files.  
 Under the `Assets` drop-down are the files, you can choose whether you prefer  
@@ -145,10 +149,11 @@ To install the host run this file with the arguments:
 - (optional) `--dist <host installation folder>`
 - (optional) `--lang <host programming language>`
 
-The "Extension ID" is found in the page you loaded the extension into your browser.
+The "Extension ID" is found at `chrome://extensions` on Chrome and  
+at `about:debugging#/runtime/this-firefox` on Firefox.
 
-If your browser is not supported by this file, join our Discord server and
-our professionals will help you and add oficial support to your browser.
+If your browser is not supported by this file, join our Discord server and  
+our professionals will help you and add official support to your browser.
 <br>
 <br>
 
