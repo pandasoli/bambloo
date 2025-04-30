@@ -1,10 +1,10 @@
 #!/bin/sh
 
-manifest_name='./com.elisoli.bambloo.discord.json'
+manifest_name='com.elisoli.bambloo.discord.json'
 
 op='install'
 lang='python'
-browser='chrome_stable'
+browser='chrome'
 id=''
 dist="$HOME/.local/share/bambloo"
 entry='natmsg-bambloo'
@@ -46,7 +46,7 @@ check_browser_info() {
 	manifest=$(echo "$manifest" | sed "s|\$ID|$id|g")
 
 	case "$browser" in
-		'firefox_bin')
+		'firefox')
 			manifest=$(echo "$manifest" | sed "/allowed_origins/d") ;;
 		*)
 			manifest=$(echo "$manifest" | sed "/allowed_extensions/d") ;;
@@ -54,17 +54,18 @@ check_browser_info() {
 }
 
 get_browser_path() {
+	XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
 	case "$browser" in
 		'chrome_unstable') echo "$XDG_CONFIG_HOME/google-chrome-unstable/NativeMessagingHosts" ;;
-		'chrome_stable') echo "$XDG_CONFIG_HOME/google-chrome/NativeMessagingHosts" ;;
+		'chrome') echo "$XDG_CONFIG_HOME/google-chrome/NativeMessagingHosts" ;;
 		'vivaldi') echo "$XDG_CONFIG_HOME/vivaldi/NativeMessagingHosts" ;;
-		'firefox_bin') echo "$HOME/.mozilla/native-messaging-hosts" ;;
+		'firefox') echo "$HOME/.mozilla/native-messaging-hosts" ;;
 	esac
 }
 
 is_supported_browser() {
 	case "$browser" in
-		'chrome_stable' | 'chrome_unstable' | 'vivaldi' | 'firefox_bin') return 0 ;;
+		'chrome' | 'chrome_unstable' | 'vivaldi' | 'firefox') return 0 ;;
 		*) return 1 ;;
 	esac
 }
