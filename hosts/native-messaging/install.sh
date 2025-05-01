@@ -58,28 +58,22 @@ get_browser_path() {
 	case "$browser" in
 		'chrome_unstable') echo "$XDG_CONFIG_HOME/google-chrome-unstable/NativeMessagingHosts" ;;
 		'chrome') echo "$XDG_CONFIG_HOME/google-chrome/NativeMessagingHosts" ;;
+		'brave') echo "$XDG_CONFIG_HOME/BraveSoftware/Brave-Browser/NativeMessagingHosts" ;;
 		'vivaldi') echo "$XDG_CONFIG_HOME/vivaldi/NativeMessagingHosts" ;;
 		'firefox') echo "$HOME/.mozilla/native-messaging-hosts" ;;
 	esac
 }
 
-is_supported_browser() {
-	case "$browser" in
-		'chrome' | 'chrome_unstable' | 'vivaldi' | 'firefox') return 0 ;;
-		*) return 1 ;;
-	esac
-}
+# Check browser info
+manifest=$(< "$manifest_name")
+browser_path=$(get_browser_path)
 
-# Check if the browser is supported
-if ! is_supported_browser; then
+if [ -z "$browser_path" ]; then
 	echo "Browser not supported"
 	exit 1
 fi
 
-# Check browser info
-manifest=$(< "$manifest_name")
 check_browser_info
-browser_path=$(get_browser_path)
 
 # Perform operation (install/uninstall)
 if [ "$op" = 'uninstall' ]; then
