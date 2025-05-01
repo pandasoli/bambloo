@@ -44,6 +44,10 @@ const onPresenseMessage = async (msg: any, tabId: number) => {
 	
 		case 'activity':
 			const activity = msg.activity as Activity
+
+			if (activity.state && activity.state?.length > 128)
+				activity.state = activity.state.substring(0, 125) + '…'
+
 			console.log(activity)
 			conn.message({ event: 'update', tabId, activity })
 	}

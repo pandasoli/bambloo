@@ -15,7 +15,7 @@ stats-*.json
 web-ext.config.ts
 
 # Lock files
-bun.lockb
+bun.lock
 
 # Cache
 __pycache__
