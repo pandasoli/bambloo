@@ -78,7 +78,10 @@
 		&.active { transform: rotate(20deg) }
 	}
 
-	main { padding-top: 16px }
+	main {
+		padding-top: 16px;
+		overflow-y: auto
+	}
 
 	main.error {
 		display: flex;
