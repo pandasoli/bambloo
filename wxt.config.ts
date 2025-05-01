@@ -22,7 +22,7 @@ export default defineConfig({
 		name: 'Bambloo',
 		description: "Let your Discord crew know what your browser is up to!",
 		minimum_chrome_version: '120',
-		version: '1.0.0',
+		version: '1.0.1',
 
 		action: {
 			default_title: 'Share what you are up to on Discord',
@@ -44,7 +44,7 @@ export default defineConfig({
 		browser_specific_settings: {
 			gecko: {
 				id: 'discord@bambloo.org',
-				strict_min_version: '50.0'
+				strict_min_version: '58.0'
 			}
 		},
 
