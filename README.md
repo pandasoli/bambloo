@@ -32,6 +32,8 @@ It is straightforward, <ins>configurable</ins> and <samp>pretty</samp> 🫐
 ![Windows support](https://img.shields.io/badge/Windows-10+-a7c7e7?logoColor=fcc624&labelColor=303446)
 ![Chrome 120+ support](https://img.shields.io/badge/Chrome-120%2B-C1E1C1?labelColor=313244)
 ![Firefox 50.0+ support](https://img.shields.io/badge/Firefox-50.0%2B-ed8796?labelColor=313244)
+![Vivaldi](https://img.shields.io/badge/Vivaldi-ff6b7d)
+![Brave](https://img.shields.io/badge/Brave-ffa368)
 </div>
 
 > [!WARNING]
