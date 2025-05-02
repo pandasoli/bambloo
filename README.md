@@ -156,6 +156,14 @@ at `about:debugging#/runtime/this-firefox` on Firefox.
 
 If your browser is not supported by this file, join our Discord server and  
 our professionals will help you and add official support to your browser.
+
+---
+
+If you are on Windows the Python host will require the library `pywin32`  
+that can be installed this way:
+```sh
+$ python -m pip install pywin32
+```
 <br>
 <br>
 
