@@ -42,38 +42,38 @@ It is straightforward, <ins>configurable</ins> and <samp>pretty</samp> 🫐
 
 <div align=center>
 
-[Installing the Extension](#installing-the-extension-) |
-[Installing the Host](#installing-the-host-) |
+[Installing the Extension](#installing-the-extension-) &emsp;•&emsp;
+[Installing the Host](#installing-the-host-) &emsp;•&emsp;
 [How It Works](#how-it-works-)
 </div>
 
 <br>
 
-[CS50 Demo Video](https://www.youtube.com/embed/aONnDZ7mH9w)
+[CS50 Demo Video 🢅](https://www.youtube.com/embed/aONnDZ7mH9w)
 
 <br>
 <br>
 
 ## Installing the Extension 🫐
 
-The extension is already available on Firefox add-ons store, you can find here: [firefox/addon/bambloo](https://addons.mozilla.org/en-US/firefox/addon/bambloo)
+> [!TIP]
+> The extension is already available on Firefox add-ons store, you can find here: [firefox/addon/bambloo](https://addons.mozilla.org/en-US/firefox/addon/bambloo)  
+> While the extension is not available on the Chrome Store you can install it manually following this doc.
 
-While the extension is not available on the Chrome Store you can install it manually.
+In the [Releases tab](https://github.com/pandasoli/bambloo/releases) you'll find the versions with their changelog and files,  
+under the `Assets` drop-down are the files, you can choose whether you prefer a zip file or a tarball,  
+download the one with the name "bambloo-extension".
 
----
-
-In the [Releases tab](https://github.com/pandasoli/bambloo/releases) you'll find the versions with their changelog and files.  
-Under the `Assets` drop-down are the files, you can choose whether you prefer  
-a zip file or a tarball. Download the one with the name "bambloo-extension".
-
-If you prefer, you can build yourself by cloning this repo and running `bin run build`.
+> [!NOTE]
+> If you prefer, you can build yourself by cloning this repo and running `bun i` and  
+> `bun --bun run build` for Chrome-based browsers or `bun --bun run build:firefox` for Firefox.
 
 <br>
 
 After downloading extract the file and follow the next steps accordingly to your browser:
 
 <details>
-	<summary>Google Chrome</summary>
+	<summary>Chrome-based browsers</summary>
 <br>
 
 1. Inside your browser, type `chrome://extensions` in your searchbar or,
@@ -100,8 +100,8 @@ After downloading extract the file and follow the next steps accordingly to your
 
 ## Installing the Host 🐼
 
-The extension alone is not enough, it needs a way to talk to Discord.  
-The way we found is having a program (a host) running on your system next to Discord.
+The extension alone is not enough, it needs a way to talk to Discord,  
+the way we found is having a program (a host) running on your system next to Discord.
 
 We have a variety of hosts, you can choose the one you feel most comfortable with.  
 Hosts differ by connection method, but don't worry about this unless you're a developer,  
@@ -134,9 +134,17 @@ and programming language, you might prefer a Python host, or maybe a binary one?
 </details>
 <br>
 
+> [!IMPORTANT]
+> If you are on Windows the Python host will require the library `pywin32` that can be installed this way:
+> ```sh
+> $ python -m pip install pywin32
+> ```
+<br>
+
 That being said let's install a host!  
-In the [Releases tab](https://github.com/pandasoli/bambloo/releases) you'll also find files named "\<method\>-hosts". Download and extract one,  
-and if you chose a WebSocket host you can just run the file called `ws-bambloo`, otherwise:
+In the [Releases tab](https://github.com/pandasoli/bambloo/releases) you'll also find files named "\<method\>-hosts",  
+download and extract one, if you chose a WebSocket host you can just  
+run the file called `ws-bambloo.py` and it will be ready, otherwise:
 
 <br>
 
@@ -151,19 +159,11 @@ To install the host run this file with the arguments:
 - (optional) `--dist <host installation folder>`
 - (optional) `--lang <host programming language>`
 
-The "Extension ID" is found at `chrome://extensions` on Chrome and  
-at `about:debugging#/runtime/this-firefox` on Firefox.
+The "Extension ID" is found at `chrome://extensions` on Chrome-based  
+and at `about:debugging#/runtime/this-firefox` on Firefox.
 
-If your browser is not supported by this file, join our Discord server and  
+If your browser is not supported by this file, join our [Discord server](https://discord.gg/4gNjyuXgMG) and  
 our professionals will help you and add official support to your browser.
-
----
-
-If you are on Windows the Python host will require the library `pywin32`  
-that can be installed this way:
-```sh
-$ python -m pip install pywin32
-```
 <br>
 <br>
 
@@ -172,7 +172,7 @@ $ python -m pip install pywin32
 
 The extension's service worker manages all the data and events of the extension,  
 when you install a Presence through the Store tab you are getting a manifest file  
-from the repositories you have configured (default: https://github.com/pandasoli/bambloo-repo),  
+from the repositories you have configured (default: [pandasoli/bambloo-repo](https://github.com/pandasoli/bambloo-repo)),  
 and this manifest file contains the path inside the repository where lies a script,  
 which that run on the tab it was made to run and collects information about the page,  
 which later is sent to the service worker, then to the host and then to Discord.
