@@ -176,3 +176,7 @@ from the repositories you have configured (default: [pandasoli/bambloo-repo](htt
 and this manifest file contains the path inside the repository where lies a script,  
 which that run on the tab it was made to run and collects information about the page,  
 which later is sent to the service worker, then to the host and then to Discord.
+
+## TODO 📃
+
+- Implement Discord account login <https://discord.com/developers/docs/topics/oauth2#oauth2>
